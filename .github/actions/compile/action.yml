@@ -120,6 +120,8 @@ runs:
         INPUTS_KERNEL_DIRNAME: ${{ inputs.kernel_dirname }}
 
     - name: Upload artifacts to S3 bucket
+      # Qualcomm-only: the S3 bucket below is not accessible from forks
+      if: github.repository_owner == 'qualcomm-linux'
       uses: qualcomm-linux/upload-private-artifact-action@aws-v4
       id: upload_s3_artifacts
       with:

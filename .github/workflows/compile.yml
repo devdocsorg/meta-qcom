@@ -190,6 +190,8 @@ jobs:
           INPUTS_DISTRO_NAME: ${{ inputs.distro_name }}
           INPUTS_KERNEL_DIRNAME: ${{ inputs.kernel_dirname }}
       - name: Set S3 object tag
+        # Qualcomm-only: the S3 bucket below is not accessible from forks
+        if: github.repository_owner == 'qualcomm-linux'
         run: |
           if [[ "$GITHUB_EVENT_NAME" = "pull_request" ]]; then
             echo "OBJECT_TAG=retention=7d" >> $GITHUB_ENV
@@ -206,6 +208,8 @@ jobs:
           fi
       
       - name: Upload artifacts to S3 bucket
+        # Qualcomm-only: the S3 bucket below is not accessible from forks
+        if: github.repository_owner == 'qualcomm-linux'
         uses: qualcomm-linux/upload-private-artifact-action@aws-v5
         id: upload_s3_artifacts
         with:
