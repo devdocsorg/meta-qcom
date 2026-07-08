@@ -26,7 +26,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  CACHE_DIR: /efs/qli/meta-qcom
+  CACHE_DIR: /home/ubuntu/cache/yocto/meta-qcom
   KAS_CLONE_DEPTH: 1
 
 jobs:
