@@ -105,7 +105,7 @@ jobs:
       - name: Dump kas-build yaml
         shell: bash
         run: |
-          mkdir $KAS_WORK_DIR
+          mkdir -p $KAS_WORK_DIR
           $KAS_CONTAINER dump --resolve-env --resolve-local --resolve-refs ${KAS_YAMLS} > kas-build.yml
 
       - name: Kas build world
