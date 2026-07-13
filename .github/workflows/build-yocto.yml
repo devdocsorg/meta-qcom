@@ -189,6 +189,7 @@ jobs:
             dirname: ""
             yamlfile: ""
     uses: ./.github/workflows/compile.yml
+    secrets: inherit
     with:
       name: ${{ matrix.machine }}/${{ matrix.distro.name }}${{ matrix.kernel.dirname }}
       machine: ${{matrix.machine}}
@@ -204,6 +205,7 @@ jobs:
       github.repository_owner == 'qualcomm-linux' &&
       (inputs.skip_if_github_cached != true || needs.github-cache-check.outputs.cache_hit != 'true')
     uses: ./.github/workflows/compile.yml
+    secrets: inherit
     with:
       name: qcom-armv8a/qcom-distro-sdk
       sdk: true
@@ -433,6 +435,7 @@ jobs:
                 dirname: ""
                 yamlfile: ""
     uses: ./.github/workflows/compile.yml
+    secrets: inherit
     with:
       name: ${{ matrix.machine }}/${{ matrix.distro.name }}${{ matrix.kernel.dirname }}
       enabled: ${{inputs.profile != 'pr' || (matrix.distro.name != 'debug' && matrix.distro.name != 'performance')}}
