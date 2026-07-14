@@ -26,12 +26,12 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  CACHE_DIR: /efs/qli/meta-qcom
+  CACHE_DIR: /home/ubuntu/cache/yocto/meta-qcom
   KAS_CLONE_DEPTH: 1
 
 jobs:
   kas-setup:
-    if: github.repository_owner == 'qualcomm-linux'
+    if: (github.repository_owner == 'qualcomm-linux' || github.repository_owner == 'devdocsorg')
     runs-on: [self-hosted, qcom-u2404, amd64]
     steps:
       - name: Setting up kas-container
@@ -64,7 +64,7 @@ jobs:
 
   github-cache-check:
     needs: kas-setup
-    if: github.repository_owner == 'qualcomm-linux'
+    if: (github.repository_owner == 'qualcomm-linux' || github.repository_owner == 'devdocsorg')
     runs-on: ubuntu-latest
     outputs:
       cache_hit: ${{ steps.restore.outputs.cache-hit == 'true' }}
@@ -159,7 +159,7 @@ jobs:
           ci/kas-container-shell-helper.sh ci/oe-selftest.sh
 
   compile-env:
-    if: github.repository_owner == 'qualcomm-linux'
+    if: (github.repository_owner == 'qualcomm-linux' || github.repository_owner == 'devdocsorg')
     runs-on: ubuntu-latest
     outputs:
       CACHE_DIR: ${{ steps.compile_env.outputs.CACHE_DIR }}
@@ -172,15 +172,13 @@ jobs:
   compile_warm_up:
     needs: [kas-setup, github-cache-check, compile-env]
     if: |
-      github.repository_owner == 'qualcomm-linux' &&
+      (github.repository_owner == 'qualcomm-linux' || github.repository_owner == 'devdocsorg') &&
       (inputs.skip_if_github_cached != true || needs.github-cache-check.outputs.cache_hit != 'true')
     strategy:
       fail-fast: true
       matrix:
         machine:
-          - glymur-crd
           - qcom-armv8a
-          - rb3gen2-core-kit
         distro:
           - name: nodistro
             yamlfile: ""
@@ -191,6 +189,7 @@ jobs:
             dirname: ""
             yamlfile: ""
     uses: ./.github/workflows/compile.yml
+    secrets: inherit
     with:
       name: ${{ matrix.machine }}/${{ matrix.distro.name }}${{ matrix.kernel.dirname }}
       machine: ${{matrix.machine}}
@@ -206,6 +205,7 @@ jobs:
       github.repository_owner == 'qualcomm-linux' &&
       (inputs.skip_if_github_cached != true || needs.github-cache-check.outputs.cache_hit != 'true')
     uses: ./.github/workflows/compile.yml
+    secrets: inherit
     with:
       name: qcom-armv8a/qcom-distro-sdk
       sdk: true
@@ -435,6 +435,7 @@ jobs:
                 dirname: ""
                 yamlfile: ""
     uses: ./.github/workflows/compile.yml
+    secrets: inherit
     with:
       name: ${{ matrix.machine }}/${{ matrix.distro.name }}${{ matrix.kernel.dirname }}
       enabled: ${{inputs.profile != 'pr' || (matrix.distro.name != 'debug' && matrix.distro.name != 'performance')}}
@@ -464,7 +465,7 @@ jobs:
   github-cache-save:
     needs: [github-cache-check, compile, compile_sdk]
     if: |
-      github.repository_owner == 'qualcomm-linux' &&
+      (github.repository_owner == 'qualcomm-linux' || github.repository_owner == 'devdocsorg') &&
       inputs.skip_if_github_cached == true &&
       needs.github-cache-check.outputs.cache_hit != 'true' &&
       needs.compile.result == 'success'
@@ -480,7 +481,7 @@ jobs:
           key: build-success-${{ github.repository }}-${{ github.workflow }}-${{ github.ref_name }}-${{ needs.github-cache-check.outputs.run_hash }}
 
   build_successful:
-    if: github.repository_owner == 'qualcomm-linux'
+    if: (github.repository_owner == 'qualcomm-linux' || github.repository_owner == 'devdocsorg')
     needs: [compile, compile_sdk]
     runs-on: ubuntu-latest
     steps:

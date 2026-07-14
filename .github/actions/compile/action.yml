@@ -55,7 +55,7 @@ runs:
     - name: Dump kas-build yaml
       shell: bash
       run: |
-        mkdir $KAS_WORK_DIR
+        mkdir -p $KAS_WORK_DIR
         $KAS_CONTAINER dump --resolve-env --resolve-local --resolve-refs ${KAS_YAMLS} > kas-build.yml
 
     - name: Kas qcom world build
@@ -114,6 +114,7 @@ runs:
         INPUTS_KERNEL_DIRNAME: ${{ inputs.kernel_dirname }}
 
     - name: Upload artifacts to S3 bucket
+      if: github.repository_owner == 'qualcomm-linux'
       uses: qualcomm-linux/upload-private-artifact-action@aws-v4
       id: upload_s3_artifacts
       with:
@@ -140,4 +141,3 @@ runs:
         overwrite: true
         name: ${{ steps.print-output.outputs.filename }}
         path: ${{ steps.print-output.outputs.filename }}
-

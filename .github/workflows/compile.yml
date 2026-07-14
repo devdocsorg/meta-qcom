@@ -105,7 +105,7 @@ jobs:
       - name: Dump kas-build yaml
         shell: bash
         run: |
-          mkdir $KAS_WORK_DIR
+          mkdir -p $KAS_WORK_DIR
           $KAS_CONTAINER dump --resolve-env --resolve-local --resolve-refs ${KAS_YAMLS} > kas-build.yml
 
       - name: Kas build world
@@ -183,7 +183,40 @@ jobs:
           INPUTS_MACHINE: ${{ inputs.machine }}
           INPUTS_DISTRO_NAME: ${{ inputs.distro_name }}
           INPUTS_KERNEL_DIRNAME: ${{ inputs.kernel_dirname }}
+
+      - name: Configure AWS credentials
+        if: github.repository_owner == 'devdocsorg'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Upload artifacts to S3
+        if: github.repository_owner == 'devdocsorg'
+        id: upload_s3_fork
+        shell: bash
+        run: |
+          set -eu
+          BUCKET="${{ secrets.AWS_S3_BUCKET }}"
+          if [ -z "$BUCKET" ]; then
+            echo "::error::AWS_S3_BUCKET secret is not set for this repository"
+            exit 1
+          fi
+          DEST="${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ github.run_id }}-${{ github.run_attempt }}"
+          if command -v aws >/dev/null 2>&1; then
+            aws s3 sync ./uploads "s3://${BUCKET}/${DEST}/" --no-progress
+          else
+            # No host aws CLI on the runner: fall back to the official image.
+            docker run --rm -v "${PWD}/uploads:/uploads" \
+              -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -e AWS_SESSION_TOKEN \
+              -e AWS_REGION -e AWS_DEFAULT_REGION \
+              amazon/aws-cli s3 sync /uploads "s3://${BUCKET}/${DEST}/" --no-progress
+          fi
+          echo "Uploaded artifacts to s3://${BUCKET}/${DEST}/"
+          echo "url=s3://${BUCKET}/${DEST}" >> "$GITHUB_OUTPUT"
+
       - name: Set S3 object tag
+        if: github.repository_owner == 'qualcomm-linux'
         run: |
           if [[ "$GITHUB_EVENT_NAME" = "pull_request" ]]; then
             echo "OBJECT_TAG=retention=7d" >> $GITHUB_ENV
@@ -200,6 +233,7 @@ jobs:
           fi
       
       - name: Upload artifacts to S3 bucket
+        if: github.repository_owner == 'qualcomm-linux'
         uses: qualcomm-linux/upload-private-artifact-action@aws-v5
         id: upload_s3_artifacts
         with:
@@ -217,7 +251,7 @@ jobs:
           KERNEL_DIRNAME="${INPUTS_KERNEL_DIRNAME}"
           BUILDNAME="${INPUTS_MACHINE}_${INPUTS_DISTRO_NAME}${KERNEL_DIRNAME}"
           FILENAME="build-url_${BUILDNAME}"
-          echo "${{ steps.upload_s3_artifacts.outputs.url }}" > "${FILENAME}"
+          echo "${{ steps.upload_s3_artifacts.outputs.url }}${{ steps.upload_s3_fork.outputs.url }}" > "${FILENAME}"
           echo "filename=${FILENAME}" >> $GITHUB_OUTPUT
         env:
           INPUTS_KERNEL_DIRNAME: ${{ inputs.kernel_dirname }}
