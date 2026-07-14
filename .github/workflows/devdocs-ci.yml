@@ -1,15 +1,15 @@
 name: DevDocs CI
 
-# Per-PR CI on the self-hosted AWS runner: every PR to devdocs/main builds
+# Per-PR CI on the self-hosted AWS runner: every PR to devdocs/master builds
 # independently, so concurrent feature branches never collide on a shared branch.
 
 on:
   pull_request:
     branches:
-      - devdocs/main
+      - devdocs/master
   push:
     branches:
-      - devdocs/main
+      - devdocs/master
       - devdocs/build-*   # manual escape hatch for long-lived experiments
 
 permissions:
