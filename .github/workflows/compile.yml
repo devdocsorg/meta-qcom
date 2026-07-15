@@ -198,20 +198,8 @@ jobs:
         run: |
           set -eu
           BUCKET="${{ secrets.AWS_S3_BUCKET }}"
-          if [ -z "$BUCKET" ]; then
-            echo "::error::AWS_S3_BUCKET secret is not set for this repository"
-            exit 1
-          fi
           DEST="${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ github.run_id }}-${{ github.run_attempt }}"
-          if command -v aws >/dev/null 2>&1; then
-            aws s3 sync ./uploads "s3://${BUCKET}/${DEST}/" --no-progress
-          else
-            # No host aws CLI on the runner: fall back to the official image.
-            docker run --rm -v "${PWD}/uploads:/uploads" \
-              -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -e AWS_SESSION_TOKEN \
-              -e AWS_REGION -e AWS_DEFAULT_REGION \
-              amazon/aws-cli s3 sync /uploads "s3://${BUCKET}/${DEST}/" --no-progress
-          fi
+          aws s3 sync ./uploads "s3://${BUCKET}/${DEST}/" --no-progress
           echo "Uploaded artifacts to s3://${BUCKET}/${DEST}/"
           echo "url=s3://${BUCKET}/${DEST}" >> "$GITHUB_OUTPUT"
 

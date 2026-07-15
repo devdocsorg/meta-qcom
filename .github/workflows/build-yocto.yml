@@ -480,6 +480,30 @@ jobs:
           path: /tmp/build-success-marker
           key: build-success-${{ github.repository }}-${{ github.workflow }}-${{ github.ref_name }}-${{ needs.github-cache-check.outputs.run_hash }}
 
+  cache-backup-s3:
+    needs: [github-cache-check, compile_warm_up, compile, compile_sdk]
+    if: |
+      always() && github.repository_owner == 'devdocsorg' &&
+      (inputs.skip_if_github_cached != true || needs.github-cache-check.outputs.cache_hit != 'true') &&
+      needs.compile_warm_up.result == 'success'
+    runs-on: [self-hosted, qcom-u2404, amd64]
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Sync yocto cache to S3
+        shell: bash
+        run: |
+          set -eu
+          BUCKET="${{ secrets.AWS_S3_BUCKET }}"
+          DEST="s3://${BUCKET}/cache/yocto/$(basename "${CACHE_DIR}")"
+          SYNC_ARGS=(--size-only --no-progress --exclude "*.lock" --exclude "*.tmp")
+          aws s3 sync "${CACHE_DIR}" "${DEST}/" "${SYNC_ARGS[@]}"
+          echo "Cache synced to ${DEST}/"
+
   build_successful:
     if: (github.repository_owner == 'qualcomm-linux' || github.repository_owner == 'devdocsorg')
     needs: [compile, compile_sdk]
