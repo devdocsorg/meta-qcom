@@ -130,6 +130,18 @@ do_compile[depends] += "${@'${QCOM_BOOT_FIRMWARE}:do_deploy' if d.getVar('QCOM_B
 do_compile[depends] += "${@'virtual/kernel:do_deploy' if 'dtb' in d.getVar('CAPSULE_ENTRIES').split() else ''}"
 do_compile[depends] += "${@'virtual/kernel:do_qcom_dtbbin_deploy' if 'dtb' in d.getVar('CAPSULE_ENTRIES').split() and 'linux-qcom-dtbbin' in (d.getVar('KERNEL_CLASSES') or '').split() else ''}"
 
+# Write ``${B}/FvUpdate.xml`` with one firmware entry per CAPSULE_ENTRIES
+# name; does nothing when CAPSULE_ENTRIES is empty.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The recipe datastore.
+#
+# Returns:
+#     None: Entries without binary, dest_disk, or dest_partition flags are
+#     skipped with a warning.
+#
+# Example:
+#     ``do_compile[prefuncs] += "generate_fvupdate"`` runs it before do_compile.
 python generate_fvupdate() {
     """Generate FvUpdate.xml from CAPSULE_ENTRIES when the variable is set."""
     import os
@@ -152,6 +164,16 @@ python generate_fvupdate() {
     ]
 
     for name in entries:
+        # Return one flag of the current entry's CAPSULE_ENTRY_<name> variable.
+        #
+        # Args:
+        #     f (str): Flag name, such as ``binary`` or ``dest_disk``.
+        #
+        # Returns:
+        #     str: The flag value, or an empty string when unset.
+        #
+        # Example:
+        #     ``flag('dest_partition')``
         def flag(f):
             return d.getVarFlag('CAPSULE_ENTRY_%s' % name, f) or ''
 
@@ -212,6 +234,14 @@ generate_fvupdate[vardeps] += "${@' '.join('CAPSULE_ENTRY_' + e for e in d.getVa
 # XBLCONFIG_DTB / XBLCONFIG_DTB_SECTION overrides), patches QcCapsuleRootCert
 # in that DTB, and repacks the updated DTB back into xbl_config.elf in place.
 # $1 - path to xbl_config.elf (modified in place on success)
+# @description Patch the `QcCapsuleRootCert` property of the post-DDR device
+#   tree inside `xbl_config.elf` with the OEM root certificate in `ROOT_INC`,
+#   and mark the result with `.xbl_with_oem_cert` in `CAPSULE_DIR`.
+# @arg $1 string Path to the staged `xbl_config.elf`, modified in place.
+# @exitcode 0 The file was patched, or no post-DDR device tree was found.
+# @exitcode >0 A qcom-capsule-tool step failed; BitBake stops the task.
+# @example
+#   patch_xblconfig_cert "${BOOTBINS_STAGED}/xbl_config.elf"
 patch_xblconfig_cert() {
     local xbl_config="$1"
     local staged_dir
@@ -258,6 +288,15 @@ patch_xblconfig_cert() {
     fi
 }
 
+# @description Build the signed UEFI capsule `${PN}.cap`: stage the boot
+#   binaries, inject the OEM root certificate into `xbl_config.elf`, create
+#   the firmware volume and version file, and run GenerateCapsule.py with the
+#   CAPSULE_* keys.
+# @noargs
+# @exitcode 0 The capsule is in `CAPSULE_DIR`.
+# @exitcode >0 A staging or capsule tool step failed; BitBake stops the task.
+# @example
+#   bitbake -c compile firmware-qcom-capsule
 do_compile() {
     CBSP_DATA="${STAGING_DATADIR_NATIVE}/cbsp-boot-utilities"
     EDK2_BASETOOLS="${STAGING_DATADIR_NATIVE}/edk2-basetools"
@@ -346,6 +385,12 @@ do_compile() {
         -v
 }
 
+# @description Install the capsule under `${nonarch_base_libdir}/firmware/efi`.
+# @noargs
+# @exitcode 0 The capsule is in the install directory.
+# @exitcode >0 An install command failed; BitBake stops the task.
+# @example
+#   bitbake -c install firmware-qcom-capsule
 do_install() {
     install -d "${D}${nonarch_base_libdir}/firmware/efi"
     install -m 0644 "${CAPSULE_DIR}/${PN}.cap" "${D}${nonarch_base_libdir}/firmware/efi/"
@@ -354,6 +399,13 @@ do_install() {
 PACKAGES = "${PN}"
 FILES:${PN} = "${nonarch_base_libdir}/firmware/efi/${PN}.cap"
 
+# @description Deploy the capsule, and the certificate-patched XBL config as
+#   `xbl_config-with-oem-cert.elf` when one was produced.
+# @noargs
+# @exitcode 0 The files are in `DEPLOYDIR`.
+# @exitcode >0 An install command failed; BitBake stops the task.
+# @example
+#   bitbake -c deploy firmware-qcom-capsule
 do_deploy() {
     install -d "${DEPLOYDIR}"
     install -m 0644 "${CAPSULE_DIR}/${PN}.cap" "${DEPLOYDIR}/"

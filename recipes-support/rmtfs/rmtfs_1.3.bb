@@ -11,6 +11,12 @@ SRCREV = "b30a3eb38f9af283f18dbd3c7755653efc52c094"
 SRC_URI = "git://github.com/linux-msm/${BPN}.git;branch=master;protocol=https;tag=v${PV}"
 DEPENDS = "qmic-native qrtr udev"
 
+# @description Install rmtfs and its systemd services with the upstream Makefile.
+# @noargs
+# @exitcode 0 The daemon and services are in the install directory.
+# @exitcode >0 The make install step failed; BitBake stops the task.
+# @example
+#   bitbake -c install rmtfs
 do_install () {
     oe_runmake install DESTDIR=${D} prefix=${prefix} servicedir=${systemd_unitdir}/system
 }

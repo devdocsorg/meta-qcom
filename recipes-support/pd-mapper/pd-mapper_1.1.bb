@@ -13,6 +13,12 @@ SRCREV = "5ecd2fe926aca7abfe40724177f63b942cff3947"
 SRC_URI = "git://github.com/linux-msm/${BPN}.git;branch=master;protocol=https;tag=v${PV} \
 "
 
+# @description Install pd-mapper and its systemd service with the upstream Makefile.
+# @noargs
+# @exitcode 0 The daemon and service are in the install directory.
+# @exitcode >0 The make install step failed; BitBake stops the task.
+# @example
+#   bitbake -c install pd-mapper
 do_install () {
     oe_runmake install DESTDIR=${D} prefix=${prefix} servicedir=${systemd_unitdir}/system
 }

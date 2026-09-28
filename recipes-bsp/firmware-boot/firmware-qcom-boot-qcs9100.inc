@@ -14,6 +14,14 @@ QCOM_BOOT_IMG_SUBDIR = "qcs9100"
 
 include firmware-qcom-boot-common.inc
 
+# @description When the archive has a `sail_nor` directory, also deploy the Safety
+#   Island NOR files (GPT, firehose programmer, programming XML, and SAIL
+#   images) to a `sail_nor` subdirectory.
+# @noargs
+# @exitcode 0 The SAIL files, when present, are in `DEPLOYDIR`.
+# @exitcode >0 A command failed; BitBake stops the task.
+# @example
+#   bitbake -c deploy firmware-qcom-boot-qcs9100
 do_deploy:append() {
     if [ -d "${UNPACKDIR}/${BOOTBINARIES}/sail_nor" ]; then
         SAIL_FILES="gpt_backup0.bin gpt_main0.bin prog_firehose_ddr.elf patch0.xml rawprogram0.xml sailhyp.elf sailsw1.elf"

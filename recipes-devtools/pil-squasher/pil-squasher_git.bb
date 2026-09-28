@@ -12,6 +12,12 @@ SRC_URI = " \
 
 PV = "0.0+"
 
+# @description Install pil-squasher with the upstream Makefile `install` target.
+# @noargs
+# @exitcode 0 The tool is in the install directory.
+# @exitcode >0 The make install step failed; BitBake stops the task.
+# @example
+#   bitbake -c install pil-squasher
 do_install () {
     oe_runmake install DESTDIR=${D} prefix=${prefix}
 }

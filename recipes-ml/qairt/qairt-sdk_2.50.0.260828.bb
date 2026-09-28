@@ -30,6 +30,18 @@ DEPENDS = "patchelf-native binutils-native systemd"
 # like "aarch64-oe-linux-gcc8.2", "aarch64-oe-linux-gcc9.3", etc.
 # This helper picks the directory whose GCC major version best matches the
 # build compiler, falling back to the nearest lower available version.
+# Return the SDK library directory pattern for the build compiler.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The recipe datastore.
+#
+# Returns:
+#     str: A glob such as ``aarch64-oe-linux-gcc11*`` for the highest SDK
+#     GCC version at or below GCCVERSION and at least 8, or None when the SDK
+#     library directory is missing or has no match.
+#
+# Example:
+#     ``PLATFORM_DIR = "${@platform_dir(d)}"``
 def platform_dir(d):
     sdk_lib_dir = d.getVar("S", True) + "/lib/"
     if os.path.exists(sdk_lib_dir) and os.path.isdir(sdk_lib_dir):
@@ -56,6 +68,15 @@ do_compile[noexec] = "1"
 COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:aarch64 = "(.*)"
 
+# @description Install the SDK headers, the libraries and tools for `PLATFORM_DIR`, and
+#   the unsigned Hexagon v66, v68, v73, and v75 libraries under
+#   `${datadir}/qcom`, linking the Shikra, Hamoa, and SA8775P `cdsp1`
+#   directories to the boards that share their binaries.
+# @noargs
+# @exitcode 0 The SDK files are in the install directory.
+# @exitcode >0 A copy, install, or link command failed; BitBake stops the task.
+# @example
+#   bitbake -c install qairt-sdk
 do_install() {
     install -d ${D}${includedir}
     install -d ${D}${libdir}
@@ -106,6 +127,13 @@ do_install() {
 # to avoid packaging/runtime dependency mismatches.
 #
 # Can be dropped once fixed upstream (planned in QAIRT SDK v2.45)
+# @description Rewrite the `libcdsprpc.so` dependency of installed SDK libraries to
+#   `libcdsprpc.so.1` with patchelf.
+# @noargs
+# @exitcode 0 Every affected library needs `libcdsprpc.so.1`.
+# @exitcode >0 patchelf failed; BitBake stops the task.
+# @example
+#   bitbake -c patch_qairt_needed_soname qairt-sdk
 do_patch_qairt_needed_soname() {
     for so in ${D}${libdir}/lib*.so; do
         if readelf -d "$so" 2>/dev/null | grep -q "NEEDED.*libcdsprpc\.so"; then

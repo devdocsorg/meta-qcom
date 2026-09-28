@@ -13,6 +13,12 @@ INHIBIT_DEFAULT_DEPS = "1"
 
 inherit python3native
 
+# @description Install `tools/swiv_build_utility.py` as `${bindir}/swiv_build_utility`.
+# @noargs
+# @exitcode 0 The tool is in the install directory.
+# @exitcode >0 The install command failed; BitBake stops the task.
+# @example
+#   bitbake -c install swiv-build-utility-native
 do_install() {
     install -Dm 0755 ${S}/tools/swiv_build_utility.py \
         ${D}${bindir}/swiv_build_utility

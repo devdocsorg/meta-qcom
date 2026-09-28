@@ -16,6 +16,13 @@ require recipes-bsp/firmware/firmware-qcom.inc
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
 
+# @description Install the Kodiak camera firmware (`CAMERA_ICP_170.elf`) under
+#   `FW_QCOM_PATH` and its licence under the documentation directory.
+# @noargs
+# @exitcode 0 The firmware and licence are in the install directory.
+# @exitcode >0 An install command failed; BitBake stops the task.
+# @example
+#   bitbake -c install camxfirmware-kodiak
 do_install() {
     install -d ${D}${FW_QCOM_PATH}
     install -m 0644 ${S}/usr/lib/firmware/qcom/qcm6490/CAMERA_ICP_170.elf ${D}${FW_QCOM_PATH}

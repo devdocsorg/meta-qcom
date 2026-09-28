@@ -34,6 +34,18 @@ PACKAGES_DYNAMIC:class-native = ""
 
 PACKAGESPLITFUNCS =+ "split_dynamic_packages"
 
+# Split each installed libabsl shared library into its own libabsl-* package.
+#
+# The main package gains a runtime dependency on every split package.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The recipe datastore.
+#
+# Returns:
+#     None: Packages and dependencies are recorded in the datastore.
+#
+# Example:
+#     ``bitbake -c package abseil-cpp`` runs it through PACKAGESPLITFUNCS.
 python split_dynamic_packages() {
     libdir = d.getVar('libdir')
 

@@ -50,6 +50,13 @@ python() {
         bb.error("%s: split firmware-qcom packages engaged, but FW_QCOM_NAME is not defined" % pn)
 }
 
+# @description Compress each installed firmware file, except `*.jsn` files, with
+#   `zstd` or `xz` when `FIRMWARE_COMPRESSION` selects one.
+# @noargs
+# @exitcode 0 The firmware files are compressed as configured, or left as they are.
+# @exitcode >0 A compression command failed; BitBake stops the task.
+# @example
+#   bitbake -c install camxfirmware-kodiak
 do_install:append() {
     for fw in $(find ${D}${FW_QCOM_BASE_PATH} -type f)
     do

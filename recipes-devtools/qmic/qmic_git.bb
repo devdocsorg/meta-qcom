@@ -12,6 +12,12 @@ PV = "0.0+"
 
 BBCLASSEXTEND = "native nativesdk"
 
+# @description Install the QMI compiler with the upstream Makefile `install` target.
+# @noargs
+# @exitcode 0 The compiler is in the install directory.
+# @exitcode >0 The make install step failed; BitBake stops the task.
+# @example
+#   bitbake -c install qmic-native
 do_install () {
     oe_runmake install DESTDIR=${D} prefix=${prefix}
 }

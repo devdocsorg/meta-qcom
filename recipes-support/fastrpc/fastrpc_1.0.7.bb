@@ -30,6 +30,13 @@ SYSTEMD_SERVICE:${PN} = " \
     sdsprpcd.service \
 "
 
+# @description Create the empty `${datadir}/qcom` directory that the fastrpc
+#   package owns for DSP libraries.
+# @noargs
+# @exitcode 0 The directory exists in the install directory.
+# @exitcode >0 The install command failed; BitBake stops the task.
+# @example
+#   bitbake -c install fastrpc
 do_install:append() {
     install -d ${D}${datadir}/qcom/
 }

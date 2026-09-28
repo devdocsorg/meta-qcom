@@ -19,6 +19,13 @@ KERNEL_DEVICETREE:glymur-crd = "${QCOM_DTB_DEFAULT}.dtb"
 KERNEL_DEVICETREE:kaanapali-mtp = "${QCOM_DTB_DEFAULT}.dtb"
 KERNEL_DEVICETREE:sm8750-mtp = "${QCOM_DTB_DEFAULT}.dtb"
 
+# @description Move EFI content installed under `/boot/EFI` to `/EFI` and remove
+#   everything else from the image root, leaving only the ESP tree.
+# @noargs
+# @exitcode 0 The image root holds only `EFI`.
+# @exitcode >0 A move or remove failed; BitBake stops the task.
+# @example
+#   bitbake esp-qcom-image
 setup_efi_folder() {
     # Move EFI content from packages expecting /boot to be the ESP location
     if [ -d ${IMAGE_ROOTFS}/boot/EFI ]; then

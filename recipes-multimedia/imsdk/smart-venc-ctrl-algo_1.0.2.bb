@@ -19,6 +19,12 @@ DEPENDS += "glib-2.0 qcom-fastcv-binaries"
 COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:aarch64 = "(.*)"
 
+# @description Install the prebuilt Smart Video Encoder Control headers and libraries.
+# @noargs
+# @exitcode 0 The headers and libraries are in the install directory.
+# @exitcode >0 A copy command failed; BitBake stops the task.
+# @example
+#   bitbake -c install smart-venc-ctrl-algo
 do_install() {
     install -d ${D}${includedir}
     install -d ${D}${libdir}

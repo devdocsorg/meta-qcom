@@ -10,10 +10,22 @@ SRC_URI = "git://github.com/andersson/mybw;protocol=https;branch=main \
 
 PV = "0.0+git"
 
+# @description Build mybw with the upstream Makefile.
+# @noargs
+# @exitcode 0 The `mybw` binary is built.
+# @exitcode >0 The build failed; BitBake stops the task.
+# @example
+#   bitbake -c compile mybw
 do_compile () {
 	oe_runmake
 }
 
+# @description Install the `mybw` binary into `${bindir}`.
+# @noargs
+# @exitcode 0 The binary is in the install directory.
+# @exitcode >0 An install command failed; BitBake stops the task.
+# @example
+#   bitbake -c install mybw
 do_install () {
 	install -d ${D}${bindir}
 	install -m 0755 mybw ${D}${bindir}/mybw

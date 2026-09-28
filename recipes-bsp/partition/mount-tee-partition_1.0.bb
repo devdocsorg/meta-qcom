@@ -20,6 +20,14 @@ S = "${UNPACKDIR}"
 
 do_compile[noexec] = "1"
 
+# @description Install the `var-lib-tee.mount` and `format-tee-partition.service` units,
+#   the `check-tee-partition-fs.sh` script, and the persist udev rule, and
+#   point the service at the installed script.
+# @noargs
+# @exitcode 0 The units, script, and rule are in the install directory.
+# @exitcode >0 An install or sed command failed; BitBake stops the task.
+# @example
+#   bitbake -c install mount-tee-partition
 do_install() {
     install -Dm 0644 ${UNPACKDIR}/var-lib-tee.mount \
             ${D}${systemd_system_unitdir}/var-lib-tee.mount

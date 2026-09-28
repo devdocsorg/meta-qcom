@@ -19,6 +19,12 @@ RCONFLICTS:${PN} = "diag"
 COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:aarch64 = "(.*)"
 
+# @description Install the prebuilt diag-router binaries into `${bindir}`.
+# @noargs
+# @exitcode 0 The binaries are in the install directory.
+# @exitcode >0 An install command failed; BitBake stops the task.
+# @example
+#   bitbake -c install diag-router
 do_install() {
     install -d ${D}${bindir}
 

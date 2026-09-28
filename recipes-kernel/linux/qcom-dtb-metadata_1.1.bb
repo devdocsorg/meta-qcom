@@ -16,6 +16,12 @@ do_configure[noexec] = "1"
 
 inherit deploy
 
+# @description Deploy the compiled `qcom-metadata.dtb` to the deploy directory.
+# @noargs
+# @exitcode 0 `qcom-metadata.dtb` is in `DEPLOYDIR`.
+# @exitcode >0 The install command failed; BitBake stops the task.
+# @example
+#   bitbake -c deploy qcom-dtb-metadata
 do_deploy() {
     install -m 0644 ${B}/qcom-metadata.dtb -D ${DEPLOYDIR}/qcom-metadata.dtb
 }

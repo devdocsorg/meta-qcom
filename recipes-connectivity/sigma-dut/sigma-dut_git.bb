@@ -10,6 +10,12 @@ SRCREV = "bd455d362f824f8d15dee305fec32aefafdca0a1"
 
 DEPENDS = "libnl"
 
+# @description Install sigma_dut into `sbindir` with the upstream `make install`.
+# @noargs
+# @exitcode 0 The tool is in the install directory.
+# @exitcode >0 make install failed; BitBake stops the task.
+# @example
+#   bitbake -c install sigma-dut
 do_install () {
 	oe_runmake install DESTDIR=${D} BINDIR=${sbindir}
 }

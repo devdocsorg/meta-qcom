@@ -48,6 +48,13 @@ PACKAGES += "${PN}-ta"
 SYSTEMD_PACKAGES = "${PN}-qteesupplicant"
 SYSTEMD_SERVICE:${PN}-qteesupplicant = "qteesupplicant.service sfsconfig.service"
 
+# @description Also copy the prebuilt trusted applications to
+#   `${nonarch_base_libdir}/qtee-tas`, without their licence PDF.
+# @noargs
+# @exitcode 0 The trusted applications are installed.
+# @exitcode >0 A command failed; BitBake stops the task.
+# @example
+#   bitbake -c install minkipc
 do_install:append() {
        mkdir -p ${D}${nonarch_base_libdir}/qtee-tas
        cp -R ${S}/ta/* ${D}${nonarch_base_libdir}/qtee-tas/

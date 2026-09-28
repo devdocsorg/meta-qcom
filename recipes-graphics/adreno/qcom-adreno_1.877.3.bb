@@ -53,6 +53,14 @@ RDEPENDS:${PN} = " \
 
 ALLOW_EMPTY:${PN} = "1"
 
+# @description Install the prebuilt Adreno libraries and keep only the EGL/GLES, Vulkan,
+#   and OpenCL parts that `DISTRO_FEATURES` enables, with their vendor
+#   ICD files, the OpenCL extension header, and the modprobe configuration.
+# @noargs
+# @exitcode 0 The selected libraries and configuration are in the install directory.
+# @exitcode >0 A copy, install, or removal command failed; BitBake stops the task.
+# @example
+#   bitbake -c install qcom-adreno
 do_install () {
     install -d ${D}/${libdir}
     cp -r ${S}/usr/lib/* ${D}/${libdir}/

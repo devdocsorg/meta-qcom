@@ -17,12 +17,24 @@ inherit allarch
 
 CLEANBROKEN = "1"
 
+# @description Do nothing: the firmware is prebuilt, so there is nothing to compile.
+# @noargs
+# @exitcode 0 Always.
+# @example
+#   bitbake -c compile firmware-ath6kl
 do_compile() {
 	:
 }
 
 FWDIR = "${nonarch_base_libdir}/firmware"
 
+# @description Install the AR6004 hw1.3 and hw3.0 firmware files and the
+#   `LICENSE.qca_firmware` licence under the firmware directory.
+# @noargs
+# @exitcode 0 The firmware and licence are in the install directory.
+# @exitcode >0 An install command failed; BitBake stops the task.
+# @example
+#   bitbake -c install firmware-ath6kl
 do_install() {
     install -d ${D}${FWDIR}/ath6k/AR6004/hw1.3
     install -d ${D}${FWDIR}/ath6k/AR6004/hw3.0

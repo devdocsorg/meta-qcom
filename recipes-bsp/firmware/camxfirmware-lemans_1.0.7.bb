@@ -16,6 +16,18 @@ require recipes-bsp/firmware/firmware-qcom.inc
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
 
+# Return the suffix that FIRMWARE_COMPRESSION adds to installed firmware files.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The recipe datastore.
+#
+# Returns:
+#     str: An empty string, or a dot and the compression name, with ``zstd``
+#     shortened to ``zst``.
+#
+# Example:
+#     ``${@fw_compr_file_suffix(d)}`` expands to ``.zst`` when
+#     FIRMWARE_COMPRESSION is ``zstd``.
 def fw_compr_file_suffix(d):
     compr = d.getVar('FIRMWARE_COMPRESSION')
     if compr == '':
@@ -24,6 +36,13 @@ def fw_compr_file_suffix(d):
         compr = 'zst'
     return '.' + compr
 
+# @description Install the Lemans camera firmware (`CAMERA_ICP.mbn`) and its licence, and
+#   link the firmware under qcs8300 for Monaco, which uses the same file.
+# @noargs
+# @exitcode 0 The firmware, licence, and link are in the install directory.
+# @exitcode >0 An install or ln command failed; BitBake stops the task.
+# @example
+#   bitbake -c install camxfirmware-lemans
 do_install() {
     install -d ${D}${FW_QCOM_PATH}
     install -m 0644 ${S}/usr/lib/firmware/qcom/sa8775p/CAMERA_ICP.mbn ${D}${FW_QCOM_PATH}

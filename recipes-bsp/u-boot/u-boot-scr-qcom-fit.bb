@@ -23,6 +23,13 @@ QCOM_FIT_KERNEL_CMDLINE = "root=${QCOM_BOOTIMG_ROOTFS} rw rootwait console=${KER
 # the default configuration of the FIT.
 QCOM_FIT_BOOT_CONF ?= ""
 
+# @description Fill the kernel command line and FIT configuration into `boot.cmd.in` and
+#   compile the result into the U-Boot script `boot.scr` with mkimage.
+# @noargs
+# @exitcode 0 `boot.scr` is in the build directory.
+# @exitcode >0 sed or mkimage failed; BitBake stops the task.
+# @example
+#   bitbake -c compile u-boot-scr-qcom-fit
 do_compile() {
     sed -e "s|@KERNEL_CMDLINE@|${QCOM_FIT_KERNEL_CMDLINE}|g" \
         -e "s|@FIT_CONF@|${QCOM_FIT_BOOT_CONF}|g" boot.cmd.in > boot.cmd
@@ -30,6 +37,12 @@ do_compile() {
 }
 do_install[noexec] = "1"
 
+# @description Deploy `boot.scr` to the deploy directory.
+# @noargs
+# @exitcode 0 `boot.scr` is in `DEPLOYDIR`.
+# @exitcode >0 The install command failed; BitBake stops the task.
+# @example
+#   bitbake -c deploy u-boot-scr-qcom-fit
 do_deploy() {
     install -d ${DEPLOYDIR}
     install -m 0644 boot.scr ${DEPLOYDIR}

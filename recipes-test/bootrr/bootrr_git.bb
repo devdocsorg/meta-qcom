@@ -12,6 +12,12 @@ PV = "0.0+git"
 
 inherit allarch
 
+# @description Install the bootrr test scripts with the upstream Makefile.
+# @noargs
+# @exitcode 0 The scripts are in the install directory.
+# @exitcode >0 The make install step failed; BitBake stops the task.
+# @example
+#   bitbake -c install bootrr
 do_install() {
 	oe_runmake install 'DESTDIR=${D}'
 }

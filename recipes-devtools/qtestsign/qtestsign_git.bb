@@ -10,6 +10,14 @@ INHIBIT_DEFAULT_DEPS = "1"
 
 inherit python3native
 
+# @description Copy the qtestsign sources into the Python site-packages directory,
+#   drop its README, licence, and requirements files, and link
+#   `${bindir}/qtestsign` to `qtestsign.py`.
+# @noargs
+# @exitcode 0 The package and its command link are in the install directory.
+# @exitcode >0 A copy, removal, or link command failed; BitBake stops the task.
+# @example
+#   bitbake -c install qtestsign-native
 do_install() {
     install -d ${D}${bindir}
     install -d ${D}${PYTHON_SITEPACKAGES_DIR}/qtestsign

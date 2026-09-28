@@ -24,6 +24,12 @@ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_DEFAULT_DEPS = "1"
 
+# @description Install the DSP binaries with the upstream `make install` into `D`.
+# @noargs
+# @exitcode 0 The DSP binaries are in the install directory.
+# @exitcode >0 The make install step failed; BitBake stops the task.
+# @example
+#   bitbake -c install hexagon-dsp-binaries
 do_install () {
 	oe_runmake install 'DESTDIR=${D}'
 }
@@ -207,7 +213,32 @@ python() {
             d.prependVar('RDEPENDS:' + p, cfg + ' ')
 }
 
+# Split each DSP configuration YAML file into its own
+# ``hexagon-dsp-binaries-<board>-config`` package before packaging.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The recipe datastore.
+#
+# Returns:
+#     None: The config packages are added to PACKAGES.
+#
+# Example:
+#     ``bitbake -c package hexagon-dsp-binaries``
 python populate_packages:prepend () {
+    # Set the MIT licence on a split configuration package.
+    #
+    # Args:
+    #     fn (str): Matched file path.
+    #     pkg (str): Name of the split package.
+    #     file_regex (str): Regular expression that matched the file.
+    #     output_pattern (str): Package name pattern.
+    #     group (str): Matched part of the file name.
+    #
+    # Returns:
+    #     None: ``LICENSE`` is set for ``pkg``.
+    #
+    # Example:
+    #     ``do_split_packages(..., hook=fix_cfg_package)``
     def fix_cfg_package(fn, pkg, file_regex, output_pattern, group):
         d.setVar('LICENSE:' + pkg, 'MIT')
 
@@ -339,6 +370,19 @@ SKIP_FILEDEPS:${PN}-thundercomm-rb5-cdsp = "1"
 
 WARN_QA:append = " hexagon-dsp-binaries-symlink-deps"
 QAPKGTEST[hexagon-dsp-binaries-symlink-deps] = "package_qa_check_symlinks"
+# Report symlinks in a package whose targets are missing from it, naming the
+# package that provides the target when that package is not in RDEPENDS.
+#
+# Args:
+#     pkg (str): Package to check.
+#     d (bb.data_smart.DataSmart): The recipe datastore.
+#
+# Returns:
+#     None: Problems are reported through ``oe.qa.handle_error`` as the
+#     ``hexagon-dsp-binaries-symlink-deps`` QA check, a warning by default.
+#
+# Example:
+#     ``QAPKGTEST[hexagon-dsp-binaries-symlink-deps] = "package_qa_check_symlinks"``
 def package_qa_check_symlinks(pkg, d):
     packages = set((d.getVar('PACKAGES') or '').split())
 

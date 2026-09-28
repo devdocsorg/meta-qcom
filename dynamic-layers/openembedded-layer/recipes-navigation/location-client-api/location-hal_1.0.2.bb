@@ -28,6 +28,12 @@ GROUPADD_PARAM:${PN} = "--system locclient"
 USERADD_PACKAGES = "${PN}"
 USERADD_PARAM:${PN} = "--system --shell /sbin/nologin --groups locclient --no-create-home --user-group gps"
 
+# @description Also install the default `gps.conf` in `${sysconfdir}`.
+# @noargs
+# @exitcode 0 `gps.conf` is installed.
+# @exitcode >0 A command failed; BitBake stops the task.
+# @example
+#   bitbake -c install location-hal
 do_install:append() {
     install -m 0644 -D ${S}/etc/gps.conf ${D}${sysconfdir}/gps.conf
 }

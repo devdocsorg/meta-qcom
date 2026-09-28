@@ -36,6 +36,14 @@ LOCAL_GETTY ?= " \
     ${IMAGE_ROOTFS}${systemd_system_unitdir}/serial-getty@.service \
     ${IMAGE_ROOTFS}${systemd_system_unitdir}/getty@.service \
 "
+# @description Make the serial and virtual console getty units in the image log
+#   in as root automatically; runs as a rootfs post-process command on
+#   systemd images.
+# @noargs
+# @exitcode 0 The getty units start with `--autologin root`.
+# @exitcode >0 sed failed; BitBake stops the task.
+# @example
+#   bitbake initramfs-tiny-image
 local_autologin () {
     sed -i -e 's/^\(ExecStart *=.*getty \)/\1--autologin root /' ${LOCAL_GETTY}
 }

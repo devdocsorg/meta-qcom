@@ -28,6 +28,13 @@ KCONFIG_MODE:qcom = "--alldefconfig"
 KBUILD_DEFCONFIG:qcom ?= "defconfig"
 KBUILD_DEFCONFIG:qcom-armv7a = "qcom_defconfig"
 
+# @description On Qualcomm machines, strip `TMPDIR` paths from the generated msm DRM
+#   sources in the kernel build tree, keeping build paths out of the output.
+# @noargs
+# @exitcode 0 The generated files hold no `TMPDIR` path.
+# @exitcode >0 sed failed; BitBake stops the task.
+# @example
+#   bitbake -c install linux-yocto-dev
 do_install:append:qcom() {
 	sed -i 's:${TMPDIR}::g' ${WORKDIR}/linux-${PACKAGE_ARCH}-${LINUX_KERNEL_TYPE}-build/drivers/gpu/drm/msm/generated/*
 }

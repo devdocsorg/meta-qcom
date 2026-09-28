@@ -8,6 +8,13 @@ HOMEPAGE = "https://www.op-tee.org/"
 DEPENDS += "python3-pycryptodome-native"
 DEPENDS:append:toolchain-clang = " lld-native"
 
+# @description Install the trusted application devkit under
+#   `${includedir}/optee/export-user_ta`.
+# @noargs
+# @exitcode 0 The devkit is in the install directory.
+# @exitcode >0 A command failed; BitBake stops the task.
+# @example
+#   bitbake -c install optee-os-tadevkit-qcom
 do_install() {
     #install TA devkit
     install -d ${D}${includedir}/optee/export-user_ta/
@@ -16,6 +23,12 @@ do_install() {
     done
 }
 
+# @description Replace the inherited OP-TEE deploy step, so the devkit
+#   deploys nothing.
+# @noargs
+# @exitcode 0 A message is printed and nothing is deployed.
+# @example
+#   bitbake -c deploy optee-os-tadevkit-qcom
 do_deploy() {
         echo "Do not inherit do_deploy from optee-os."
 }

@@ -21,6 +21,12 @@ COMPATIBLE_MACHINE:aarch64 = "(.*)"
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
 
+# @description Install the prebuilt CamX headers and their licence file.
+# @noargs
+# @exitcode 0 The headers and licence are in the install directory.
+# @exitcode >0 A copy or install command failed; BitBake stops the task.
+# @example
+#   bitbake -c install camxcommon-headers
 do_install() {
     install -d ${D}${includedir}/camx/kodiak
     install -d ${D}${datadir}/doc/${BPN}

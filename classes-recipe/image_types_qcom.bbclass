@@ -43,6 +43,14 @@ do_image_qcomflash[depends] += "${@ ['', '${QCOM_PARTITION_CONF}:do_deploy'][d.g
 				${@'abl2esp:do_deploy' if d.getVar('ABL_SIGNATURE_VERSION') else  ''}"
 IMAGE_TYPEDEP:qcomflash += "${IMAGE_QCOMFLASH_FS_TYPE}"
 
+# @description Copy the GPT images, zero-fill images, `rawprogram` and `patch`
+#   XML files, and any `contents.xml` from a partition directory.
+# @arg $1 string Directory holding the partition files.
+# @arg $2 string Destination directory.
+# @exitcode 0 The partition files were copied.
+# @exitcode >0 An install command failed; BitBake stops the task.
+# @example
+#   deploy_partition_files ${DEPLOY_DIR_IMAGE}/${QCOM_PARTITION_FILES_SUBDIR} .
 deploy_partition_files() {
     for pbin in $1/gpt_main*.bin $1/gpt_backup*.bin \
                 $1/gpt_both*.bin $1/zeros_*.bin \
@@ -55,6 +63,16 @@ deploy_partition_files() {
     fi
 }
 
+# @description Assemble the `qcomflash` flashing directory for an image: the
+#   ESP, DTB and boot images, root filesystem, partition tables, CDT, boot
+#   firmware, bootloader, SPI-NOR files, abl2esp, and capsule when present;
+#   then link it as `IMAGE_LINK_NAME.qcomflash` and pack it into a
+#   `.qcomflash.tar.gz` tarball.
+# @noargs
+# @exitcode 0 The flashing directory, link, and tarball are in `IMGDEPLOYDIR`.
+# @exitcode >0 A copy, install, or archive command failed; BitBake stops the task.
+# @example
+#   bitbake -c image_qcomflash core-image-base
 create_qcomflash_pkg() {
     # esp image
     [ -n "${QCOM_ESP_FILE}" ] && cp -l -L ${QCOM_ESP_FILE} efi.bin

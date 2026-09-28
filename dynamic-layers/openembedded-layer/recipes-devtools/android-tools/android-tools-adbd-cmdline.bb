@@ -9,6 +9,13 @@ SRC_URI = " \
     file://50-adbd-cmdline.conf \
 "
 
+# @description Install `50-adbd-cmdline.conf` as a drop-in for the
+#   android-tools-adbd service.
+# @noargs
+# @exitcode 0 The drop-in is installed.
+# @exitcode >0 A command failed; BitBake stops the task.
+# @example
+#   bitbake -c install android-tools-adbd-cmdline
 do_install() {
     install -d ${D}${systemd_unitdir}/system/android-tools-adbd.service.d
     install -m 0644 ${S}/50-adbd-cmdline.conf ${D}${systemd_unitdir}/system/android-tools-adbd.service.d

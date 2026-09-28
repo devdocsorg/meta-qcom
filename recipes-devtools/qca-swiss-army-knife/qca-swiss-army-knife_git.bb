@@ -17,6 +17,13 @@ SRC_URI = " \
 
 PV = "0.0+"
 
+# @description Install the upstream tool scripts and the four layer-provided
+#   ath10k and ath11k `board-2.json` generator scripts into `${bindir}`.
+# @noargs
+# @exitcode 0 The scripts are in the install directory.
+# @exitcode >0 An install command failed; BitBake stops the task.
+# @example
+#   bitbake -c install qca-swiss-army-knife
 do_install () {
 	install -d ${D}/${bindir}
 	install -m 0755 tools/scripts/*/* ${D}/${bindir}

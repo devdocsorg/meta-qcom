@@ -34,6 +34,15 @@ COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:aarch64 = "(.*)"
 
 # Use do_install:append to preserve cmake_do_install
+# @description Install the prebuilt CamX libraries for `PLATFORM`, the
+#   camera-nhx program and helper programs when present, remove `.so`
+#   development links and legacy `libcamera*` libraries, and install the
+#   NOTICE and licence files.
+# @noargs
+# @exitcode 0 The CamX files are installed.
+# @exitcode >0 A command failed; BitBake stops the task.
+# @example
+#   bitbake -c install camxlib-talos
 do_install:append() {
     install -d ${D}${libdir}
     install -d ${D}${datadir}/doc/${BPN}

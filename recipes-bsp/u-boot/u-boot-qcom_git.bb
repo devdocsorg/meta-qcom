@@ -42,6 +42,14 @@ python __anonymous() {
             d.appendVar('BOARD_MBN_HEADER', mbn_header + " ? ")
 }
 
+# @description After each U-Boot configuration builds, stage `bl31.bin` and `tee-raw.bin`
+#   for the SPL FIT when `QCOM_UBOOT_SPL_FIT` is 1; otherwise sign `u-boot.elf`
+#   as `u-boot.mbn` when the configuration has a `BOARD_MBN_HEADER` version.
+# @noargs
+# @exitcode 0 The staged firmware or signed image is in the build directory.
+# @exitcode >0 A copy or qtestsign failed; BitBake stops the task.
+# @example
+#   bitbake -c compile u-boot-qcom
 uboot_compile_config:append() {
     config_mbn_header=$(uboot_config_get_indexed_value "${BOARD_MBN_HEADER}" $i)
 
@@ -56,6 +64,14 @@ uboot_compile_config:append() {
 }
 
 # Rebuild the SPL ELF after uboot-sign, add the SWIV segment and sign it as TZ.
+# @description When `QCOM_UBOOT_SPL_FIT` is 1, rebuild the SPL ELF, add its SWIV segment
+#   with `swiv_build_utility`, and sign it as the TZ image `u-boot-spl.mbn`,
+#   using the configuration's MBN header version or v6.
+# @noargs
+# @exitcode 0 The signed SPL is in the build directory, or nothing is done.
+# @exitcode >0 The SPL build, SWIV step, or signing failed; BitBake stops the task.
+# @example
+#   bitbake -c compile u-boot-qcom
 uboot_assemble_fitimage_helper:append() {
     if [ "${QCOM_UBOOT_SPL_FIT}" = "1" ]; then
         mbn_header=$(uboot_config_get_indexed_value "${BOARD_MBN_HEADER}" $i)
@@ -71,6 +87,13 @@ uboot_assemble_fitimage_helper:append() {
     fi
 }
 
+# @description Deploy the signed `u-boot-spl.mbn` (SPL FIT builds) or `u-boot.mbn` of each
+#   configuration, when it was built, with the configuration type in its name.
+# @noargs
+# @exitcode 0 The signed image, if any, is in `DEPLOYDIR`.
+# @exitcode >0 The install command failed; BitBake stops the task.
+# @example
+#   bitbake -c deploy u-boot-qcom
 uboot_deploy_config:append() {
     if [ "${QCOM_UBOOT_SPL_FIT}" = "1" ]; then
         if [ -f ${B}/${builddir}/u-boot-spl.mbn ]; then

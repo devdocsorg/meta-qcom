@@ -12,6 +12,13 @@ SRC_URI:append:qcom = " \
 # local hook can be removed once an equivalent upstream implementation exists.
 POLICY_BOOLEANS ?= ""
 
+# @description Write each `name=value` entry of `POLICY_BOOLEANS` to
+#   `policy/booleans.conf`, replacing any earlier line for the same name.
+# @noargs
+# @exitcode 0 The booleans are in `policy/booleans.conf`.
+# @exitcode >0 An entry is malformed, or its value is not `true` or `false`; `bbfatal` stops the task.
+# @example
+#   set_qcom_policy_booleans
 set_qcom_policy_booleans() {
     touch "${S}/policy/booleans.conf"
 
@@ -42,6 +49,13 @@ set_qcom_policy_booleans() {
     done
 }
 
+# @description On Qualcomm machines, apply `POLICY_BOOLEANS` before the
+#   policy compiles.
+# @noargs
+# @exitcode 0 The booleans are applied.
+# @exitcode >0 A command failed; BitBake stops the task.
+# @example
+#   bitbake -c compile refpolicy-targeted
 do_compile:prepend:qcom() {
     set_qcom_policy_booleans
 }

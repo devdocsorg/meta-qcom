@@ -33,6 +33,13 @@ EXTRA_OEMAKE:append = " \
 
 do_compile[depends] += "${@bb.utils.contains('QCOM_UBOOT_SPL_FIT', '1', '', 'u-boot-qcom:do_deploy', d)}"
 
+# @description Unless `QCOM_UBOOT_SPL_FIT` is `1`, wrap the installed `fip.bin`
+#   in an ELF at `FIP_ELF_ADDR` and sign it with qtestsign as `fip.elf`.
+# @noargs
+# @exitcode 0 `fip.elf` is in the firmware directory, or no FIP was built.
+# @exitcode >0 A command failed; BitBake stops the task.
+# @example
+#   bitbake -c install trusted-firmware-a-qcom-rb3gen2
 do_install:append() {
     # Nothing to wrap and sign without a FIP.
     if [ "${QCOM_UBOOT_SPL_FIT}" != "1" ]; then

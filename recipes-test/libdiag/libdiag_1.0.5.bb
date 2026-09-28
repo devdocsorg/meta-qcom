@@ -20,6 +20,13 @@ inherit lib_package
 COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:aarch64 = "(.*)"
 
+# @description Install the prebuilt diag utilities, the `libdiag` library with its
+#   version links, its pkg-config files, and its headers.
+# @noargs
+# @exitcode 0 The files are in the install directory.
+# @exitcode >0 An install or link command failed; BitBake stops the task.
+# @example
+#   bitbake -c install libdiag
 do_install() {
     install -d ${D}${bindir}
     install -d ${D}${libdir}/pkgconfig

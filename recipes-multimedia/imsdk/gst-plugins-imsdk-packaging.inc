@@ -6,6 +6,19 @@ require recipes-multimedia/gstreamer/gstreamer1.0-plugins-packaging.inc
 
 PACKAGESPLITFUNCS =+ "split_imsdk_module_packages"
 
+# Split each IMSDK plugin's runtime modules into its own package.
+#
+# Every ``.so`` under ``${libdir}/imsdk/<plugin>/modules/`` goes into a
+# ``${PN}-<plugin>-modules`` package.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The recipe datastore.
+#
+# Returns:
+#     None: The packages are added through ``do_split_packages``.
+#
+# Example:
+#     ``PACKAGESPLITFUNCS =+ "split_imsdk_module_packages"``
 python split_imsdk_module_packages () {
     imsdk_root = d.expand('${libdir}/imsdk')
 

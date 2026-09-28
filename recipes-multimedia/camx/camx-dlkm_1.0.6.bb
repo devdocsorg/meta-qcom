@@ -14,6 +14,13 @@ inherit module
 MAKE_TARGETS = "modules"
 MODULES_INSTALL_TARGET = "modules_install"
 
+# @description Add the camera driver UAPI headers for the default and Kodiak camera
+#   stacks under `${includedir}/camx`.
+# @noargs
+# @exitcode 0 The headers are in the install directory.
+# @exitcode >0 An install command failed; BitBake stops the task.
+# @example
+#   bitbake -c install camx-dlkm
 do_install:append() {
     install -d ${D}${includedir}/camx/camera/media
     install -d ${D}${includedir}/camx/camera-kodiak/media

@@ -13,6 +13,12 @@ SRC_URI = "git://git.codelinaro.org/clo/qsdk/oss/tools/skales.git;protocol=https
           file://0002-mkbootimg-use-python3.patch \
           "
 
+# @description Install the skales `mkbootimg` script into `${bindir}/skales`.
+# @noargs
+# @exitcode 0 The script is in the install directory.
+# @exitcode >0 An install command failed; BitBake stops the task.
+# @example
+#   bitbake -c install skales-native
 do_install () {
     install -d ${D}${bindir}/skales
     install -m 0755 ${S}/mkbootimg ${D}${bindir}/skales

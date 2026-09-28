@@ -9,6 +9,14 @@ inherit deploy allarch
 
 do_install[noexec] = "1"
 
+# @description Deploy the GPT binaries, programming and patch XML files, zero images,
+#   and optional `contents.xml` of every platform that qcom-ptool generated
+#   to `partitions/` in the deploy directory, keeping each platform's subdirectory.
+# @noargs
+# @exitcode 0 The partition files are in `DEPLOYDIR`.
+# @exitcode >0 An expected file is missing or a copy failed; BitBake stops the task.
+# @example
+#   bitbake -c deploy qcom-partition-conf
 do_deploy() {
     cd ${S}/platforms
     for gpt in `find . -name gpt_main0.bin` ; do

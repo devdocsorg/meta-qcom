@@ -18,6 +18,15 @@ do_compile[noexec] = "1"
 
 inherit deploy
 
+# @description Copy the boot binaries (`*.bin`, `*.elf`, `*.fv`, `*.lzma`, `*.mbn`,
+#   `*.melf`, `*.xz`, and `qsahara_*.xml`) from each directory in
+#   `QCOM_BOOT_BINARY_DIRS` to `QCOM_BOOT_IMG_SUBDIR` in the deploy directory,
+#   dropping the archive's own `gpt_*.bin` and `zeros_*.bin` files.
+# @noargs
+# @exitcode 0 The boot binaries are in `DEPLOYDIR`.
+# @exitcode >0 A command failed; BitBake stops the task.
+# @example
+#   bitbake -c deploy firmware-qcom-boot-qcs6490
 do_deploy() {
     install -d ${DEPLOYDIR}/${QCOM_BOOT_IMG_SUBDIR}
     for bootdir in ${QCOM_BOOT_BINARY_DIRS}; do

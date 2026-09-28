@@ -48,6 +48,14 @@ KBUILD_CONFIG_EXTRA:append:aarch64 = " ${S}/arch/arm64/configs/qcom.config"
 KBUILD_CONFIG_EXTRA:append = " ${@oe.utils.vartrue('DEBUG_BUILD', '${S}/kernel/configs/debug.config', '', d)}"
 KBUILD_CONFIG_EXTRA:append:aarch64 = " ${@oe.utils.vartrue('DEBUG_BUILD', '${S}/arch/arm64/configs/qcom_debug.config', '', d)}"
 
+# @description Start `.config` from the kernel tree's `KBUILD_DEFCONFIG` and merge the
+#   `KBUILD_CONFIG_EXTRA` fragments and the recipe's `.cfg` files into it
+#   before the kernel configure step.
+# @noargs
+# @exitcode 0 The merged `.config` is in the build directory.
+# @exitcode >0 The copy or merge_config.sh failed; BitBake stops the task.
+# @example
+#   bitbake -c configure linux-qcom-next
 do_configure:prepend() {
     # Use a copy of the 'defconfig' from the actual repo to merge fragments
     cp ${S}/arch/${ARCH}/configs/${KBUILD_DEFCONFIG} ${B}/.config

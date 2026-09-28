@@ -14,6 +14,14 @@ DEPENDS += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'virtual/egl virtual/libgles2', '', d)} \
 "
 
+# @description Also install the camera-nhx test JSON files when present, the
+#   CamX and skel data under `${datadir}`, and remove OpenCL components when
+#   the distro does not enable OpenCL.
+# @noargs
+# @exitcode 0 The extra files are installed.
+# @exitcode >0 A command failed; BitBake stops the task.
+# @example
+#   bitbake -c install camxlib-lemans
 do_install:append() {
     # Copy json only when /etc folder exists in ${S}
     if [ -d "${S}/etc" ]; then

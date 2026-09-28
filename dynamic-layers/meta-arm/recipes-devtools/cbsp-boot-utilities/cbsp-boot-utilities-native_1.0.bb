@@ -24,6 +24,12 @@ DEPENDS += " \
 # package), so poetry-core does not install it. Stage it explicitly so
 # qcom-capsule.bbclass can fall back to a default when no board-specific
 # override is provided via SRC_URI:append.
+# @description Install the default `FvUpdate.xml` under `${datadir}/cbsp-boot-utilities`.
+# @noargs
+# @exitcode 0 `FvUpdate.xml` is installed.
+# @exitcode >0 A command failed; BitBake stops the task.
+# @example
+#   bitbake -c install cbsp-boot-utilities-native
 do_install:append() {
     install -d "${D}${datadir}/cbsp-boot-utilities"
     install -m 0644 "${S}/FvUpdate.xml" "${D}${datadir}/cbsp-boot-utilities/"

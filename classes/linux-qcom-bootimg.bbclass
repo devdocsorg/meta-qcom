@@ -27,6 +27,22 @@ python __anonymous () {
         d.setVar('EXTERNAL_KERNEL_DEVICETREE', "${RECIPE_SYSROOT}/boot/devicetree")
 }
 
+# Build Android boot images with skales mkbootimg for each device tree in
+# KERNEL_DEVICETREE and QCOM_BOOTIMG_DEVICETREE, appending the DTB to the
+# kernel, plus initramfs and SD-card variants when configured.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The kernel recipe datastore.
+#
+# Returns:
+#     None: The ``boot-*.img`` images and links are written to QIMG_DEPLOYDIR.
+#
+# Raises:
+#     bb.BBHandledException: Through ``bb.fatal`` for an unsupported ARCH, a
+#         missing initramfs image, QCOM_BOOTIMG_ROOTFS, or device tree list.
+#
+# Example:
+#     ``bitbake -c qcom_img_deploy virtual/kernel``
 python do_qcom_img_deploy() {
     import shutil
     import subprocess
@@ -81,14 +97,51 @@ python do_qcom_img_deploy() {
     with open(definitrd, "w") as f:
         f.write("This is not an initrd\n")
 
+    # Build the boot images for one device tree.
+    #
+    # Args:
+    #     dtbf (str): Device tree path from the device tree variable.
+    #     external (bool): Read the DTB from EXTERNAL_KERNEL_DEVICETREE.
+    #
+    # Returns:
+    #     None: Images and ``boot-<machine>.img`` style links are created.
+    #
+    # Example:
+    #     ``make_dtb_image("qcom/qcs6490-rb3gen2.dtb")``
     def make_dtb_image(dtbf, external=False):
         dtb = os.path.basename(dtbf)
         dtb_name = dtb.rsplit('.', 1)[0]
 
+        # Return a variable's per-DTB flag value, or the variable itself.
+        #
+        # Args:
+        #     name (str): Variable name, such as ``QCOM_BOOTIMG_ROOTFS``.
+        #
+        # Returns:
+        #     str: The flag named after the DTB when set, else the value.
+        #
+        # Example:
+        #     ``getVarDTB("KERNEL_CMDLINE_EXTRA")``
         def getVarDTB(name):
             var = d.getVarFlag(name, dtb_name)
             return d.getVar(name) if var is None else var
 
+        # Run mkbootimg for one image and point a link at it.
+        #
+        # Args:
+        #     output (str): Boot image path to write.
+        #     output_link (str): Link path to replace.
+        #     rootfs (str): Root device for the command line, or empty.
+        #     initrd (str): Ramdisk file; a placeholder by default.
+        #
+        # Returns:
+        #     None: The image and link exist.
+        #
+        # Raises:
+        #     subprocess.CalledProcessError: If mkbootimg fails.
+        #
+        # Example:
+        #     ``make_image_internal(output, output_link, "/dev/sda1")``
         def make_image_internal(output, output_link, rootfs, initrd = definitrd):
             rootfs_cmdline = "root=%s " % (rootfs) if rootfs else ""
             subprocess.check_call([mkbootimg,
@@ -102,12 +155,37 @@ python do_qcom_img_deploy() {
                 os.unlink(output_link)
             os.symlink(os.path.basename(output), output_link)
 
+        # Build a boot image named from a template, DTB, and kernel name.
+        #
+        # Args:
+        #     template (str): Name template with two ``%s`` fields.
+        #     rootfs (str): Root device for the command line.
+        #
+        # Returns:
+        #     str: Path of the created image.
+        #
+        # Example:
+        #     ``make_image("boot-%s-%s.img", rootfs)``
         def make_image(template, rootfs):
             output = os.path.join(qcom_deploy_dir, template % (dtb_name, kernel_image_name))
             output_link =  os.path.join(qcom_deploy_dir, template % (dtb_name, kernel_link_name))
             make_image_internal(output, output_link, rootfs)
             return output
 
+        # Build a boot image with the initramfs as its ramdisk and link it
+        # under an ``initramfs`` name as well.
+        #
+        # Args:
+        #     template (str): Name template with three ``%s`` fields.
+        #     rootfs (str): Root device for the command line.
+        #     initrd (str): Initramfs image file.
+        #     initrd_image_name (str): INITRAMFS_IMAGE, used in the name.
+        #
+        # Returns:
+        #     str: Path of the created image.
+        #
+        # Example:
+        #     ``make_initramfs_image("boot-%s-%s-%s.img", rootfs, initrd, "initramfs-kerneltest-image")``
         def make_initramfs_image(template, rootfs, initrd, initrd_image_name):
             output = os.path.join(qcom_deploy_dir, template % (initrd_image_name, dtb_name, kernel_image_name))
             output_link =  os.path.join(qcom_deploy_dir, template % (initrd_image_name, dtb_name, kernel_link_name))
@@ -177,6 +255,16 @@ SSTATETASKS += "do_qcom_img_deploy"
 do_qcom_img_deploy[sstate-inputdirs] = "${QIMG_DEPLOYDIR}"
 do_qcom_img_deploy[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}"
 
+# Restore do_qcom_img_deploy output from the shared-state cache.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The kernel recipe datastore.
+#
+# Returns:
+#     None: The cached boot images are copied to DEPLOY_DIR_IMAGE.
+#
+# Example:
+#     ``bitbake virtual/kernel`` runs this task when the cache holds the output.
 python do_qcom_img_deploy_setscene () {
     sstate_setscene(d)
 }

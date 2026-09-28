@@ -35,6 +35,15 @@ COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:aarch64 = "(.*)"
 
 # Use do_install:append to preserve cmake_do_install
+# @description Install the prebuilt Kodiak CamX libraries, data, and
+#   helper programs, drop OpenCL and OpenGL components that the distro does
+#   not enable, remove `.so` development links and legacy `libcamera*`
+#   libraries, and install the NOTICE and licence files.
+# @noargs
+# @exitcode 0 The CamX files are installed.
+# @exitcode >0 A command failed; BitBake stops the task.
+# @example
+#   bitbake -c install camxlib-kodiak
 do_install:append() {
     install -d ${D}${libdir}
     install -d ${D}${datadir}/doc/${BPN}

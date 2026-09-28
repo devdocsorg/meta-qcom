@@ -14,6 +14,13 @@ require esp-qcom-common.inc
 PACKAGE_INSTALL = ""
 
 # Setup boot files for FIT image-based boot
+# @description Empty the image root and copy in the FIT image, preferring the one with
+#   `INITRAMFS_IMAGE` when it exists, and the U-Boot `boot.scr` script.
+# @noargs
+# @exitcode 0 The ESP root holds `fitImage` and `boot.scr`.
+# @exitcode >0 No FIT image or boot script was found (bbfatal), or a copy failed.
+# @example
+#   bitbake esp-qcom-fit-image
 setup_fit_boot_files() {
     # Remove skeleton directories and base files created by the image class
     find ${IMAGE_ROOTFS} -mindepth 1 -maxdepth 1 -exec rm -rf {} +
