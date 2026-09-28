@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>trusted-firmware-a-qcom.inc &#8212; meta-qcom  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=dd1dafa6"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="cbsp-boot-utilities-native_1.0.bb" href="dynamic-layers-meta-arm-recipes-devtools-cbsp-boot-utilities-cbsp-boot-utilities-native_1.0.bb.html" />
+    <link rel="prev" title="uki-esp-image.bbclass" href="classes-uki-esp-image.bbclass.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="trusted-firmware-a-qcom-inc">
+<h1>trusted-firmware-a-qcom.inc<a class="headerlink" href="#trusted-firmware-a-qcom-inc" title="Link to this heading">¶</a></h1>
+<p>Source: <a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/dynamic-layers/meta-arm/recipes-bsp/trusted-firmware-a/trusted-firmware-a-qcom.inc">dynamic-layers/meta-arm/recipes-bsp/trusted-firmware-a/trusted-firmware-a-qcom.inc</a></p>
+<section id="index">
+<h2>Index<a class="headerlink" href="#index" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="#do-install-append">do_install:append</a></p></li>
+</ul>
+<section id="do-install-append">
+<h3>do_install:append<a class="headerlink" href="#do-install-append" title="Link to this heading">¶</a></h3>
+<p>Unless <code class="docutils literal notranslate"><span class="pre">QCOM_UBOOT_SPL_FIT</span></code> is <code class="docutils literal notranslate"><span class="pre">1</span></code>, wrap the installed <code class="docutils literal notranslate"><span class="pre">fip.bin</span></code>
+in an ELF at <code class="docutils literal notranslate"><span class="pre">FIP_ELF_ADDR</span></code> and sign it with qtestsign as <code class="docutils literal notranslate"><span class="pre">fip.elf</span></code>.</p>
+<section id="example">
+<h4>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bitbake<span class="w"> </span>-c<span class="w"> </span>install<span class="w"> </span>trusted-firmware-a-qcom-rb3gen2
+</pre></div>
+</div>
+<p><em>Function has no arguments.</em></p>
+</section>
+<section id="exit-codes">
+<h4>Exit codes<a class="headerlink" href="#exit-codes" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p><strong>0</strong>: <code class="docutils literal notranslate"><span class="pre">fip.elf</span></code> is in the firmware directory, or no FIP was built.</p></li>
+<li><p><strong>&gt;0</strong>: A command failed; BitBake stops the task.</p></li>
+</ul>
+</section>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../README.html">meta-qcom</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user/README.html">User documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../README.html">Contributor documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../CONTRIBUTING.html">Contributing to meta-qcom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../DEVELOPMENT.html">Set up your development environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".github-test_reference_coverage.py.html">test_reference_coverage.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ci-kas-container-shell-helper.sh.html">kas-container-shell-helper.sh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ci-oe-selftest.sh.html">oe-selftest.sh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ci-yocto-buildstats.sh.html">yocto-buildstats.sh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ci-yocto-check-layer.sh.html">yocto-check-layer.sh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ci-yocto-patchreview.sh.html">yocto-patchreview.sh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes-linux-qcom-bootimg.bbclass.html">linux-qcom-bootimg.bbclass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes-linux-qcom-dtbbin.bbclass.html">linux-qcom-dtbbin.bbclass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes-recipe-dtb-fit-image.bbclass.html">dtb-fit-image.bbclass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes-recipe-image-adbd.bbclass.html">image-adbd.bbclass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes-recipe-image_types_qcom.bbclass.html">image_types_qcom.bbclass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes-recipe-qcom-capsule.bbclass.html">qcom-capsule.bbclass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes-uki-esp-image.bbclass.html">uki-esp-image.bbclass</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">trusted-firmware-a-qcom.inc</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#index">Index</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#do-install-append">do_install:append</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#exit-codes">Exit codes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic-layers-meta-arm-recipes-devtools-cbsp-boot-utilities-cbsp-boot-utilities-native_1.0.bb.html">cbsp-boot-utilities-native_1.0.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic-layers-meta-arm-recipes-security-optee-optee-os-qcom.inc.html">optee-os-qcom.inc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic-layers-meta-arm-recipes-security-optee-optee-os-tadevkit-qcom_git.bb.html">optee-os-tadevkit-qcom_git.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-devtools-abseil-cpp-abseil-cpp_20260107.1.bb.html">abseil-cpp_20260107.1.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-devtools-android-tools-android-tools-adbd-cmdline.bb.html">android-tools-adbd-cmdline.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-devtools-android-tools-android-tools-conf-android-gadget-start.html">android-gadget-start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-multimedia-camx-camxlib-hamoa_1.0.48.bb.html">camxlib-hamoa_1.0.48.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-multimedia-camx-camxlib-kodiak_1.0.44.bb.html">camxlib-kodiak_1.0.44.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-multimedia-camx-camxlib-lemans_1.0.48.bb.html">camxlib-lemans_1.0.48.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-multimedia-camx-camxlib-shikra_1.0.48.bb.html">camxlib-shikra_1.0.48.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-multimedia-camx-camxlib-talos_1.0.48.bb.html">camxlib-talos_1.0.48.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-multimedia-camx-common.inc.html">common.inc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-navigation-location-client-api-location-hal_1.0.2.bb.html">location-hal_1.0.2.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-security-minkipc-minkipc_1.2.10.bb.html">minkipc_1.2.10.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-support-libssc-libssc_git.bb.html">libssc_git.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-support-sensors-qcom-sensors-binaries_1.2.1.bb.html">qcom-sensors-binaries_1.2.1.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic-layers-selinux-recipes-security-refpolicy-refpolicy-targeted_git.bbappend.html">refpolicy-targeted_git.bbappend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic-layers-virtualization-layer-recipes-containers-containerd-containerd_git.bbappend.html">containerd_git.bbappend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lib-oeqa-selftest-cases-qcom_fitimage.py.html">qcom_fitimage.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lib-qcom-dtb_only_fitimage.py.html">dtb_only_fitimage.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-bsp-firmware-boot-firmware-qcom-boot-common.inc.html">firmware-qcom-boot-common.inc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-bsp-firmware-boot-firmware-qcom-boot-dragonboard410c_1036.1.bb.html">firmware-qcom-boot-dragonboard410c_1036.1.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-bsp-firmware-boot-firmware-qcom-boot-dragonboard820c_01700.1.bb.html">firmware-qcom-boot-dragonboard820c_01700.1.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-bsp-firmware-boot-firmware-qcom-boot-qcs8300.inc.html">firmware-qcom-boot-qcs8300.inc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-bsp-firmware-boot-firmware-qcom-boot-qcs9100.inc.html">firmware-qcom-boot-qcs9100.inc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-bsp-firmware-boot-firmware-qcom-cdt-common.inc.html">firmware-qcom-cdt-common.inc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-bsp-firmware-camxfirmware-hamoa_1.0.6.bb.html">camxfirmware-hamoa_1.0.6.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-bsp-firmware-camxfirmware-kodiak_1.0.7.bb.html">camxfirmware-kodiak_1.0.7.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-bsp-firmware-camxfirmware-lemans_1.0.7.bb.html">camxfirmware-lemans_1.0.7.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-bsp-firmware-camxfirmware-talos_1.0.1.bb.html">camxfirmware-talos_1.0.1.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-bsp-firmware-firmware-ath6kl_git.bb.html">firmware-ath6kl_git.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-bsp-firmware-firmware-qcom.inc.html">firmware-qcom.inc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-bsp-hexagon-dsp-binaries-hexagon-dsp-binaries.inc.html">hexagon-dsp-binaries.inc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-bsp-lk-lk.inc.html">lk.inc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-bsp-partition-mount-tee-partition_1.0.bb.html">mount-tee-partition_1.0.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-bsp-partition-qcom-partition-conf_git.bb.html">qcom-partition-conf_git.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-bsp-partition-qcom-raw-partitions-udev-rules_git.bb.html">qcom-raw-partitions-udev-rules_git.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-bsp-u-boot-u-boot-qcom_git.bb.html">u-boot-qcom_git.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-bsp-u-boot-u-boot-scr-qcom-fit.bb.html">u-boot-scr-qcom-fit.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-bsp-u-boot-u-boot_%25.bbappend.html">u-boot_%.bbappend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-connectivity-sigma-dut-sigma-dut_git.bb.html">sigma-dut_git.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-core-systemd-systemd_%25.bbappend.html">systemd_%.bbappend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-devtools-pil-squasher-pil-squasher_git.bb.html">pil-squasher_git.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-devtools-qc-image-unpacker-qc-image-unpacker_git.bb.html">qc-image-unpacker_git.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-devtools-qca-swiss-army-knife-qca-swiss-army-knife_git.bb.html">qca-swiss-army-knife_git.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-devtools-qmic-qmic_git.bb.html">qmic_git.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-devtools-qtestsign-qtestsign_git.bb.html">qtestsign_git.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-devtools-skales-skales_git.bb.html">skales_git.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-devtools-swiv-build-utility-swiv-build-utility_git.bb.html">swiv-build-utility_git.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-graphics-adreno-qcom-adreno_1.877.3.bb.html">qcom-adreno_1.877.3.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-graphics-kgsl-dlkm-kgsl-dlkm_1.0.14.bb.html">kgsl-dlkm_1.0.14.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-graphics-wayland-weston-init.bbappend.html">weston-init.bbappend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-kernel-images-esp-qcom-fit-image.bb.html">esp-qcom-fit-image.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-kernel-images-esp-qcom-image.bb.html">esp-qcom-image.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-kernel-iris-video-module-iris-video-dlkm_1.0.28.bb.html">iris-video-dlkm_1.0.28.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-kernel-linux-linux-qcom-next_git.bb.html">linux-qcom-next_git.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-kernel-linux-linux-qcom_6.18.bb.html">linux-qcom_6.18.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-kernel-linux-linux-yocto-dev.bbappend.html">linux-yocto-dev.bbappend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-kernel-linux-qcom-dtb-metadata_1.1.bb.html">qcom-dtb-metadata_1.1.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-kernel-qps615-module-qps615-firmware_6.0.0.bb.html">qps615-firmware_6.0.0.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-ml-qairt-qairt-sdk_2.50.0.260828.bb.html">qairt-sdk_2.50.0.260828.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-multimedia-camx-camx-dlkm_1.0.6.bb.html">camx-dlkm_1.0.6.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-multimedia-camx-camxcommon-headers_1.0.48.bb.html">camxcommon-headers_1.0.48.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-multimedia-fastcv-qcom-fastcv-binaries_1.8.9.bb.html">qcom-fastcv-binaries_1.8.9.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-multimedia-imsdk-gst-plugins-imsdk-packaging.inc.html">gst-plugins-imsdk-packaging.inc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-multimedia-imsdk-smart-venc-ctrl-algo_1.0.2.bb.html">smart-venc-ctrl-algo_1.0.2.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-support-abl2esp-abl2esp_1.0.bb.html">abl2esp_1.0.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-support-fastrpc-fastrpc_1.0.7.bb.html">fastrpc_1.0.7.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-support-initrdscripts-files-copy-modules.sh.html">copy-modules.sh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-support-initrdscripts-initramfs-module-copy-modules_1.0.bb.html">initramfs-module-copy-modules_1.0.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-support-pd-mapper-pd-mapper_1.1.bb.html">pd-mapper_1.1.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-support-qbootctl-qbootctl_git.bb.html">qbootctl_git.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-support-rmtfs-rmtfs_1.3.bb.html">rmtfs_1.3.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-test-bootrr-bootrr_git.bb.html">bootrr_git.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-test-diag-diag_git.bb.html">diag_git.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-test-diag-router-diag-router_1.0.3.bb.html">diag-router_1.0.3.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-test-images-initramfs-tiny-image.bb.html">initramfs-tiny-image.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-test-libdiag-libdiag_1.0.5.bb.html">libdiag_1.0.5.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes-test-mybw-mybw_git.bb.html">mybw_git.bb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../README.html#files">Files</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../README.html">Documentation overview</a><ul>
+  <li><a href="../README.html">Contributor documentation</a><ul>
+      <li>Previous: <a href="classes-uki-esp-image.bbclass.html" title="previous chapter">uki-esp-image.bbclass</a></li>
+      <li>Next: <a href="dynamic-layers-meta-arm-recipes-devtools-cbsp-boot-utilities-cbsp-boot-utilities-native_1.0.bb.html" title="next chapter">cbsp-boot-utilities-native_1.0.bb</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,15 +1,18 @@
 # Third-party notices
 
-The layer's own licence is in [LICENSE](../LICENSE). The files below adapt
-material from other projects, whose notices follow.
+The layer's own licence is in [LICENSE](../LICENSE). The documentation tooling
+and templates below adapt material from other projects, whose notices follow.
 
 ## Repository documentation skeleton
 
-These files adapt the
+These files come from, or were written together with, the
 [qli2-example-repo](https://github.com/devdocsorg/qli2-example-repo) skeleton
 and are distributed under the BSD 3-Clause licence below:
-`.github/ISSUE_TEMPLATE/`, `.github/PULL_REQUEST_TEMPLATE/`, and
-`CODE_OF_CONDUCT.md`.
+`.github/check_offline.py`, `.github/finalise_site.py`,
+`.github/test_reference_coverage.py`, `.github/workflows/documentation.yml`,
+`.github/ISSUE_TEMPLATE/`, `.github/PULL_REQUEST_TEMPLATE/`,
+`CODE_OF_CONDUCT.md`, `docs/README.md`, `docs/source/Makefile`,
+`docs/source/conf.py`, and `docs/source/.templates/index.html`.
 
 ```text
 BSD 3-Clause License

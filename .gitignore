@@ -1,3 +1,13 @@
+# Python bytecode from the layer's helper modules.
 lib/qcom/__pycache__/
+# Build identifier fragment that CI generates for each run.
 ci/build-id.yml
+# kas-container script that CI copies into the checkout.
 kas-container
+# Local documentation toolchain and build intermediates.
+.venv/
+.docs-tools/
+docs/.doctrees/
+docs/source/contributing/.generated/
+# Local environment settings copied from .env.example.
+.env

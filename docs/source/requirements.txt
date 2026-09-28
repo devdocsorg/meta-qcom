@@ -1,0 +1,12 @@
+# Exact documentation-package versions for the Sphinx site.
+Sphinx==9.1.0
+myst-parser==5.1.0
+# Docutils element IDs used by the rendered-entry check.
+docutils==0.22.4
+# Shell parser used to discover shell functions for the reference coverage check.
+tree-sitter==0.26.0
+tree-sitter-bash==0.25.1
+# YAML parser used to read GitHub Actions run blocks and kas fragments.
+PyYAML==6.0.3
+# Browser validation used by the shared check target.
+playwright==1.62.0

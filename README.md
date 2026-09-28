@@ -101,12 +101,12 @@ For a manual build without KAS, refer to the [Yocto Project Quick Build](https:/
 ## Flash
 
 For instructions on building the QDL tool, preparing the board, and flashing
-images over USB (EDL mode), see [Flashing images](docs/flashing.md).
+images over USB (EDL mode), see [Flashing images](docs/source/user/flashing.md).
 
 ## Security recommendations for production
 
 Please refer to the security recommendations for production builds documented here:
-[Security Recommendations](docs/security-recommendations.md)
+[Security Recommendations](docs/source/user/security-recommendations.md)
 
 ## Releases
 
@@ -146,19 +146,9 @@ build it with KAS using the configuration for your target machine and distro.
 
 ## Contributing
 
-Please submit any patches against the `meta-qcom` layer (branch **master**)
-by using the GitHub pull-request feature. Fork the repo, create a branch,
-do the work, rebase from upstream, and create the pull request.
-
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow
 and the commit subject and message requirements before opening a pull request.
-
-Branch **kirkstone** is not open for direct contributions, please raise an
-issue with the suggested change instead.
-
-### Qualcomm Internal
-
-Please make sure to visit go/GitHubBasicsDoc and go/OSSBestPractices before proposing changes.
+Follow the [Code of Conduct](CODE_OF_CONDUCT.md) when participating.
 
 ## Communication
 

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Configuration reference &#8212; meta-qcom  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=dd1dafa6"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Security recommendation for Production Build" href="security-recommendations.html" />
+    <link rel="prev" title="Flashing images" href="flashing.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="configuration-reference">
+<h1>Configuration reference<a class="headerlink" href="#configuration-reference" title="Link to this heading">¶</a></h1>
+<p>Builds combine kas fragments from <code class="docutils literal notranslate"><span class="pre">ci/</span></code>, the layer settings in <code class="docutils literal notranslate"><span class="pre">conf/layer.conf</span></code>,
+and a machine configuration from <code class="docutils literal notranslate"><span class="pre">conf/machine/</span></code>. Standard BitBake and Yocto
+variables keep their upstream meaning; follow the links for their full
+definitions. The tables cover what this layer sets and why.</p>
+<section id="how-settings-load">
+<h2>How settings load<a class="headerlink" href="#how-settings-load" title="Link to this heading">¶</a></h2>
+<p>kas reads the fragments named on its command line from left to right, joined
+with <code class="docutils literal notranslate"><span class="pre">:</span></code>; a later fragment overrides the same key in an earlier one, and
+<code class="docutils literal notranslate"><span class="pre">header.includes</span></code> pulls in other fragments first
+(<a class="reference external" href="https://kas.readthedocs.io/en/5.5/userguide/project-configuration.html">kas project configuration</a>).
+kas writes the <code class="docutils literal notranslate"><span class="pre">local_conf_header</span></code> entries into <code class="docutils literal notranslate"><span class="pre">conf/local.conf</span></code> and adds
+each repository’s layers to <code class="docutils literal notranslate"><span class="pre">conf/bblayers.conf</span></code>. <code class="docutils literal notranslate"><span class="pre">machine</span></code> selects a file in
+<code class="docutils literal notranslate"><span class="pre">conf/machine/</span></code>, which <code class="docutils literal notranslate"><span class="pre">require</span></code>s its SoC include, which requires
+<code class="docutils literal notranslate"><span class="pre">qcom-base.inc</span></code> and <code class="docutils literal notranslate"><span class="pre">qcom-common.inc</span></code>. BitBake then applies its
+<a class="reference external" href="https://docs.yoctoproject.org/bitbake/2.18/bitbake-user-manual/bitbake-user-manual-metadata.html#basic-syntax">assignment operators</a>:
+<code class="docutils literal notranslate"><span class="pre">=</span></code> and <code class="docutils literal notranslate"><span class="pre">:=</span></code> set a value, <code class="docutils literal notranslate"><span class="pre">?=</span></code> sets it only when unset, <code class="docutils literal notranslate"><span class="pre">??=</span></code> is the weakest
+default, and <code class="docutils literal notranslate"><span class="pre">+=</span></code>, <code class="docutils literal notranslate"><span class="pre">:append</span></code>, and <code class="docutils literal notranslate"><span class="pre">:remove</span></code> edit an existing value.</p>
+</section>
+<section id="build-fragments">
+<h2>Build fragments<a class="headerlink" href="#build-fragments" title="Link to this heading">¶</a></h2>
+<p>Compose a build as <code class="docutils literal notranslate"><span class="pre">ci/&lt;machine&gt;.yml[:ci/&lt;distro&gt;.yml][:ci/&lt;kernel&gt;.yml][:&lt;options&gt;]</span></code>.
+Every fragment uses kas format version 14.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Fragment</p></th>
+<th class="head"><p>Purpose and settings</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ci/base.yml</span></code></p></td>
+<td><p>Common base: <code class="docutils literal notranslate"><span class="pre">nodistro</span></code>, <code class="docutils literal notranslate"><span class="pre">master</span></code> branches, <a class="reference external" href="https://github.com/openembedded/openembedded-core">openembedded-core</a> with the three <code class="docutils literal notranslate"><span class="pre">patches/oe-core</span></code> patches, <a class="reference external" href="https://github.com/openembedded/bitbake">bitbake</a>, and target <code class="docutils literal notranslate"><span class="pre">core-image-base</span></code>. Its <code class="docutils literal notranslate"><span class="pre">local_conf_header</span></code> entries are in the next table.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ci/base.lock.yml</span></code></p></td>
+<td><p>Pins each layer to a commit (<code class="docutils literal notranslate"><span class="pre">overrides.repos.&lt;name&gt;.commit</span></code>); kas loads it whenever <code class="docutils literal notranslate"><span class="pre">ci/base.yml</span></code> is used. CI regenerates it with <code class="docutils literal notranslate"><span class="pre">kas</span> <span class="pre">lock</span></code> before building.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ci/&lt;machine&gt;.yml</span></code></p></td>
+<td><p>One per machine in <code class="docutils literal notranslate"><span class="pre">conf/machine/</span></code>: includes <code class="docutils literal notranslate"><span class="pre">ci/base.yml</span></code> and sets <code class="docutils literal notranslate"><span class="pre">machine</span></code>. The <code class="docutils literal notranslate"><span class="pre">-open-fw</span></code> machines also include <code class="docutils literal notranslate"><span class="pre">ci/meta-arm.yml</span></code>; <code class="docutils literal notranslate"><span class="pre">ci/sdx75-idp.yml</span></code> builds <code class="docutils literal notranslate"><span class="pre">core-image-minimal</span></code>; <code class="docutils literal notranslate"><span class="pre">ci/qcom-armv8a.yml</span></code> sets <code class="docutils literal notranslate"><span class="pre">PREFERRED_PROVIDER_virtual/dtb</span> <span class="pre">=</span> <span class="pre">&quot;devicetree-dummy&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">QCOM_BOOTIMG_DEVICETREE</span> <span class="pre">=</span> <span class="pre">&quot;qcom-armv8-dummy.dtb&quot;</span></code>. <code class="docutils literal notranslate"><span class="pre">ci/qcs6490-rb3gen2-core-kit.yml</span></code> and <code class="docutils literal notranslate"><span class="pre">ci/qrb2210-rb1-core-kit.yml</span></code> link to the renamed machines’ fragments.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ci/qcom-distro.yml</span></code></p></td>
+<td><p>Selects <code class="docutils literal notranslate"><span class="pre">qcom-distro</span></code> from <a class="reference external" href="https://github.com/qualcomm-linux/meta-qcom-distro">meta-qcom-distro</a>, adds <a class="reference external" href="https://github.com/openembedded/meta-openembedded">meta-openembedded</a> (seven layers), <a class="reference external" href="https://github.com/qualcomm-linux/meta-ai">meta-ai</a>, <a class="reference external" href="https://git.yoctoproject.org/meta-virtualization">meta-virtualization</a> (<code class="docutils literal notranslate"><span class="pre">SKIP_META_VIRT_SANITY_CHECK</span> <span class="pre">=</span> <span class="pre">&quot;1&quot;</span></code>), <a class="reference external" href="https://github.com/AudioReach/meta-audioreach">meta-audioreach</a>, <a class="reference external" href="https://git.yoctoproject.org/meta-selinux">meta-selinux</a> with the three <code class="docutils literal notranslate"><span class="pre">patches/selinux</span></code> patches, <a class="reference external" href="https://github.com/uptane/meta-updater">meta-updater</a>, and <a class="reference external" href="https://git.yoctoproject.org/meta-security">meta-security</a> with meta-tpm, and builds the four <code class="docutils literal notranslate"><span class="pre">qcom-*-image</span></code> targets.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ci/qcom-distro-catchall.yml</span></code>, <code class="docutils literal notranslate"><span class="pre">-selinux.yml</span></code>, <code class="docutils literal notranslate"><span class="pre">-sota.yml</span></code></p></td>
+<td><p>Include <code class="docutils literal notranslate"><span class="pre">ci/qcom-distro.yml</span></code> and switch to the <code class="docutils literal notranslate"><span class="pre">qcom-distro-catchall</span></code>, <code class="docutils literal notranslate"><span class="pre">qcom-distro-selinux</span></code>, or <code class="docutils literal notranslate"><span class="pre">qcom-distro-sota</span></code> distro; the first two narrow the target list.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ci/qcom-distro-kvm.yml</span></code>, <code class="docutils literal notranslate"><span class="pre">-multimedia-image.yml</span></code></p></td>
+<td><p>Include <code class="docutils literal notranslate"><span class="pre">ci/qcom-distro.yml</span></code>; add <code class="docutils literal notranslate"><span class="pre">kvm</span></code> to <code class="docutils literal notranslate"><span class="pre">MACHINE_FEATURES</span></code>, or build only <code class="docutils literal notranslate"><span class="pre">qcom-multimedia-image</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ci/linux-qcom-6.18.yml</span></code>, <code class="docutils literal notranslate"><span class="pre">ci/linux-qcom-rt-6.18.yml</span></code></p></td>
+<td><p>Set <code class="docutils literal notranslate"><span class="pre">PREFERRED_PROVIDER_virtual/kernel</span></code> to <code class="docutils literal notranslate"><span class="pre">linux-qcom</span></code> or <code class="docutils literal notranslate"><span class="pre">linux-qcom-rt</span></code> with <code class="docutils literal notranslate"><span class="pre">PREFERRED_VERSION_virtual/kernel</span> <span class="pre">=</span> <span class="pre">&quot;6.18%&quot;</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ci/linux-qcom-next.yml</span></code>, <code class="docutils literal notranslate"><span class="pre">ci/linux-qcom-next-rt.yml</span></code></p></td>
+<td><p>Select <code class="docutils literal notranslate"><span class="pre">linux-qcom-next</span></code> or <code class="docutils literal notranslate"><span class="pre">linux-qcom-next-rt</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ci/linux-yocto-dev.yml</span></code></p></td>
+<td><p>Selects <code class="docutils literal notranslate"><span class="pre">linux-yocto-dev</span></code> and drops the <code class="docutils literal notranslate"><span class="pre">version-going-backwards</span></code> QA error for it.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ci/u-boot-qcom.yml</span></code></p></td>
+<td><p>Sets <code class="docutils literal notranslate"><span class="pre">PREFERRED_PROVIDER_virtual/bootloader</span> <span class="pre">=</span> <span class="pre">&quot;u-boot-qcom&quot;</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ci/kernel-fit-image.yml</span></code></p></td>
+<td><p>U-Boot FIT kernel flow: removes <code class="docutils literal notranslate"><span class="pre">linux-qcom-bootimg</span></code> from <code class="docutils literal notranslate"><span class="pre">KERNEL_CLASSES</span></code>, adds <code class="docutils literal notranslate"><span class="pre">kernel-fit-extra-artifacts</span></code>, and sets <code class="docutils literal notranslate"><span class="pre">QCOM_ESP_IMAGE</span> <span class="pre">=</span> <span class="pre">&quot;esp-qcom-fit-image&quot;</span></code> and an empty <code class="docutils literal notranslate"><span class="pre">EFI_PROVIDER</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ci/capsule.yml</span></code>, <code class="docutils literal notranslate"><span class="pre">ci/capsule-test-keys.yml</span></code></p></td>
+<td><p>Build the UEFI capsule (<code class="docutils literal notranslate"><span class="pre">firmware-qcom-capsule</span></code> as provider and runtime package), and sign it with the development keys in <code class="docutils literal notranslate"><span class="pre">ci/test-keys/</span></code> (<code class="docutils literal notranslate"><span class="pre">CAPSULE_ROOT_CER</span></code>, <code class="docutils literal notranslate"><span class="pre">CAPSULE_CERT_PEM</span></code>, <code class="docutils literal notranslate"><span class="pre">CAPSULE_ROOT_PUB</span></code>, <code class="docutils literal notranslate"><span class="pre">CAPSULE_SUB_PUB</span></code>). Never use those keys in production.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ci/meta-arm.yml</span></code>, <code class="docutils literal notranslate"><span class="pre">ci/dpdk.yml</span></code></p></td>
+<td><p>Add <a class="reference external" href="https://git.yoctoproject.org/meta-arm">meta-arm</a> with meta-arm-toolchain, or <a class="reference external" href="https://git.yoctoproject.org/meta-dpdk">meta-dpdk</a>, on <code class="docutils literal notranslate"><span class="pre">master</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ci/debug.yml</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DEBUG_BUILD</span> <span class="pre">=</span> <span class="pre">&quot;1&quot;</span></code>, debug filesystem images as <code class="docutils literal notranslate"><span class="pre">tar.zst</span></code>, and an ftrace kernel command line (<code class="docutils literal notranslate"><span class="pre">KERNEL_CMDLINE_EXTRA_FTRACE</span></code>).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ci/performance.yml</span></code></p></td>
+<td><p>Appends <code class="docutils literal notranslate"><span class="pre">quiet</span> <span class="pre">systemd.tty.term.console=dumb</span> <span class="pre">initramfs.udev-root-only=1</span> <span class="pre">initramfs.efivarfs=0</span></code> to the kernel command line.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ci/nospdx.yml</span></code></p></td>
+<td><p>Removes <code class="docutils literal notranslate"><span class="pre">create-spdx-image-3.0</span></code> from <code class="docutils literal notranslate"><span class="pre">IMAGE_CLASSES</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ci/test-oe-nogl.yml</span></code></p></td>
+<td><p>Adds meta-oe from <a class="reference external" href="https://github.com/openembedded/meta-openembedded">meta-openembedded</a> and removes <code class="docutils literal notranslate"><span class="pre">opengl</span></code> from <code class="docutils literal notranslate"><span class="pre">DISTRO_FEATURES</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ci/world.yml</span></code></p></td>
+<td><p>Builds <code class="docutils literal notranslate"><span class="pre">world</span></code> limited to this layer (<code class="docutils literal notranslate"><span class="pre">EXCLUDE_FROM_WORLD</span></code> is <code class="docutils literal notranslate"><span class="pre">1</span></code>, and <code class="docutils literal notranslate"><span class="pre">0</span></code> for <code class="docutils literal notranslate"><span class="pre">layer-qcom</span></code>); a commented line would also include <code class="docutils literal notranslate"><span class="pre">layer-qcom-distro</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ci/ci.yml</span></code></p></td>
+<td><p>CI settings; includes <code class="docutils literal notranslate"><span class="pre">ci/mirror.yml</span></code> and <code class="docutils literal notranslate"><span class="pre">ci/ccache.yml</span></code>, and sets <code class="docutils literal notranslate"><span class="pre">BB_SIGNATURE_HANDLER</span> <span class="pre">=</span> <span class="pre">&quot;OEBasicHash&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">FIRMWARE_COMPRESSION:qcom-armv8a</span> <span class="pre">=</span> <span class="pre">&quot;zst&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">PACKAGE_CLASSES</span> <span class="pre">=</span> <span class="pre">&quot;package_rpm&quot;</span></code>, memory-bounded parallelism (<code class="docutils literal notranslate"><span class="pre">BB_PRESSURE_MAX_MEMORY</span></code>, <code class="docutils literal notranslate"><span class="pre">PARALLEL_MAKE</span></code>, <code class="docutils literal notranslate"><span class="pre">do_compile[number_threads]</span></code>), job-local git clones, and shallow qcom kernel fetches. Its comments give the reasons.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ci/ccache.yml</span></code></p></td>
+<td><p>Enables ccache in <code class="docutils literal notranslate"><span class="pre">${SSTATE_DIR}/ccache</span></code> (200G) for the compiler, toolchain, kernel, and large C++ recipes only.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ci/mirror.yml</span></code></p></td>
+<td><p>Uses the Yocto Project shared-state mirror.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ci/mirror-download-disable.yml</span></code>, <code class="docutils literal notranslate"><span class="pre">-test.yml</span></code>, <code class="docutils literal notranslate"><span class="pre">-tarballs.yml</span></code></p></td>
+<td><p>Mirror maintenance: drop <code class="docutils literal notranslate"><span class="pre">qli-mirrors</span></code>, fetch only from <code class="docutils literal notranslate"><span class="pre">QLI_MIRRORS</span></code> (<code class="docutils literal notranslate"><span class="pre">BB_FETCH_PREMIRRORONLY</span></code>), or generate mirror tarballs.</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">ci/base.yml</span></code> writes these <code class="docutils literal notranslate"><span class="pre">local_conf_header</span></code> entries:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Entry</p></th>
+<th class="head"><p>Settings</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">base</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CONF_VERSION</span> <span class="pre">=</span> <span class="pre">&quot;2&quot;</span></code>; inherits <code class="docutils literal notranslate"><span class="pre">buildstats-summary</span></code>, <code class="docutils literal notranslate"><span class="pre">buildhistory</span></code>, <code class="docutils literal notranslate"><span class="pre">rm_work</span></code>, and <code class="docutils literal notranslate"><span class="pre">image-buildinfo</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">diskmon</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BB_DISKMON_DIRS</span> <span class="pre">??=</span></code> stops tasks below 1G free (100M for <code class="docutils literal notranslate"><span class="pre">/tmp</span></code>) and halts below 100M (10M) in <code class="docutils literal notranslate"><span class="pre">TMPDIR</span></code>, <code class="docutils literal notranslate"><span class="pre">DL_DIR</span></code>, and <code class="docutils literal notranslate"><span class="pre">SSTATE_DIR</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">clo-mirrors</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MIRRORS:append</span></code> sends GitHub, other git, and HTTPS fetches to CodeLinaro mirrors when the original fails.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cmdline</span></code></p></td>
+<td><p>Appends <code class="docutils literal notranslate"><span class="pre">qcom_scm.download_mode=1</span></code> to <code class="docutils literal notranslate"><span class="pre">KERNEL_CMDLINE_EXTRA</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">extra</span></code></p></td>
+<td><p>Adds <code class="docutils literal notranslate"><span class="pre">efi</span> <span class="pre">pam</span> <span class="pre">pni-names</span></code> to <code class="docutils literal notranslate"><span class="pre">DISTRO_FEATURES</span></code>, passwordless root login (<code class="docutils literal notranslate"><span class="pre">EXTRA_IMAGE_FEATURES</span></code>), <code class="docutils literal notranslate"><span class="pre">IMAGE_ROOTFS_EXTRA_SPACE</span> <span class="pre">=</span> <span class="pre">&quot;307200&quot;</span></code> (KiB), and a 30 s systemd watchdog.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">os-release</span></code></p></td>
+<td><p>Adds <code class="docutils literal notranslate"><span class="pre">BUILD_ID</span></code> to <code class="docutils literal notranslate"><span class="pre">/etc/os-release</span></code>; <code class="docutils literal notranslate"><span class="pre">BUILD_ID</span> <span class="pre">?=</span> <span class="pre">&quot;local-${DATETIME}&quot;</span></code>, which CI overrides through the generated, ignored <code class="docutils literal notranslate"><span class="pre">ci/build-id.yml</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="layer-settings">
+<h2>Layer settings<a class="headerlink" href="#layer-settings" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">conf/layer.conf</span></code> registers the layer with BitBake
+(<a class="reference external" href="https://docs.yoctoproject.org/6.0/ref-manual/variables.html#term-BBFILE_COLLECTIONS">layer variables</a>).</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Setting</p></th>
+<th class="head"><p>Local value and purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BBPATH</span></code>, <code class="docutils literal notranslate"><span class="pre">BBFILES</span></code></p></td>
+<td><p>Add the layer and its <code class="docutils literal notranslate"><span class="pre">recipes-*/*/*.bb</span></code> and <code class="docutils literal notranslate"><span class="pre">.bbappend</span></code> files.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">LAYERDIR_qcom</span></code></p></td>
+<td><p>Layer root, so recipes can use files such as <code class="docutils literal notranslate"><span class="pre">ci/test-keys/</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BBFILE_COLLECTIONS</span></code>, <code class="docutils literal notranslate"><span class="pre">BBFILE_PATTERN_qcom</span></code>, <code class="docutils literal notranslate"><span class="pre">BBFILE_PRIORITY_qcom</span></code></p></td>
+<td><p>Collection <code class="docutils literal notranslate"><span class="pre">qcom</span></code>, priority <code class="docutils literal notranslate"><span class="pre">6</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">LAYERDEPENDS_qcom</span></code>, <code class="docutils literal notranslate"><span class="pre">LAYERRECOMMENDS_qcom</span></code>, <code class="docutils literal notranslate"><span class="pre">LAYERSERIES_COMPAT_qcom</span></code></p></td>
+<td><p>Requires <code class="docutils literal notranslate"><span class="pre">core</span></code>; recommends <code class="docutils literal notranslate"><span class="pre">openembedded-layer</span></code> and <code class="docutils literal notranslate"><span class="pre">meta-arm</span></code>; compatible with <code class="docutils literal notranslate"><span class="pre">wrynose</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">LICENSE_PATH</span></code></p></td>
+<td><p>Adds <code class="docutils literal notranslate"><span class="pre">licenses/</span></code> for the Qualcomm licences.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BBFILES_DYNAMIC</span></code></p></td>
+<td><p>Adds <code class="docutils literal notranslate"><span class="pre">dynamic-layers/&lt;collection&gt;/</span></code> recipes only when that collection is present: <code class="docutils literal notranslate"><span class="pre">ai</span></code>, <code class="docutils literal notranslate"><span class="pre">meta-arm</span></code>, <code class="docutils literal notranslate"><span class="pre">networking-layer</span></code>, <code class="docutils literal notranslate"><span class="pre">openembedded-layer</span></code>, <code class="docutils literal notranslate"><span class="pre">qcom-distro</span></code>, <code class="docutils literal notranslate"><span class="pre">selinux</span></code>, <code class="docutils literal notranslate"><span class="pre">virtualization-layer</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">QLI_BASELINE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">main</span></code>, the Qualcomm Linux baseline name.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">INHERIT</span> <span class="pre">+=</span> <span class="pre">&quot;qli-mirrors&quot;</span></code></p></td>
+<td><p>Adds the Qualcomm Linux download mirrors from <code class="docutils literal notranslate"><span class="pre">classes/qli-mirrors.bbclass</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PREFERRED_RPROVIDER_virtual-diag-router</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">?=</span> <span class="pre">&quot;diag&quot;</span></code>, which picks <code class="docutils literal notranslate"><span class="pre">diag</span></code> when <code class="docutils literal notranslate"><span class="pre">diag-router</span></code> is also available.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">addpylib</span></code></p></td>
+<td><p>Makes <code class="docutils literal notranslate"><span class="pre">lib/</span></code> importable as the <code class="docutils literal notranslate"><span class="pre">qcom</span></code> Python namespace.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SIGGEN_EXCLUDE_SAFE_RECIPE_DEPS</span></code></p></td>
+<td><p>Keeps the runtime-only <code class="docutils literal notranslate"><span class="pre">qcom-adreno-&gt;kgsl-dlkm</span></code> dependency out of task signatures.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="machine-settings">
+<h2>Machine settings<a class="headerlink" href="#machine-settings" title="Link to this heading">¶</a></h2>
+<p>Each <code class="docutils literal notranslate"><span class="pre">conf/machine/&lt;machine&gt;.conf</span></code> requires one SoC include, such as
+<code class="docutils literal notranslate"><span class="pre">qcom-qcs6490.inc</span></code>, which sets <code class="docutils literal notranslate"><span class="pre">SOC_FAMILY</span></code>, <code class="docutils literal notranslate"><span class="pre">DEFAULTTUNE</span></code>, and the SoC
+package groups. <code class="docutils literal notranslate"><span class="pre">qcom-common.inc</span></code> holds the shared defaults and requires
+<code class="docutils literal notranslate"><span class="pre">qcom-common-binary.inc</span></code> (binary recipe versions) and <code class="docutils literal notranslate"><span class="pre">qcom-u-boot-common.inc</span></code>.
+The machine files set these Qualcomm settings:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Setting</p></th>
+<th class="head"><p>Purpose</p></th>
+<th class="head"><p>Type and default</p></th>
+<th class="head"><p>Safe example</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">QCOM_BOOT_FIRMWARE</span></code>, <code class="docutils literal notranslate"><span class="pre">QCOM_CDT_FIRMWARE</span></code></p></td>
+<td><p>Recipes that deploy boot firmware and the CDT into the flash package.</p></td>
+<td><p>Recipe name; <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> skips it.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">firmware-qcom-boot-qcs6490</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">QCOM_BOOT_FILES_SUBDIR</span></code>, <code class="docutils literal notranslate"><span class="pre">QCOM_CDT_FILE</span></code></p></td>
+<td><p>Deploy subfolder with those files, and the CDT file name without <code class="docutils literal notranslate"><span class="pre">.bin</span></code>.</p></td>
+<td><p>Path and name; <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">qcm6490</span></code>, <code class="docutils literal notranslate"><span class="pre">cdt_core_kit</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">QCOM_PARTITION_FILES_SUBDIR</span></code>, <code class="docutils literal notranslate"><span class="pre">QCOM_PARTITION_FILES_SUBDIR_SPINOR</span></code></p></td>
+<td><p>Partition layouts from <code class="docutils literal notranslate"><span class="pre">qcom-partition-conf</span></code> for the main storage and SPI-NOR.</p></td>
+<td><p>Path; defaults to the boot subfolder, and <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">partitions/qcs6490-rb3gen2/ufs</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">QCOM_DTB_DEFAULT</span></code></p></td>
+<td><p>Device tree packed as <code class="docutils literal notranslate"><span class="pre">dtb.bin</span></code>, or <code class="docutils literal notranslate"><span class="pre">multi-dtb</span></code> for the FIT with every DTB.</p></td>
+<td><p>DTB name; <code class="docutils literal notranslate"><span class="pre">??=</span> <span class="pre">&quot;multi-dtb&quot;</span></code>.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">qcs615-ride</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">LINUX_QCOM_KERNEL_DEVICETREE</span></code></p></td>
+<td><p>Device trees built only by the <code class="docutils literal notranslate"><span class="pre">linux-qcom*</span></code> kernels, added to <code class="docutils literal notranslate"><span class="pre">KERNEL_DEVICETREE</span></code> for them.</p></td>
+<td><p>DTB list; <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">qcom/kodiak-el2.dtbo</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">QCOM_RT_CPU</span></code>, <code class="docutils literal notranslate"><span class="pre">QCOM_IRQAFF</span></code>, <code class="docutils literal notranslate"><span class="pre">QCOM_RCU_NOCBS</span></code>, <code class="docutils literal notranslate"><span class="pre">QCOM_RCU_EXPEDITED</span></code>, <code class="docutils literal notranslate"><span class="pre">QCOM_CPUIDLE_OFF</span></code></p></td>
+<td><p>Real-time kernel arguments <code class="docutils literal notranslate"><span class="pre">isolcpus</span></code>, <code class="docutils literal notranslate"><span class="pre">irqaffinity</span></code>, <code class="docutils literal notranslate"><span class="pre">rcu_nocbs</span></code>, <code class="docutils literal notranslate"><span class="pre">rcupdate.rcu_expedited</span></code>, and <code class="docutils literal notranslate"><span class="pre">cpuidle.off</span></code>; <code class="docutils literal notranslate"><span class="pre">qcom-common.inc</span></code> builds them into <code class="docutils literal notranslate"><span class="pre">RT_ARGS_*</span></code> and <code class="docutils literal notranslate"><span class="pre">RT_KERNEL_CMDLINE</span></code>, with <code class="docutils literal notranslate"><span class="pre">efi=runtime</span></code>, and appends them only with <code class="docutils literal notranslate"><span class="pre">linux-qcom-rt</span></code> or <code class="docutils literal notranslate"><span class="pre">linux-qcom-next-rt</span></code>.</p></td>
+<td><p>CPU list or <code class="docutils literal notranslate"><span class="pre">1</span></code>; <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> omits the argument.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">7</span></code>, <code class="docutils literal notranslate"><span class="pre">0-6</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">QCOM_XBL_CONFIG</span></code>, <code class="docutils literal notranslate"><span class="pre">QCOM_UEFI_DTB</span></code></p></td>
+<td><p>Boot firmware variant; the <code class="docutils literal notranslate"><span class="pre">kvm</span></code> machine feature picks the KVM files.</p></td>
+<td><p>File name.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">xbl_config.elf</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">QCOM_BOOTIMG_*</span></code>, <code class="docutils literal notranslate"><span class="pre">SD_QCOM_BOOTIMG_ROOTFS</span></code>, <code class="docutils literal notranslate"><span class="pre">QCOM_VFAT_SECTOR_SIZE</span></code></p></td>
+<td><p>Android boot image kernel base, page size, and root device (for SD-card boot images too), and the VFAT sector size.</p></td>
+<td><p>Address, size, or device; <code class="docutils literal notranslate"><span class="pre">0x80000000</span></code>, <code class="docutils literal notranslate"><span class="pre">4096</span></code>, <code class="docutils literal notranslate"><span class="pre">PARTLABEL=rootfs</span></code>, <code class="docutils literal notranslate"><span class="pre">4096</span></code>.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">2048</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">UBOOT_CONFIG</span></code> and its <code class="docutils literal notranslate"><span class="pre">[&lt;board&gt;]</span></code> flags, <code class="docutils literal notranslate"><span class="pre">BOARD_MBN_HEADER[&lt;board&gt;]</span></code></p></td>
+<td><p>U-Boot board, its defconfig, and the MBN header version.</p></td>
+<td><p>Board name; <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> builds none.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">qcs6490-rb3gen2</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CAPSULE_GUID</span></code>, <code class="docutils literal notranslate"><span class="pre">CAPSULE_FLASH_TYPE</span></code>, <code class="docutils literal notranslate"><span class="pre">CAPSULE_ENTRIES</span></code>, <code class="docutils literal notranslate"><span class="pre">CAPSULE_ENTRY_&lt;name&gt;[...]</span></code></p></td>
+<td><p>UEFI capsule identity and the partitions it updates (<code class="docutils literal notranslate"><span class="pre">iq-x7181-evk</span></code>).</p></td>
+<td><p>GUID, type, and names.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CAPSULE_ENTRIES</span> <span class="pre">=</span> <span class="pre">&quot;dtb&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">VIRTUAL-RUNTIME_qcom-capsule-firmware</span></code></p></td>
+<td><p>Capsule package added to <code class="docutils literal notranslate"><span class="pre">MACHINE_EXTRA_RRECOMMENDS</span></code>.</p></td>
+<td><p>Package name; <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">firmware-qcom-capsule</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">QCOM_UBOOT_SPL_FIT</span></code>, <code class="docutils literal notranslate"><span class="pre">SPL_BINARY</span></code>, <code class="docutils literal notranslate"><span class="pre">UBOOT_FIT_*</span></code>, <code class="docutils literal notranslate"><span class="pre">QCOM_FIT_BOOT_CONF</span></code></p></td>
+<td><p>U-Boot SPL FIT boot flow from <code class="docutils literal notranslate"><span class="pre">qcom-uboot-spl-fit.inc</span></code>, whose comments explain each setting, and the FIT configuration it boots.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code> or unset; name.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">QCOM_UBOOT_SPL_ENTRY</span></code>, <code class="docutils literal notranslate"><span class="pre">QCOM_UBOOT_SPL_FIT_ATF</span></code>, <code class="docutils literal notranslate"><span class="pre">QCOM_UBOOT_SPL_FIT_TEE</span></code>, <code class="docutils literal notranslate"><span class="pre">QCOM_UBOOT_SPL_SWIV_PLATFORM</span></code></p></td>
+<td><p>SoC inputs for that flow: SPL entry address, TF-A and OP-TEE recipes, and SWIV platform (<code class="docutils literal notranslate"><span class="pre">qcom-qcs9100.inc</span></code>, with the <code class="docutils literal notranslate"><span class="pre">UBOOT_FIT_*</span></code> load addresses).</p></td>
+<td><p>Address, recipe, or name.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">lemans</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">FIT_DTB_MKIMAGE_EXTRA_OPTS</span></code></p></td>
+<td><p>mkimage options for the DTB FIT.</p></td>
+<td><p>Options; <code class="docutils literal notranslate"><span class="pre">-E</span> <span class="pre">-B</span> <span class="pre">8</span></code>.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-E</span> <span class="pre">-B</span> <span class="pre">8</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">VERSION_abseil-cpp</span></code>, <code class="docutils literal notranslate"><span class="pre">VERSION_protobuf</span></code></p></td>
+<td><p>Versions the binary recipes need; <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> leaves protobuf unpinned.</p></td>
+<td><p>Version.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">20260107.1</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>The machines also set standard variables:
+<a class="reference external" href="https://docs.yoctoproject.org/6.0/ref-manual/variables.html#term-MACHINE_FEATURES"><code class="docutils literal notranslate"><span class="pre">MACHINE_FEATURES</span></code></a>
+(base <code class="docutils literal notranslate"><span class="pre">alsa</span> <span class="pre">bluetooth</span> <span class="pre">usbgadget</span> <span class="pre">usbhost</span> <span class="pre">wifi</span></code>, plus per-board features),
+<a class="reference external" href="https://docs.yoctoproject.org/6.0/ref-manual/variables.html#term-KERNEL_DEVICETREE"><code class="docutils literal notranslate"><span class="pre">KERNEL_DEVICETREE</span></code></a>,
+<a class="reference external" href="https://docs.yoctoproject.org/6.0/ref-manual/variables.html#term-MACHINE_ESSENTIAL_EXTRA_RRECOMMENDS"><code class="docutils literal notranslate"><span class="pre">MACHINE_ESSENTIAL_EXTRA_RRECOMMENDS</span></code></a>
+and <code class="docutils literal notranslate"><span class="pre">MACHINE_EXTRA_RRECOMMENDS</span></code> (board firmware and package groups),
+kernel image types and classes, <code class="docutils literal notranslate"><span class="pre">EXTRA_IMAGECMD:ext4</span></code> (4096-byte blocks),
+<code class="docutils literal notranslate"><span class="pre">EXTRA_IMAGEDEPENDS</span></code> (Android boot images for the generic machines, TF-A for the
+open-firmware ones),
+<code class="docutils literal notranslate"><span class="pre">MACHINEOVERRIDES</span></code> (adds <code class="docutils literal notranslate"><span class="pre">qcom</span></code>), <code class="docutils literal notranslate"><span class="pre">XSERVER</span></code> and <code class="docutils literal notranslate"><span class="pre">XSERVER_OPENGL</span></code>, <code class="docutils literal notranslate"><span class="pre">EFI_PROVIDER</span></code>
+(<code class="docutils literal notranslate"><span class="pre">systemd-boot</span></code>) and <code class="docutils literal notranslate"><span class="pre">EFI_LINUX_IMG</span></code> (the unified kernel image name),
+<code class="docutils literal notranslate"><span class="pre">PREFERRED_PROVIDER_virtual/kernel</span></code> (default
+<code class="docutils literal notranslate"><span class="pre">linux-qcom-next</span></code>, <code class="docutils literal notranslate"><span class="pre">linux-yocto</span></code> for <code class="docutils literal notranslate"><span class="pre">qcom-armv8a</span></code>), <code class="docutils literal notranslate"><span class="pre">SERIAL_CONSOLES</span></code>
+(<code class="docutils literal notranslate"><span class="pre">115200;ttyMSM0</span></code>), <code class="docutils literal notranslate"><span class="pre">IMAGE_FSTYPES</span></code> (<code class="docutils literal notranslate"><span class="pre">ext4</span></code> and <code class="docutils literal notranslate"><span class="pre">qcomflash</span></code>; <code class="docutils literal notranslate"><span class="pre">ubi</span></code> with
+<code class="docutils literal notranslate"><span class="pre">MKUBIFS_ARGS</span></code> and <code class="docutils literal notranslate"><span class="pre">UBINIZE_ARGS</span></code> for <code class="docutils literal notranslate"><span class="pre">sdx75-idp</span></code>), and <code class="docutils literal notranslate"><span class="pre">INITRAMFS_MAXSIZE</span></code>.
+<code class="docutils literal notranslate"><span class="pre">qcom-armv8a</span></code> and <code class="docutils literal notranslate"><span class="pre">qcom-armv7a</span></code> are generic machines covering several boards.
+<code class="docutils literal notranslate"><span class="pre">qcs6490-rb3gen2-core-kit</span></code> and <code class="docutils literal notranslate"><span class="pre">qrb2210-rb1-core-kit</span></code> are deprecated names
+that require <code class="docutils literal notranslate"><span class="pre">rb3gen2-core-kit</span></code> and <code class="docutils literal notranslate"><span class="pre">rb1-core-kit</span></code>.</p>
+</section>
+<section id="environment-settings">
+<h2>Environment settings<a class="headerlink" href="#environment-settings" title="Link to this heading">¶</a></h2>
+<p>The layer reads no environment variables at parse time. The build helpers in
+<code class="docutils literal notranslate"><span class="pre">ci/</span></code> and kas read the settings listed in <a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/.env.example">.env.example</a>;
+nothing loads that file automatically, so export the ones you need.</p>
+</section>
+<section id="continuous-integration">
+<h2>Continuous integration<a class="headerlink" href="#continuous-integration" title="Link to this heading">¶</a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Workflow</p></th>
+<th class="head"><p>Trigger and check</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/.github/workflows/pr.yml">pr.yml</a></p></td>
+<td><p>Pull requests to <code class="docutils literal notranslate"><span class="pre">master</span></code> that change more than Markdown: builds the <code class="docutils literal notranslate"><span class="pre">pr</span></code> profile of <code class="docutils literal notranslate"><span class="pre">build-yocto.yml</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/.github/workflows/push.yml">push.yml</a></p></td>
+<td><p>Pushes to <code class="docutils literal notranslate"><span class="pre">master</span></code>: full build, LAVA tests, and published results.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/.github/workflows/nightly-build.yml">nightly-build.yml</a>, <a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/.github/workflows/nightly-build-wrynose.yml">nightly-build-wrynose.yml</a>, <a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/.github/workflows/weekly-build.yml">weekly-build.yml</a></p></td>
+<td><p>Schedules: nightly <code class="docutils literal notranslate"><span class="pre">master</span></code> and <code class="docutils literal notranslate"><span class="pre">wrynose</span></code> builds and tests that skip unchanged inputs, and the weekly superset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/.github/workflows/build-yocto.yml">build-yocto.yml</a>, <a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/.github/workflows/compile.yml">compile.yml</a></p></td>
+<td><p>Called workflows: <code class="docutils literal notranslate"><span class="pre">kas</span> <span class="pre">lock</span></code>, patch review, <code class="docutils literal notranslate"><span class="pre">yocto-check-layer</span></code>, oe-selftest, and the machine, distro, and kernel build matrix.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/.github/workflows/test.yml">test.yml</a>, <a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/.github/workflows/test-distro.yml">test-distro.yml</a>, <a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/.github/workflows/test-pr.yml">test-pr.yml</a>, <a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/.github/workflows/test-pr-wrynose.yml">test-pr-wrynose.yml</a>, <a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/.github/workflows/publish-results.yml">publish-results.yml</a></p></td>
+<td><p>Boot and pre-merge tests in the LAVA lab after a build, and their published results.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/.github/workflows/markdownlint.yml">markdownlint.yml</a></p></td>
+<td><p>Changes to Markdown: lints <code class="docutils literal notranslate"><span class="pre">**/*.md</span></code> with <code class="docutils literal notranslate"><span class="pre">.github/.markdownlint.yaml</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/.github/workflows/documentation.yml">documentation.yml</a></p></td>
+<td><p>Pull requests and pushes to <code class="docutils literal notranslate"><span class="pre">master</span></code>: runs the documentation <code class="docutils literal notranslate"><span class="pre">setup</span></code> and <code class="docutils literal notranslate"><span class="pre">check</span></code> targets.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/.github/workflows/repolinter.yml">repolinter.yml</a></p></td>
+<td><p>Pull requests and pushes to <code class="docutils literal notranslate"><span class="pre">master</span></code>: repository policy lint, including source licence headers.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/.github/workflows/backport.yml">backport.yml</a>, <a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/.github/workflows/stales.yml">stales.yml</a>, <a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/.github/workflows/sstate-cleanup.yml">sstate-cleanup.yml</a></p></td>
+<td><p>Maintenance: backport pull requests for merged changes labelled <code class="docutils literal notranslate"><span class="pre">backport</span> <span class="pre">wrynose</span></code>, stale issue handling, and shared-state cache expiry.</p></td>
+</tr>
+</tbody>
+</table>
+<p>The <code class="docutils literal notranslate"><span class="pre">.github/actions/</span></code> folder holds the composite actions these workflows use.
+<code class="docutils literal notranslate"><span class="pre">.github/.markdownlint.yaml</span></code>, <code class="docutils literal notranslate"><span class="pre">.github/CODEOWNERS</span></code>, <code class="docutils literal notranslate"><span class="pre">.gitignore</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">docs/source/conf.py</span></code> explain their settings in comments beside them.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../README.html">meta-qcom</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="README.html">User documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="flashing.html">Flashing images</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Configuration reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#how-settings-load">How settings load</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#build-fragments">Build fragments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#layer-settings">Layer settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#machine-settings">Machine settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#environment-settings">Environment settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#continuous-integration">Continuous integration</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="security-recommendations.html">Security recommendation for Production Build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="README.html#files">Files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/README.html">Contributor documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../README.html">Documentation overview</a><ul>
+  <li><a href="README.html">User documentation</a><ul>
+      <li>Previous: <a href="flashing.html" title="previous chapter">Flashing images</a></li>
+      <li>Next: <a href="security-recommendations.html" title="next chapter">Security recommendation for Production Build</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

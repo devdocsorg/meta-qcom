@@ -1,5 +1,18 @@
 # Flashing images
 
+This tutorial writes an image built with this layer to an RB3 Gen 2 board over
+USB and boots it.
+
+## Prerequisites
+
+- A `core-image-base` build for `rb3gen2-core-kit`, made with the README's
+  [quick build](https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/README.md#quick-build).
+  Run the flashing commands from the directory where you ran
+  `kas-container build`.
+- The board, its power supply, a micro USB cable for the debug UART, and a
+  USB-C cable.
+- A Linux host where you can build QDL, as the next section describes.
+
 ## Build QDL tool
 
 QDL tool communicates with USB devices of VID:PID `05c6:9008` and uploads a
@@ -69,3 +82,10 @@ Make sure that ModemManager is not running, disable it if necessary.
    HELLO version: 0x2 compatible: 0x1 max_len: 1024 mode: 0
    READ64 image: 13 offset: 0x0 length: 0x40
    ```
+
+## Expected result
+
+When QDL finishes, the board reboots into the new image; power-cycle it if it
+stays in EDL mode. The serial console shows the boot log and then a
+`rb3gen2-core-kit login:` prompt. Log in as `root`; the quick-build
+configuration sets no password.
