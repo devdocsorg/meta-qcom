@@ -14,6 +14,13 @@ QCOM_BOOT_IMG_SUBDIR = "qcs9100"
 
 include firmware-qcom-boot-common.inc
 
+# @description Also deploy the SAIL flashing files when the boot binaries have a sail_nor directory.
+# The files listed in SAIL_FILES go to ${DEPLOYDIR}/${QCOM_BOOT_IMG_SUBDIR}/sail_nor.
+# @noargs
+# @exitcode 0 The SAIL files are deployed, or the boot binaries have no sail_nor directory.
+# @exitcode 1 A file listed in SAIL_FILES is missing from the sail_nor directory.
+# @example
+#   bitbake firmware-qcom-boot-qcs9100 -c deploy
 do_deploy:append() {
     if [ -d "${UNPACKDIR}/${BOOTBINARIES}/sail_nor" ]; then
         SAIL_FILES="gpt_backup0.bin gpt_main0.bin prog_firehose_ddr.elf patch0.xml rawprogram0.xml sailhyp.elf sailsw1.elf"

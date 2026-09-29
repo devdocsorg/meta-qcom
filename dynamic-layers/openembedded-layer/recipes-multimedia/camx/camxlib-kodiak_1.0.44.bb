@@ -34,7 +34,12 @@ DEPENDS += " \
 COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:aarch64 = "(.*)"
 
+# @description Install the prebuilt Kodiak CamX files, leaving out those needing absent GPU APIs.
 # Use do_install:append to preserve cmake_do_install
+# @noargs
+# @exitcode 0 The libraries, data, tools, and notices are installed under ${D}.
+# @example
+#   bitbake camxlib-kodiak -c install
 do_install:append() {
     install -d ${D}${libdir}
     install -d ${D}${datadir}/doc/${BPN}

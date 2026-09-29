@@ -12,6 +12,14 @@ SRC_URI:append:qcom = " \
 # local hook can be removed once an equivalent upstream implementation exists.
 POLICY_BOOLEANS ?= ""
 
+# @description Write each POLICY_BOOLEANS setting into the policy's booleans.conf.
+# A new "name = value" line replaces any earlier line for the same name, and the
+# policy build uses these values as the boolean and tunable defaults.
+# @noargs
+# @exitcode 0 booleans.conf holds one line for each setting.
+# @exitcode 1 bbfatal stops the build on an entry without "=", a bad name, or a bad value.
+# @example
+#   set_qcom_policy_booleans
 set_qcom_policy_booleans() {
     touch "${S}/policy/booleans.conf"
 
@@ -42,6 +50,12 @@ set_qcom_policy_booleans() {
     done
 }
 
+# @description Apply POLICY_BOOLEANS to booleans.conf before the policy is compiled.
+# @noargs
+# @exitcode 0 The settings are in booleans.conf and compilation continues.
+# @exitcode 1 An invalid POLICY_BOOLEANS entry stops the build.
+# @example
+#   bitbake refpolicy-targeted -c compile
 do_compile:prepend:qcom() {
     set_qcom_policy_booleans
 }

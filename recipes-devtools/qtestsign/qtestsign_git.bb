@@ -10,6 +10,13 @@ INHIBIT_DEFAULT_DEPS = "1"
 
 inherit python3native
 
+# @description Install qtestsign as a Python package with a qtestsign command in ${bindir}.
+# The sources are copied to ${PYTHON_SITEPACKAGES_DIR}/qtestsign without README.md, COPYING,
+# and requirements.txt, and ${bindir}/qtestsign is a relative symlink to qtestsign.py.
+# @noargs
+# @exitcode 0 The package and the qtestsign command are under ${D}.
+# @example
+#   bitbake qtestsign -c install
 do_install() {
     install -d ${D}${bindir}
     install -d ${D}${PYTHON_SITEPACKAGES_DIR}/qtestsign

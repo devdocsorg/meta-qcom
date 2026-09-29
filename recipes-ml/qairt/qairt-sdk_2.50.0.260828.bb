@@ -30,6 +30,18 @@ DEPENDS = "patchelf-native binutils-native systemd"
 # like "aarch64-oe-linux-gcc8.2", "aarch64-oe-linux-gcc9.3", etc.
 # This helper picks the directory whose GCC major version best matches the
 # build compiler, falling back to the nearest lower available version.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The recipe's datastore.
+#
+# Returns:
+#     str: A glob pattern such as ``aarch64-oe-linux-gcc11*`` for the newest matching GCC
+#     major version from the build GCC down to 8, or None when ${S}/lib does not exist
+#     or no directory matches.
+#
+# Example:
+#     ``PLATFORM_DIR = "${@platform_dir(d)}"`` expands to ``aarch64-oe-linux-gcc11*`` when
+#     the build uses GCC 16 and the newest SDK directory is ``aarch64-oe-linux-gcc11.2``.
 def platform_dir(d):
     sdk_lib_dir = d.getVar("S", True) + "/lib/"
     if os.path.exists(sdk_lib_dir) and os.path.isdir(sdk_lib_dir):
@@ -56,6 +68,13 @@ do_compile[noexec] = "1"
 COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:aarch64 = "(.*)"
 
+# @description Install the QAIRT SDK headers, libraries, tools, and Hexagon DSP libraries.
+# Host libraries and tools come from the ${PLATFORM_DIR} directories; the Hexagon libraries
+# go to per-board dsp/cdsp directories, with symlinks for boards that share them.
+# @noargs
+# @exitcode 0 The SDK files are installed under ${D}.
+# @example
+#   bitbake qairt-sdk -c install
 do_install() {
     install -d ${D}${includedir}
     install -d ${D}${libdir}
@@ -100,12 +119,17 @@ do_install() {
     cp -r ${S}/bin/${PLATFORM_DIR}/* ${D}${bindir}
 }
 
+# @description Make the installed SDK libraries depend on libcdsprpc.so.1 instead of libcdsprpc.so.
 # Some shared libraries depend on the unversioned 'libcdsprpc.so',
 # while the provider (fastrpc) exports the versioned SONAME 'libcdsprpc.so.1'.
 # Rewrite DT_NEEDED from libcdsprpc.so to libcdsprpc.so.1 for affected libraries
 # to avoid packaging/runtime dependency mismatches.
 #
 # Can be dropped once fixed upstream (planned in QAIRT SDK v2.45)
+# @noargs
+# @exitcode 0 No library in ${D}${libdir} has a DT_NEEDED entry for the unversioned libcdsprpc.so.
+# @example
+#   bitbake qairt-sdk -c patch_qairt_needed_soname
 do_patch_qairt_needed_soname() {
     for so in ${D}${libdir}/lib*.so; do
         if readelf -d "$so" 2>/dev/null | grep -q "NEEDED.*libcdsprpc\.so"; then

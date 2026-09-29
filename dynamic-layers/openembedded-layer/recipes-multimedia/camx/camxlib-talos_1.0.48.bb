@@ -14,6 +14,12 @@ DEPENDS += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'virtual/egl virtual/libgles2', '', d)} \
 "
 
+# @description Remove the libiwarp and libhidrx camera components unless opengl and opencl
+# are both in DISTRO_FEATURES.
+# @noargs
+# @exitcode 0 The installed files match the enabled OpenGL and OpenCL support.
+# @example
+#   bitbake camxlib-talos -c install
 do_install:append() {
     if ${@bb.utils.contains('DISTRO_FEATURES', 'opengl opencl', 'false', 'true', d)}; then
         rm -f ${D}${libdir}/camx/${PLATFORM}/camera/components/libiwarp*

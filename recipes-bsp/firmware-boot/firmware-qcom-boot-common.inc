@@ -18,6 +18,14 @@ do_compile[noexec] = "1"
 
 inherit deploy
 
+# @description Deploy the NHLOS boot binaries from each existing QCOM_BOOT_BINARY_DIRS directory.
+# The gpt_*.bin and zeros_*.bin files are deleted from those directories first, so they are not
+# deployed; the top-level .bin, .elf, .fv, .lzma, .mbn, .melf, .xz, and qsahara_*.xml files are
+# copied to ${DEPLOYDIR}/${QCOM_BOOT_IMG_SUBDIR}.
+# @noargs
+# @exitcode 0 The boot binaries are in ${DEPLOYDIR}/${QCOM_BOOT_IMG_SUBDIR}.
+# @example
+#   bitbake firmware-qcom-boot-qcs6490 -c deploy
 do_deploy() {
     install -d ${DEPLOYDIR}/${QCOM_BOOT_IMG_SUBDIR}
     for bootdir in ${QCOM_BOOT_BINARY_DIRS}; do

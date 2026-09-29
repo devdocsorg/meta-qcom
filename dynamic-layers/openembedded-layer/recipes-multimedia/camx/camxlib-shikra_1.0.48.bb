@@ -15,6 +15,11 @@ DEPENDS += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'virtual/egl virtual/libgles2', '', d)} \
 "
 
+# @description Remove the GPU camera node libraries when DISTRO_FEATURES has no opencl.
+# @noargs
+# @exitcode 0 The installed files match the enabled OpenCL support.
+# @example
+#   bitbake camxlib-shikra -c install
 do_install:append() {
     # Remove OpenCL-dependent libraries when opencl is not enabled.
     if ${@bb.utils.contains('DISTRO_FEATURES', 'opencl', 'false', 'true', d)}; then

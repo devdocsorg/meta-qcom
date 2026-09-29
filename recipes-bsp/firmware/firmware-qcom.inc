@@ -40,6 +40,13 @@ FILES:linux-firmware-qcom-${FW_QCOM_NAME}-wifi = "${FW_QCOM_PATH}/wcnss.mbn* ${F
 # Possible values are "xz" and "zst".
 FIRMWARE_COMPRESSION ?= ""
 
+# Give each split firmware package the main package's INSANE_SKIP and check FW_QCOM_NAME.
+#
+# Logs an error when SPLIT_FIRMWARE_PACKAGES is set but FW_QCOM_NAME is still "unset".
+#
+# Example:
+#     BitBake runs this while parsing a recipe that requires this file:
+#     ``bitbake firmware-qcom-rb3gen2``.
 python() {
     pn = d.getVar("PN")
     insanes = d.getVar("INSANE_SKIP:%s" % pn)
@@ -50,6 +57,13 @@ python() {
         bb.error("%s: split firmware-qcom packages engaged, but FW_QCOM_NAME is not defined" % pn)
 }
 
+# @description Compress the installed firmware files as FIRMWARE_COMPRESSION selects.
+# Each regular file under ${D}${FW_QCOM_BASE_PATH} whose name does not end in "jsn" is replaced
+# by a zstd ("zst" or "zstd") or xz ("xz") compressed copy; other values compress nothing.
+# @noargs
+# @exitcode 0 The firmware files are compressed, or FIRMWARE_COMPRESSION selects no compression.
+# @example
+#   bitbake firmware-qcom-rb3gen2 -c install
 do_install:append() {
     for fw in $(find ${D}${FW_QCOM_BASE_PATH} -type f)
     do

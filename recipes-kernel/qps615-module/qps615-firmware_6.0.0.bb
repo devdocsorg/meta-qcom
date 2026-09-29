@@ -10,6 +10,11 @@ SRCREV = "f9b0e1bc0f7c3dfc74ad1a46a87efa56885b9288"
 
 SRC_URI = "git://github.com/TC956X/TC9564_Firmware.git;protocol=https;branch=industrial_limited_tested;tag=V6.0.0"
 
+# @description Install the QPS615 (TC956X) PCIe bridge firmware binary.
+# @noargs
+# @exitcode 0 TC956X_Firmware_PCIeBridge.bin is in ${nonarch_base_libdir}/firmware.
+# @example
+#   bitbake qps615-firmware -c install
 do_install() {
 	install -d ${D}${nonarch_base_libdir}/firmware/
 	install -m 0644 ${S}/Bin/TC956X_Firmware_PCIeBridge.bin ${D}${nonarch_base_libdir}/firmware/

@@ -14,6 +14,11 @@ inherit module
 MAKE_TARGETS = "modules"
 MODULES_INSTALL_TARGET = "modules_install"
 
+# @description Install the camera and camera-kodiak UAPI media headers after the kernel modules.
+# @noargs
+# @exitcode 0 The headers are in ${includedir}/camx/camera/media and camx/camera-kodiak/media.
+# @example
+#   bitbake camx-dlkm -c install
 do_install:append() {
     install -d ${D}${includedir}/camx/camera/media
     install -d ${D}${includedir}/camx/camera-kodiak/media

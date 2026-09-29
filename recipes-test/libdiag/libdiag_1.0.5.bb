@@ -20,6 +20,11 @@ inherit lib_package
 COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:aarch64 = "(.*)"
 
+# @description Install the prebuilt libdiag library, utility programs, headers, and pkg-config file.
+# @noargs
+# @exitcode 0 The files are in ${D}; libdiag.so.1 and libdiag.so link to libdiag.so.${PV}.
+# @example
+#   bitbake libdiag -c install
 do_install() {
     install -d ${D}${bindir}
     install -d ${D}${libdir}/pkgconfig

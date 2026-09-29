@@ -30,6 +30,11 @@ SYSTEMD_SERVICE:${PN} = " \
     sdsprpcd.service \
 "
 
+# @description Create the ${datadir}/qcom directory that the fastrpc package owns.
+# @noargs
+# @exitcode 0 ${D}${datadir}/qcom exists.
+# @example
+#   bitbake fastrpc -c install
 do_install:append() {
     install -d ${D}${datadir}/qcom/
 }

@@ -33,7 +33,12 @@ DEPENDS += "glib-2.0 fastrpc protobuf libxml2"
 COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:aarch64 = "(.*)"
 
+# @description Install the prebuilt CamX libraries, tools, and notices for ${PLATFORM}.
 # Use do_install:append to preserve cmake_do_install
+# @noargs
+# @exitcode 0 The libraries, tools, and notices are installed under ${D}.
+# @example
+#   bitbake camxlib-lemans -c install
 do_install:append() {
     install -d ${D}${libdir}
     install -d ${D}${datadir}/doc/${BPN}

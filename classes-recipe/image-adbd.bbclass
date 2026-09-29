@@ -12,6 +12,11 @@ IMAGE_FEATURES[validitems] += "enable-adbd"
 
 PACKAGE_INSTALL:append = " ${@bb.utils.contains("BBFILE_COLLECTIONS", "openembedded-layer", "android-tools-adbd android-tools-adbd-cmdline", "", d)}"
 
+# @description Create /etc/usb-debugging-enabled in the root filesystem so adbd is enabled.
+# @noargs
+# @exitcode 0 ${IMAGE_ROOTFS}/etc/usb-debugging-enabled exists.
+# @example
+#   bitbake initramfs-test-image -c rootfs
 enable_adbd_at_boot () {
     touch ${IMAGE_ROOTFS}/etc/usb-debugging-enabled
 }
@@ -20,6 +25,13 @@ ROOTFS_POSTPROCESS_COMMAND += "${@bb.utils.contains('IMAGE_FEATURES', [ 'enable-
 
 addtask oelayer_check before do_build
 do_oelayer_check[nostamp] = "1"
+# Warn when the image inherits image-adbd but meta-openembedded is not in the build.
+#
+# The adbd packages come from meta-openembedded (openembedded-layer in
+# BBFILE_COLLECTIONS), so without that layer the image has no adbd.
+#
+# Example:
+#     ``bitbake initramfs-test-image -c oelayer_check``
 python do_oelayer_check() {
     if 'openembedded-layer' not in d.getVar('BBFILE_COLLECTIONS').split():
         bb.warn("'image-adbd' is inherited but the meta-openembedded layer"

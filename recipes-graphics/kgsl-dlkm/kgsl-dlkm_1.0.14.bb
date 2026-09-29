@@ -10,6 +10,11 @@ SRC_URI = " \
     file://kgsl.rules \
 "
 
+# @description Install the KGSL udev rules file after the kernel module is installed.
+# @noargs
+# @exitcode 0 kgsl.rules is installed in ${nonarch_base_libdir}/udev/rules.d.
+# @example
+#   bitbake kgsl-dlkm -c install
 do_install:append() {
       install -m 0644 ${UNPACKDIR}/kgsl.rules -D ${D}${nonarch_base_libdir}/udev/rules.d/kgsl.rules
 }

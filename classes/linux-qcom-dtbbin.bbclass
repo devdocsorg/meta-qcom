@@ -11,6 +11,15 @@ DTBBIN_SIZE ?= "4096"
 
 do_qcom_dtbbin_deploy[depends] += "dosfstools-native:do_populate_sysroot mtools-native:do_populate_sysroot"
 do_qcom_dtbbin_deploy[cleandirs] = "${DTBBIN_DEPLOYDIR}"
+# @description Put each kernel DTB in its own vfat image, dtb-<name>-image.vfat.
+# DTBOs are skipped. Each image is DTBBIN_SIZE KiB and holds the DTB as combined-dtb.dtb.
+# When QCOM_DTB_DEFAULT is multi-dtb, dtb-multi-dtb-image.vfat also holds qclinuxfitImage
+# as qclinux_fit.img. sstate publishes ${DTBBIN_DEPLOYDIR} to ${DEPLOY_DIR_IMAGE}.
+# @noargs
+# @exitcode 0 The images are in ${DTBBIN_DEPLOYDIR}.
+# @exitcode >0 A DTB is missing from the deploy directory, or mkfs.vfat or mcopy failed.
+# @example
+#   bitbake virtual/kernel -c qcom_dtbbin_deploy
 do_qcom_dtbbin_deploy() {
     # Source the DTBs from what do_deploy published: unlike ${D}, which
     # only exists when do_install ran in this build, DEPLOY_DIR_IMAGE is
@@ -47,6 +56,11 @@ SSTATETASKS += "do_qcom_dtbbin_deploy"
 do_qcom_dtbbin_deploy[sstate-inputdirs] = "${DTBBIN_DEPLOYDIR}"
 do_qcom_dtbbin_deploy[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}"
 
+# Restore the output of do_qcom_dtbbin_deploy from the shared state cache.
+#
+# Example:
+#     BitBake runs it in place of do_qcom_dtbbin_deploy when sstate holds the output:
+#     ``bitbake virtual/kernel -c qcom_dtbbin_deploy``
 python do_qcom_dtbbin_deploy_setscene () {
     sstate_setscene(d)
 }

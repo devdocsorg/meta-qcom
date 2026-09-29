@@ -8,6 +8,11 @@ SRC_URI:append:qcom = " \
 # dma-heap rules.
 GROUPADD_PARAM:udev:append:qcom = "; -r dmaheap"
 
+# @description Install the udev rule that gives the dmaheap group access to /dev/dma_heap/system.
+# @noargs
+# @exitcode 0 99-dma-heap.rules is in ${D}${nonarch_libdir}/udev/rules.d.
+# @example
+#   bitbake systemd -c install
 do_install:append:qcom() {
     install -d ${D}${nonarch_libdir}/udev/rules.d
     install -m 0644 ${UNPACKDIR}/99-dma-heap.rules \

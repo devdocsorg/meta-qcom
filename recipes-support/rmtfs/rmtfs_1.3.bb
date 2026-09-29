@@ -11,6 +11,11 @@ SRCREV = "b30a3eb38f9af283f18dbd3c7755653efc52c094"
 SRC_URI = "git://github.com/linux-msm/${BPN}.git;branch=master;protocol=https;tag=v${PV}"
 DEPENDS = "qmic-native qrtr udev"
 
+# @description Install rmtfs and its systemd services with the project's make install.
+# @noargs
+# @exitcode 0 The program and the rmtfs services are installed under ${D}.
+# @example
+#   bitbake rmtfs -c install
 do_install () {
     oe_runmake install DESTDIR=${D} prefix=${prefix} servicedir=${systemd_unitdir}/system
 }

@@ -4,6 +4,11 @@
 
 TOPDIR=$(realpath $(dirname $(readlink -f $0))/..)
 
+# @description Print how to run the script with a script path, then stop the script.
+# @noargs
+# @exitcode 1 Always; the script exits after printing the usage message.
+# @example
+#   _help
 _help(){
     echo "The script path argument is missing, please run it with:"
     echo " $0 /path/to/script"

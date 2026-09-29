@@ -10,10 +10,20 @@ SRC_URI = "git://github.com/andersson/mybw;protocol=https;branch=main \
 
 PV = "0.0+git"
 
+# @description Build mybw with the project's Makefile.
+# @noargs
+# @exitcode 0 The mybw program is built.
+# @example
+#   bitbake mybw -c compile
 do_compile () {
 	oe_runmake
 }
 
+# @description Install the mybw program.
+# @noargs
+# @exitcode 0 mybw is in ${bindir}.
+# @example
+#   bitbake mybw -c install
 do_install () {
 	install -d ${D}${bindir}
 	install -m 0755 mybw ${D}${bindir}/mybw

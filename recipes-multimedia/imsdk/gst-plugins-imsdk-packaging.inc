@@ -6,6 +6,10 @@ require recipes-multimedia/gstreamer/gstreamer1.0-plugins-packaging.inc
 
 PACKAGESPLITFUNCS =+ "split_imsdk_module_packages"
 
+# Put the runtime modules of each IMSDK plugin into a ${PN}-<plugin>-modules package.
+#
+# Example:
+#     PACKAGESPLITFUNCS runs it during packaging: ``bitbake gst-plugins-imsdk-base -c package``.
 python split_imsdk_module_packages () {
     imsdk_root = d.expand('${libdir}/imsdk')
 

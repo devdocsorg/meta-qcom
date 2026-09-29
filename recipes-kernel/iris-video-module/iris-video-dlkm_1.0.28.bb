@@ -19,6 +19,12 @@ MAKE_TARGETS = "modules"
 COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:aarch64 = "(.*)"
 
+# @description Install the Venus and Vidc modprobe blacklist files after the module install.
+# update-alternatives picks one of them as ${sysconfdir}/modprobe.d/blacklist-video.conf.
+# @noargs
+# @exitcode 0 Both blacklist-video.conf.* files are in ${sysconfdir}/modprobe.d.
+# @example
+#   bitbake iris-video-dlkm -c install
 do_install:append() {
     install -d ${D}${sysconfdir}/modprobe.d
     install -Dm 0644 ${UNPACKDIR}/blacklist-video.conf.venus \

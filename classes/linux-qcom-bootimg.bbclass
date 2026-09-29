@@ -17,6 +17,14 @@ QIMG_DEPLOYDIR = "${WORKDIR}/qcom_deploy-${PN}"
 # INITRAMFS_IMAGE = "initramfs-kerneltest-image"
 #
 
+# Add the initramfs and external device tree dependencies of do_qcom_img_deploy.
+#
+# When INITRAMFS_IMAGE is set, do_qcom_img_deploy waits for that image. When
+# PREFERRED_PROVIDER_virtual/dtb is set, it waits for virtual/dtb and
+# EXTERNAL_KERNEL_DEVICETREE points at the provider's device trees in the recipe sysroot.
+#
+# Example:
+#     BitBake runs it while parsing the kernel recipe: ``bitbake virtual/kernel``.
 python __anonymous () {
     if d.getVar('INITRAMFS_IMAGE') != '':
         d.appendVarFlag('do_qcom_img_deploy', 'depends', ' ${INITRAMFS_IMAGE}:do_image_complete')
@@ -27,6 +35,105 @@ python __anonymous () {
         d.setVar('EXTERNAL_KERNEL_DEVICETREE', "${RECIPE_SYSROOT}/boot/devicetree")
 }
 
+# @function do_qcom_img_deploy.make_dtb_image
+# Build the boot images for one device tree, with the DTB appended to the kernel.
+#
+# Writes boot-<dtb>-<kernel image name>.img with QCOM_BOOTIMG_ROOTFS as the root device,
+# plus an initramfs variant when INITRAMFS_IMAGE is set and boot-sd-* variants when
+# SD_QCOM_BOOTIMG_ROOTFS is set. External device trees add -ext-dtb to the names. The
+# first image without an initramfs is also linked as boot-<kernel link name>.img, and the
+# first SD one as boot-sd-<kernel link name>.img.
+#
+# Args:
+#     dtbf (str): Device tree entry from KERNEL_DEVICETREE or QCOM_BOOTIMG_DEVICETREE;
+#         only its base name is used.
+#     external (bool): True to read the DTB from EXTERNAL_KERNEL_DEVICETREE instead of
+#         the kernel's deploy directory.
+#
+# Raises:
+#     bb.BBHandledException: bb.fatal stops the task when QCOM_BOOTIMG_ROOTFS is not set.
+#
+# Example:
+#     ``make_dtb_image(dtbf, external=True)`` for each entry of QCOM_BOOTIMG_DEVICETREE.
+
+# @function do_qcom_img_deploy.make_dtb_image.getVarDTB
+# Return a variable's value for the current device tree.
+#
+# Args:
+#     name (str): Variable name.
+#
+# Returns:
+#     str: The variable's flag named after the DTB, such as
+#     ``QCOM_BOOTIMG_ROOTFS[sdm845-db845c]``, when set; otherwise the variable's value,
+#     or None when neither is set.
+#
+# Example:
+#     ``getVarDTB("QCOM_BOOTIMG_ROOTFS")``
+
+# @function do_qcom_img_deploy.make_dtb_image.make_image_internal
+# Run mkbootimg to write one boot image, then point a symlink at it.
+#
+# The kernel is ${WORKDIR}/kernel-dtb. The command line is
+# "[root=<rootfs> ]rw rootwait <consoles> <KERNEL_CMDLINE_EXTRA>", and the page size
+# and base address come from QCOM_BOOTIMG_PAGE_SIZE and QCOM_BOOTIMG_KERNEL_BASE.
+#
+# Args:
+#     output (str): Path of the boot image to write.
+#     output_link (str): Path of the symlink to create or replace.
+#     rootfs (str): Root device for root= on the command line; empty leaves root= out.
+#     initrd (str): Ramdisk path; defaults to the placeholder ${WORKDIR}/initrd.img.
+#
+# Raises:
+#     subprocess.CalledProcessError: mkbootimg fails.
+#
+# Example:
+#     ``make_image_internal(output, output_link, rootfs)``
+
+# @function do_qcom_img_deploy.make_dtb_image.make_image
+# Build a boot image for the current device tree with the placeholder ramdisk.
+#
+# Args:
+#     template (str): File name pattern for the DTB name and the kernel image name,
+#         such as "boot-%s-%s.img"; the symlink uses the kernel link name.
+#     rootfs (str): Root device for root= on the command line.
+#
+# Returns:
+#     str: Path of the boot image.
+#
+# Example:
+#     ``output = make_image(template, rootfs)``
+
+# @function do_qcom_img_deploy.make_dtb_image.make_initramfs_image
+# Build a boot image for the current device tree with an initramfs as its ramdisk.
+#
+# Besides the link named with the kernel link name, it links a name that has
+# "initramfs" in place of the initramfs image name.
+#
+# Args:
+#     template (str): File name pattern for the initramfs image name, the DTB name, and
+#         the kernel image name, such as "boot-%s-%s-%s.img".
+#     rootfs (str): Root device for root= on the command line.
+#     initrd (str): Path of the initramfs archive.
+#     initrd_image_name (str): Initramfs image name used in the file name.
+#
+# Returns:
+#     str: Path of the boot image.
+#
+# Example:
+#     ``make_initramfs_image(template, rootfs, initrd, d.getVar("INITRAMFS_IMAGE"))``
+
+# Build Android boot images with mkbootimg for each device tree the kernel is built with.
+#
+# Each device tree in KERNEL_DEVICETREE and QCOM_BOOTIMG_DEVICETREE gets its own images.
+# They are written to ${QIMG_DEPLOYDIR}, which sstate publishes to ${DEPLOY_DIR_IMAGE}.
+#
+# Raises:
+#     bb.BBHandledException: bb.fatal stops the task when the initramfs image is missing,
+#         ARCH is not arm or arm64, neither KERNEL_DEVICETREE nor QCOM_BOOTIMG_DEVICETREE
+#         is set, or QCOM_BOOTIMG_DEVICETREE is set without PREFERRED_PROVIDER_virtual/dtb.
+#
+# Example:
+#     ``bitbake virtual/kernel -c qcom_img_deploy``
 python do_qcom_img_deploy() {
     import shutil
     import subprocess
@@ -177,6 +284,11 @@ SSTATETASKS += "do_qcom_img_deploy"
 do_qcom_img_deploy[sstate-inputdirs] = "${QIMG_DEPLOYDIR}"
 do_qcom_img_deploy[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}"
 
+# Restore the output of do_qcom_img_deploy from the shared state cache.
+#
+# Example:
+#     BitBake runs it in place of do_qcom_img_deploy when sstate holds the output:
+#     ``bitbake virtual/kernel -c qcom_img_deploy``
 python do_qcom_img_deploy_setscene () {
     sstate_setscene(d)
 }

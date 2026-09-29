@@ -12,6 +12,11 @@ SRC_URI = " \
 
 PV = "0.0+"
 
+# @description Install pil-squasher and pil-splitter with the project's make install target.
+# @noargs
+# @exitcode 0 Both programs are in ${D}${prefix}/bin.
+# @example
+#   bitbake pil-squasher -c install
 do_install () {
     oe_runmake install DESTDIR=${D} prefix=${prefix}
 }

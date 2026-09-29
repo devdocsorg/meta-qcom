@@ -12,10 +12,20 @@ DEPENDS = "qrtr udev"
 RPROVIDES:${PN} = "virtual-diag-router"
 RCONFLICTS:${PN} = "diag-router"
 
+# @description Build diag with the project's Makefile.
+# @noargs
+# @exitcode 0 The diag programs are built.
+# @example
+#   bitbake diag -c compile
 do_compile () {
 	oe_runmake
 }
 
+# @description Install diag with the project's make install.
+# @noargs
+# @exitcode 0 The diag files are installed under ${D}.
+# @example
+#   bitbake diag -c install
 do_install () {
 	oe_runmake install 'DESTDIR=${D}'
 }

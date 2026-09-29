@@ -24,6 +24,12 @@ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_DEFAULT_DEPS = "1"
 
+# @description Install the DSP binaries and configuration files with the project's make install.
+# The dsp-binaries Makefile places them under share/qcom in ${D}.
+# @noargs
+# @exitcode 0 The DSP binaries and conf.d files are under ${D}.
+# @example
+#   bitbake hexagon-dsp-binaries -c install
 do_install () {
 	oe_runmake install 'DESTDIR=${D}'
 }
@@ -197,6 +203,10 @@ RDEPENDS:${PN}-thundercomm-rb5-sdsp = "linux-firmware-qcom-sm8250-thundercomm-rb
 RDEPENDS:${PN}-thundercomm-rubikpi3-adsp = "linux-firmware-qcom-qcs6490-thundercomm-rubikpi3-audio (= 1:${PV})"
 RDEPENDS:${PN}-thundercomm-rubikpi3-cdsp = "${PN}-thundercomm-rb3gen2-cdsp (= ${PV})"
 
+# Make each DSP binary package depend on its board's configuration package.
+#
+# Example:
+#     BitBake runs this while parsing the recipe: ``bitbake hexagon-dsp-binaries``.
 python() {
     for p in d.getVar('PACKAGES').split():
         if not p.endswith('dsp'):
@@ -207,6 +217,23 @@ python() {
             d.prependVar('RDEPENDS:' + p, cfg + ' ')
 }
 
+# @function populate_packages:prepend.fix_cfg_package
+# Set the MIT licence on a configuration package that do_split_packages creates.
+#
+# Args:
+#     fn (str): Path of the file that matched, relative to the split directory.
+#     pkg (str): Name of the package created for the file.
+#     file_regex (str): Regular expression that matched the file.
+#     output_pattern (str): Package name pattern.
+#     group (str): Text captured by the regular expression.
+#
+# Example:
+#     do_split_packages calls it as the ``hook`` for each configuration file.
+
+# Split each board's DSP configuration file into its own package.
+#
+# Example:
+#     ``bitbake hexagon-dsp-binaries -c package`` runs it before packaging.
 python populate_packages:prepend () {
     def fix_cfg_package(fn, pkg, file_regex, output_pattern, group):
         d.setVar('LICENSE:' + pkg, 'MIT')
@@ -339,6 +366,14 @@ SKIP_FILEDEPS:${PN}-thundercomm-rb5-cdsp = "1"
 
 WARN_QA:append = " hexagon-dsp-binaries-symlink-deps"
 QAPKGTEST[hexagon-dsp-binaries-symlink-deps] = "package_qa_check_symlinks"
+# Report symlinks in a package whose targets are missing or are in a package it does not depend on.
+#
+# Args:
+#     pkg (str): Name of the package to check.
+#     d (bb.data_smart.DataSmart): The recipe's datastore.
+#
+# Example:
+#     The package QA runs it for each package: ``bitbake hexagon-dsp-binaries -c package_qa``.
 def package_qa_check_symlinks(pkg, d):
     packages = set((d.getVar('PACKAGES') or '').split())
 

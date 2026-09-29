@@ -12,6 +12,11 @@ PV = "0.0+git"
 
 inherit allarch
 
+# @description Install the bootrr test scripts with the project's make install.
+# @noargs
+# @exitcode 0 The bootrr files are installed under ${D}.
+# @example
+#   bitbake bootrr -c install
 do_install() {
 	oe_runmake install 'DESTDIR=${D}'
 }

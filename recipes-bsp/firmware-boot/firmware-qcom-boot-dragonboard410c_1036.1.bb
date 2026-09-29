@@ -14,11 +14,23 @@ include firmware-qcom-boot-common.inc
 
 DEPENDS = "lk-db410c"
 
+# @description Make allarch's handler return at once, so PACKAGE_ARCH is not set to "all".
 # Disable archall as we depend on arch-specific package
+# @noargs
+# @exitcode 0 PACKAGE_ARCH keeps its architecture-specific default.
+# @example
+#   bitbake -e firmware-qcom-boot-dragonboard410c | grep '^PACKAGE_ARCH='
 allarch_package_arch_handler:prepend() {
     return
 }
 
+# @description Deploy the Dragonboard 410c boot files, replacing the common do_deploy.
+# The bootloaders-linux .mbn files, the CDT, the EFS seed image, the eMMC firehose programmer,
+# and the LICENSE file are copied to ${DEPLOYDIR}/${QCOM_BOOT_IMG_SUBDIR}.
+# @noargs
+# @exitcode 0 The boot files are in ${DEPLOYDIR}/${QCOM_BOOT_IMG_SUBDIR}.
+# @example
+#   bitbake firmware-qcom-boot-dragonboard410c -c deploy
 do_deploy() {
     install -d ${DEPLOYDIR}/${QCOM_BOOT_IMG_SUBDIR}
     find "${S}/bootloaders-linux" -maxdepth 1 -name '*.mbn' -exec install -m 0644 {} ${DEPLOYDIR}/${QCOM_BOOT_IMG_SUBDIR} \;

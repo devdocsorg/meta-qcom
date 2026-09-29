@@ -20,6 +20,13 @@ S = "${UNPACKDIR}"
 
 do_compile[noexec] = "1"
 
+# @description Install the units, script, and udev rule that mount the persist partition.
+# This installs var-lib-tee.mount, format-tee-partition.service (with @sbindir@ replaced by
+# ${sbindir}), check-tee-partition-fs.sh in ${sbindir}, and persist.rules as 99-persist.rules.
+# @noargs
+# @exitcode 0 The files are under ${D}.
+# @example
+#   bitbake mount-tee-partition -c install
 do_install() {
     install -Dm 0644 ${UNPACKDIR}/var-lib-tee.mount \
             ${D}${systemd_system_unitdir}/var-lib-tee.mount

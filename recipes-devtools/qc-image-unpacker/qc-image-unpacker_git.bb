@@ -18,6 +18,11 @@ S = "${UNPACKDIR}/${BP}/src"
 
 DEPENDS = "zlib"
 
+# @description Install the qc_image_unpacker program into ${bindir}.
+# @noargs
+# @exitcode 0 qc_image_unpacker is in ${D}${bindir}.
+# @example
+#   bitbake qc-image-unpacker -c install
 do_install() {
     install -d ${D}${bindir}
     install -m 0755 ${S}/qc_image_unpacker ${D}${bindir} 

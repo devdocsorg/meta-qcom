@@ -20,10 +20,15 @@ DEPENDS += " \
     python3-requests-native \
 "
 
+# @description Install the default FvUpdate.xml under ${datadir}/cbsp-boot-utilities.
 # FvUpdate.xml ships alongside pyproject.toml (not inside the Python
 # package), so poetry-core does not install it. Stage it explicitly so
 # qcom-capsule.bbclass can fall back to a default when no board-specific
 # override is provided via SRC_URI:append.
+# @noargs
+# @exitcode 0 FvUpdate.xml is installed in ${datadir}/cbsp-boot-utilities.
+# @example
+#   bitbake cbsp-boot-utilities-native -c install
 do_install:append() {
     install -d "${D}${datadir}/cbsp-boot-utilities"
     install -m 0644 "${S}/FvUpdate.xml" "${D}${datadir}/cbsp-boot-utilities/"
