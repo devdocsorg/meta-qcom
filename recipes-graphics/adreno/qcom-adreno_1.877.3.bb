@@ -53,6 +53,11 @@ RDEPENDS:${PN} = " \
 
 ALLOW_EMPTY:${PN} = "1"
 
+# @description Install the Adreno libraries and configuration, keeping only the EGL, Vulkan, and OpenCL parts that DISTRO_FEATURES enables.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install qcom-adreno
 do_install () {
     install -d ${D}/${libdir}
     cp -r ${S}/usr/lib/* ${D}/${libdir}/

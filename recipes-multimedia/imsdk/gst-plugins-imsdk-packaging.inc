@@ -6,6 +6,16 @@ require recipes-multimedia/gstreamer/gstreamer1.0-plugins-packaging.inc
 
 PACKAGESPLITFUNCS =+ "split_imsdk_module_packages"
 
+# Split each plugin's runtime modules under libdir/imsdk into a ``${PN}-<plugin>-modules`` package.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The recipe datastore.
+#
+# Returns:
+#     None
+#
+# Example:
+#     ``bitbake -c package gst-plugins-imsdk-base``
 python split_imsdk_module_packages () {
     imsdk_root = d.expand('${libdir}/imsdk')
 

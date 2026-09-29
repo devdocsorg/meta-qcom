@@ -30,6 +30,11 @@ PV = "${LK_PV}+git"
 
 DEPENDS += "qtestsign-native"
 
+# @description Sign the LK image with qtestsign as emmc_appsboot_signed.mbn.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c compile lk-db410c
 do_compile:append() {
     export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1
     qtestsign -v3 aboot -o ${S}/build-${LK_SOC}/emmc_appsboot_signed.mbn ${S}/build-${LK_SOC}/emmc_appsboot.mbn
@@ -39,6 +44,11 @@ do_compile:append() {
 
 inherit deploy
 
+# @description Deploy the unsigned and signed LK images under LK_MACHINE.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c deploy lk-db410c
 do_deploy() {
     install -d ${DEPLOYDIR}/${LK_MACHINE}
     install -D -p -m644 ${S}/build-${LK_SOC}/emmc_appsboot.mbn ${DEPLOYDIR}/${LK_MACHINE}/emmc_appsboot${LK_FLAVOUR}-unsigned.mbn

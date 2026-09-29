@@ -28,8 +28,13 @@ if [ ! -d "$GADGET_PATH" ]; then
     exit 1
 fi
 
-# Return a normalized rank for a speed string.
+# @description Return a normalized rank for a speed string.
 # Higher number == better.
+# @arg $1 string A maximum_speed value, such as super-speed.
+# @stdout The rank, from 0 for an unknown speed to 5 for super-speed-plus.
+# @exitcode 0 Always.
+# @example
+#   speed_rank high-speed
 speed_rank() {
     # Kernel ABI guarantees specific lowercase values
     case "$1" in
@@ -42,7 +47,12 @@ speed_rank() {
     esac
 }
 
-# Read maximum speed capability for a UDC.
+# @description Read maximum speed capability for a UDC.
+# @arg $1 string Path to the UDC in /sys/class/udc.
+# @stdout The UDC's maximum_speed, or an empty line when it has none.
+# @exitcode 0 Always.
+# @example
+#   read_max_speed /sys/class/udc/a600000.usb
 read_max_speed() {
     p="$1"
     if [ -f "$p/maximum_speed" ]; then

@@ -9,6 +9,11 @@
 # intended to only have a leading slash, no trailing slash e.g. '/EFI', or just empty, ''
 ESPFOLDER ?= "/EFI"
 
+# @description Copy the unified kernel image into EFI/Linux of the ESP image's root filesystem.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c ukiesp esp-qcom-image
 do_ukiesp() {
 	mkdir -p ${IMAGE_ROOTFS}${ESPFOLDER}/EFI/Linux
 

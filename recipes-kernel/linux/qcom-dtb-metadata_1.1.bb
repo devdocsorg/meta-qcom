@@ -16,6 +16,11 @@ do_configure[noexec] = "1"
 
 inherit deploy
 
+# @description Deploy qcom-metadata.dtb.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c deploy qcom-dtb-metadata
 do_deploy() {
     install -m 0644 ${B}/qcom-metadata.dtb -D ${DEPLOYDIR}/qcom-metadata.dtb
 }

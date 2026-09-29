@@ -14,6 +14,11 @@ DEPENDS += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'virtual/egl virtual/libgles2', '', d)} \
 "
 
+# @description Drop the Talos warp and HIDRX components unless both OpenGL and OpenCL are enabled.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install camxlib-talos
 do_install:append() {
     if ${@bb.utils.contains('DISTRO_FEATURES', 'opengl opencl', 'false', 'true', d)}; then
         rm -f ${D}${libdir}/camx/${PLATFORM}/camera/components/libiwarp*

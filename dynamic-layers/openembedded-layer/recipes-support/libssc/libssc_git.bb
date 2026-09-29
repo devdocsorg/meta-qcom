@@ -17,6 +17,11 @@ GIR_MESON_OPTION = ""
 
 DEPENDS = "glib-2.0 libqmi protobuf-c protobuf-c-native"
 
+# @description Remove the Python mock server that the libssc build installs.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install libssc
 do_install:append() {
     # no need to ship mocking server
     rm -rf ${D}${libdir}/python*

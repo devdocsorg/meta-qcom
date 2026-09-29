@@ -43,6 +43,12 @@ do_image_qcomflash[depends] += "${@ ['', '${QCOM_PARTITION_CONF}:do_deploy'][d.g
 				${@'abl2esp:do_deploy' if d.getVar('ABL_SIGNATURE_VERSION') else  ''}"
 IMAGE_TYPEDEP:qcomflash += "${IMAGE_QCOMFLASH_FS_TYPE}"
 
+# @description Copy the GPT, zeros, rawprogram, patch, and contents.xml partition files from one folder to another.
+# @arg $1 string Folder holding the partition files.
+# @arg $2 string Destination folder.
+# @exitcode 0 The files are copied; a missing GPT or XML file fails the calling task.
+# @example
+#   deploy_partition_files ${DEPLOY_DIR_IMAGE}/${QCOM_PARTITION_FILES_SUBDIR} .
 deploy_partition_files() {
     for pbin in $1/gpt_main*.bin $1/gpt_backup*.bin \
                 $1/gpt_both*.bin $1/zeros_*.bin \
@@ -55,6 +61,11 @@ deploy_partition_files() {
     fi
 }
 
+# @description Assemble the qcomflash folder and tarball that the QDL tool flashes: ESP, DTB, boot, and root filesystem images, partition tables, boot firmware, and any capsule.
+# @noargs
+# @exitcode 0 The folder and .qcomflash.tar.gz are written; any failing command fails the image task.
+# @example
+#   bitbake core-image-base
 create_qcomflash_pkg() {
     # esp image
     [ -n "${QCOM_ESP_FILE}" ] && cp -l -L ${QCOM_ESP_FILE} efi.bin

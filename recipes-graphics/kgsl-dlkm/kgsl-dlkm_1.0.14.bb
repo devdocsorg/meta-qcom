@@ -10,6 +10,11 @@ SRC_URI = " \
     file://kgsl.rules \
 "
 
+# @description Install the kgsl udev rule.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install kgsl-dlkm
 do_install:append() {
       install -m 0644 ${UNPACKDIR}/kgsl.rules -D ${D}${nonarch_base_libdir}/udev/rules.d/kgsl.rules
 }

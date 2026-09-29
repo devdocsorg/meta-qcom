@@ -10,10 +10,20 @@ SRC_URI = "git://github.com/andersson/mybw;protocol=https;branch=main \
 
 PV = "0.0+git"
 
+# @description Build with the source's Makefile.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c compile mybw
 do_compile () {
 	oe_runmake
 }
 
+# @description Install mybw.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install mybw
 do_install () {
 	install -d ${D}${bindir}
 	install -m 0755 mybw ${D}${bindir}/mybw

@@ -60,12 +60,31 @@ class QcomFitImageTests(OESelftestTestCase):
 
     @staticmethod
     def _create_dummy_file(path, size=128):
-        """Create a small random binary file (enough to satisfy mkimage)."""
+        """Create a small random binary file (enough to satisfy mkimage).
+
+        Args:
+            path (str): File to create; missing parent folders are created.
+            size (int): Number of random bytes. Defaults to 128.
+
+        Returns:
+            None
+
+        Example:
+            ``QcomFitImageTests._create_dummy_file(os.path.join(dtb_dir, "board.dtb"))``
+        """
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, 'wb') as f:
             f.write(os.urandom(size))
 
     def _get_test_dir(self):
+        """Return an empty working folder for the current test.
+
+        Returns:
+            str: ``$BUILDDIR/qcom-fitimage-test/<test name>``, recreated empty.
+
+        Example:
+            ``test_dir = self._get_test_dir()``
+        """
         topdir = os.environ['BUILDDIR']
         d = os.path.join(topdir, 'qcom-fitimage-test', self._testMethodName)
         if os.path.exists(d):
@@ -77,16 +96,19 @@ class QcomFitImageTests(OESelftestTestCase):
         """Replicate dtb-fit-image.bbclass logic and produce an ITS file.
 
         Args:
-            kernel_devicetree: Space-separated DTB/DTBO filenames
+            kernel_devicetree (str): Space-separated DTB/DTBO filenames
                 (the value of KERNEL_DEVICETREE).
-            fit_dtb_compatible: Dict mapping encoded compatible strings
+            fit_dtb_compatible (dict[str, str]): Dict mapping encoded compatible strings
                 (commas replaced with underscores, e.g. ``"qcom_board-iot"``)
                 to DTB+overlay combo strings (e.g. ``"board"`` or
                 ``"board overlay"``). (the FIT_DTB_COMPATIBLE flags)
 
         Returns:
-            (its_path, parsed) where *parsed* is the dict returned by
+            tuple[str, dict]: (its_path, parsed) where *parsed* is the dict returned by
             ``_parse_its_file``.
+
+        Example:
+            ``_, parsed = self._build_qcom_fitimage("board.dtb", {"qcom_board-iot": "board"})``
         """
         # Lazy import: layer lib paths are only on sys.path after
         # _add_layer_libs() which runs *after* test module discovery.
@@ -172,6 +194,15 @@ class QcomFitImageTests(OESelftestTestCase):
 
         Only properties of depth-3 nodes (direct children of ``images``
         or ``configurations``) are captured.
+
+        Args:
+            its_path (str): ITS file to read.
+
+        Returns:
+            dict: ``images`` and ``configurations`` maps from node name to properties.
+
+        Example:
+            ``parsed = QcomFitImageTests._parse_its_file(its_path)``
         """
         images = {}
         configs = {}
@@ -219,13 +250,33 @@ class QcomFitImageTests(OESelftestTestCase):
     # ------------------------------------------------------------------
 
     def _get_config_compats(self, parsed):
-        """Return the list of compatible strings across all configs."""
+        """Return the list of compatible strings across all configs.
+
+        Args:
+            parsed (dict): A result of ``_parse_its_file``.
+
+        Returns:
+            list[str]: The ``compatible`` value of each configuration that has one.
+
+        Example:
+            ``compats = self._get_config_compats(parsed)``
+        """
         return [p['compatible']
                 for p in parsed['configurations'].values()
                 if 'compatible' in p]
 
     def _assert_fdt_linkage(self, parsed):
-        """Every ``fdt`` ref in every config must name an existing image."""
+        """Every ``fdt`` ref in every config must name an existing image.
+
+        Args:
+            parsed (dict): A result of ``_parse_its_file``.
+
+        Raises:
+            AssertionError: A configuration has no ``fdt`` or names a missing image.
+
+        Example:
+            ``self._assert_fdt_linkage(parsed)``
+        """
         img_names = set(parsed['images'].keys())
         for cname, cprops in parsed['configurations'].items():
             fdt = cprops.get('fdt')
@@ -237,7 +288,17 @@ class QcomFitImageTests(OESelftestTestCase):
                     f"Config {cname}: fdt '{ref}' not found in images")
 
     def _assert_metadata_excluded_from_configs(self, parsed):
-        """qcom-metadata must never appear in any configuration node."""
+        """qcom-metadata must never appear in any configuration node.
+
+        Args:
+            parsed (dict): A result of ``_parse_its_file``.
+
+        Raises:
+            AssertionError: A configuration references fdt-qcom-metadata.dtb.
+
+        Example:
+            ``self._assert_metadata_excluded_from_configs(parsed)``
+        """
         for cname, cprops in parsed['configurations'].items():
             fdt = cprops.get('fdt', '')
             refs = fdt if isinstance(fdt, list) else [fdt]
@@ -250,7 +311,11 @@ class QcomFitImageTests(OESelftestTestCase):
     # ==================================================================
 
     def test_single_dtb_single_compat(self):
-        """Single DTB with one compatible string."""
+        """Single DTB with one compatible string.
+
+        Example:
+            ``oe-selftest -r qcom_fitimage.QcomFitImageTests.test_single_dtb_single_compat``
+        """
         _, p = self._build_qcom_fitimage(
             "myboard.dtb",
             {"qcom_myboard-idp": "myboard"})
@@ -273,7 +338,11 @@ class QcomFitImageTests(OESelftestTestCase):
         self._assert_metadata_excluded_from_configs(p)
 
     def test_single_dtb_multi_compat(self):
-        """Single DTB with multiple compatibles -> one config per compat."""
+        """Single DTB with multiple compatibles -> one config per compat.
+
+        Example:
+            ``oe-selftest -r qcom_fitimage.QcomFitImageTests.test_single_dtb_multi_compat``
+        """
         _, p = self._build_qcom_fitimage(
             "qcs6490-rb3gen2.dtb",
             {
@@ -296,7 +365,11 @@ class QcomFitImageTests(OESelftestTestCase):
         self._assert_metadata_excluded_from_configs(p)
 
     def test_dtb_with_single_overlay(self):
-        """Base DTB + overlay -> base config + overlay config with fdt list."""
+        """Base DTB + overlay -> base config + overlay config with fdt list.
+
+        Example:
+            ``oe-selftest -r qcom_fitimage.QcomFitImageTests.test_dtb_with_single_overlay``
+        """
         _, p = self._build_qcom_fitimage(
             "qcs6490-rb3gen2.dtb qcs6490-rb3gen2-vision-mezzanine.dtbo",
             {
@@ -327,7 +400,11 @@ class QcomFitImageTests(OESelftestTestCase):
         self._assert_metadata_excluded_from_configs(p)
 
     def test_dtb_with_multiple_overlays(self):
-        """Base DTB + multiple stacked overlays."""
+        """Base DTB + multiple stacked overlays.
+
+        Example:
+            ``oe-selftest -r qcom_fitimage.QcomFitImageTests.test_dtb_with_multiple_overlays``
+        """
         _, p = self._build_qcom_fitimage(
             "lemans-evk.dtb lemans-evk-camx.dtbo "
             "lemans-el2.dtbo lemans-camx-el2.dtbo",
@@ -367,7 +444,11 @@ class QcomFitImageTests(OESelftestTestCase):
         self._assert_metadata_excluded_from_configs(p)
 
     def test_metadata_node_excluded_from_configs(self):
-        """Metadata DTB appears as image (type=qcom_metadata) but never in configs."""
+        """Metadata DTB appears as image (type=qcom_metadata) but never in configs.
+
+        Example:
+            ``oe-selftest -r qcom_fitimage.QcomFitImageTests.test_metadata_node_excluded_from_configs``
+        """
         _, p = self._build_qcom_fitimage(
             "simple.dtb",
             {"qcom_simple-evk": "simple"})
@@ -383,7 +464,11 @@ class QcomFitImageTests(OESelftestTestCase):
             self.assertTrue(len(conf['compatible']) > 0)
 
     def test_overlay_filtering_by_kernel_devicetree(self):
-        """Overlay combos whose DTBOs are absent from KERNEL_DEVICETREE are skipped."""
+        """Overlay combos whose DTBOs are absent from KERNEL_DEVICETREE are skipped.
+
+        Example:
+            ``oe-selftest -r qcom_fitimage.QcomFitImageTests.test_overlay_filtering_by_kernel_devicetree``
+        """
         _, p = self._build_qcom_fitimage(
             "base.dtb",            # overlay DTBO not listed
             {
@@ -399,7 +484,11 @@ class QcomFitImageTests(OESelftestTestCase):
         self.assertEqual(len(p['images']), 2)   # metadata + base
 
     def test_fdt_linkage_validity(self):
-        """Every fdt reference in every config matches an existing image."""
+        """Every fdt reference in every config matches an existing image.
+
+        Example:
+            ``oe-selftest -r qcom_fitimage.QcomFitImageTests.test_fdt_linkage_validity``
+        """
         _, p = self._build_qcom_fitimage(
             "board.dtb camx.dtbo el2.dtbo",
             {
@@ -416,7 +505,11 @@ class QcomFitImageTests(OESelftestTestCase):
         self.assertIn('fdt-el2.dtbo', p['images'])
 
     def test_compatible_string_format(self):
-        """Compatible strings use valid metadata suffixes (qcom,<soc>-<board>[-…])."""
+        """Compatible strings use valid metadata suffixes (qcom,<soc>-<board>[-…]).
+
+        Example:
+            ``oe-selftest -r qcom_fitimage.QcomFitImageTests.test_compatible_string_format``
+        """
         _, p = self._build_qcom_fitimage(
             "qcs6490-rb3gen2.dtb qcs6490-rb3gen2-vision-mezzanine.dtbo",
             {
@@ -440,7 +533,11 @@ class QcomFitImageTests(OESelftestTestCase):
                     f"Config {cname}: unknown suffix '{part}' in '{compat}'")
 
     def test_dtbo_no_standalone_config(self):
-        """Overlay .dtbo files must never be the sole fdt in a config."""
+        """Overlay .dtbo files must never be the sole fdt in a config.
+
+        Example:
+            ``oe-selftest -r qcom_fitimage.QcomFitImageTests.test_dtbo_no_standalone_config``
+        """
         _, p = self._build_qcom_fitimage(
             "base.dtb overlay1.dtbo overlay2.dtbo",
             {
@@ -459,7 +556,11 @@ class QcomFitImageTests(OESelftestTestCase):
                     f"Config {cname}: first fdt '{fdt[0]}' must be a .dtb")
 
     def test_multiple_base_dtbs_with_overlays(self):
-        """Multiple base DTBs each with their own overlay sets."""
+        """Multiple base DTBs each with their own overlay sets.
+
+        Example:
+            ``oe-selftest -r qcom_fitimage.QcomFitImageTests.test_multiple_base_dtbs_with_overlays``
+        """
         _, p = self._build_qcom_fitimage(
             "boardA.dtb boardA-cam.dtbo boardB.dtb boardB-cam.dtbo",
             {
@@ -495,7 +596,11 @@ class QcomFitImageTests(OESelftestTestCase):
         self._assert_metadata_excluded_from_configs(p)
 
     def test_base_dtb_only_in_overlay(self):
-        """Base DTB with no standalone compatible, used only via overlays."""
+        """Base DTB with no standalone compatible, used only via overlays.
+
+        Example:
+            ``oe-selftest -r qcom_fitimage.QcomFitImageTests.test_base_dtb_only_in_overlay``
+        """
         _, p = self._build_qcom_fitimage(
             "base.dtb overlay.dtbo",
             {
@@ -515,7 +620,11 @@ class QcomFitImageTests(OESelftestTestCase):
         self._assert_metadata_excluded_from_configs(p)
 
     def test_mkimage_compile(self):
-        """Compile the ITS with mkimage and verify with dumpimage."""
+        """Compile the ITS with mkimage and verify with dumpimage.
+
+        Example:
+            ``oe-selftest -r qcom_fitimage.QcomFitImageTests.test_mkimage_compile``
+        """
         its_path, p = self._build_qcom_fitimage(
             "testboard.dtb testboard-cam.dtbo",
             {
@@ -587,7 +696,15 @@ class QcomFitImageIntegrationTests(OESelftestTestCase):
     # ------------------------------------------------------------------
 
     def _get_bb_vars(self):
-        """Retrieve bitbake variables needed by integration tests."""
+        """Retrieve bitbake variables needed by integration tests.
+
+        Returns:
+            dict[str, str]: DEPLOY_DIR_IMAGE, KERNEL_DEVICETREE, MACHINE, QCOM_DTB_DEFAULT,
+            and FIT_CONF_PREFIX for virtual/kernel, cached for the test class.
+
+        Example:
+            ``deploy_dir = self._get_bb_vars()['DEPLOY_DIR_IMAGE']``
+        """
         if self.__class__._cached_bb_vars is None:
             self.__class__._cached_bb_vars = get_bb_vars([
                 'DEPLOY_DIR_IMAGE',
@@ -599,7 +716,14 @@ class QcomFitImageIntegrationTests(OESelftestTestCase):
         return self.__class__._cached_bb_vars
 
     def _skip_unless_multi_dtb(self):
-        """Skip the test unless the current MACHINE uses multi-dtb mode."""
+        """Skip the test unless the current MACHINE uses multi-dtb mode.
+
+        Raises:
+            unittest.SkipTest: QCOM_DTB_DEFAULT is not multi-dtb.
+
+        Example:
+            ``self._skip_unless_multi_dtb()``
+        """
         bb_vars = self._get_bb_vars()
         if bb_vars.get('QCOM_DTB_DEFAULT', '') != 'multi-dtb':
             self.skipTest(
@@ -613,6 +737,13 @@ class QcomFitImageIntegrationTests(OESelftestTestCase):
 
         The build is triggered once; subsequent calls within the same
         oe-selftest invocation are essentially no-ops (sstate hit).
+
+        Returns:
+            tuple[str, str, dict[str, str]]: The ITS and FIT image paths in DEPLOY_DIR_IMAGE,
+            and the variables from ``_get_bb_vars``.
+
+        Example:
+            ``its_path, fit_path, bb_vars = self._build_and_locate_fit()``
         """
         bb_vars = self._get_bb_vars()
         deploy_dir = bb_vars['DEPLOY_DIR_IMAGE']
@@ -626,7 +757,17 @@ class QcomFitImageIntegrationTests(OESelftestTestCase):
 
     @staticmethod
     def _parse_its_file(its_path):
-        """Re-use the ITS parser from the unit-test class."""
+        """Re-use the ITS parser from the unit-test class.
+
+        Args:
+            its_path (str): ITS file to read.
+
+        Returns:
+            dict: ``images`` and ``configurations`` maps from node name to properties.
+
+        Example:
+            ``parsed = self._parse_its_file(its_path)``
+        """
         return QcomFitImageTests._parse_its_file(its_path)
 
     def _get_metadata_nodes(self, deploy_dir):
@@ -635,6 +776,16 @@ class QcomFitImageIntegrationTests(OESelftestTestCase):
         Decompiles the deployed qcom-metadata.dtb back to DTS using
         dtc-native, then parses node names.  This mirrors what
         check-fitimage-metadata.sh does.
+
+        Args:
+            deploy_dir (str): DEPLOY_DIR_IMAGE holding qcom-metadata.dtb.
+
+        Returns:
+            set[str]: The node names, cached for the test class, or an empty set when
+            qcom-metadata.dtb was not deployed.
+
+        Example:
+            ``nodes = self._get_metadata_nodes(bb_vars['DEPLOY_DIR_IMAGE'])``
         """
         if self.__class__._meta_nodes is not None:
             return self.__class__._meta_nodes
@@ -667,7 +818,14 @@ class QcomFitImageIntegrationTests(OESelftestTestCase):
         return nodes
 
     def _setup_uboot_tools(self):
-        """Build u-boot-tools-native and return the bindir."""
+        """Build u-boot-tools-native and return the bindir.
+
+        Returns:
+            str: The native sysroot folder holding mkimage and dumpimage.
+
+        Example:
+            ``dumpimage = os.path.join(self._setup_uboot_tools(), 'dumpimage')``
+        """
         bitbake('u-boot-tools-native -c addto_recipe_sysroot')
         uboot_vars = get_bb_vars(
             ['RECIPE_SYSROOT_NATIVE', 'bindir'], 'u-boot-tools-native')
@@ -688,6 +846,9 @@ class QcomFitImageIntegrationTests(OESelftestTestCase):
           - Every config has an fdt reference that exists in images
           - qcom-metadata never appears in any configuration
           - At least one configuration exists
+
+        Example:
+            ``oe-selftest -r qcom_fitimage.QcomFitImageIntegrationTests.test_fitimage_its_structure``
         """
         self._skip_unless_multi_dtb()
         its_path, fit_path, bb_vars = self._build_and_locate_fit()
@@ -744,6 +905,9 @@ class QcomFitImageIntegrationTests(OESelftestTestCase):
           - All DTBs from KERNEL_DEVICETREE appear in the dump
           - The metadata image node is listed
           - Configuration sections are present
+
+        Example:
+            ``oe-selftest -r qcom_fitimage.QcomFitImageIntegrationTests.test_fitimage_dumpimage``
         """
         self._skip_unless_multi_dtb()
         its_path, fit_path, bb_vars = self._build_and_locate_fit()
@@ -778,6 +942,9 @@ class QcomFitImageIntegrationTests(OESelftestTestCase):
 
         This replicates the core check from check-fitimage-metadata.sh
         without requiring dtc.
+
+        Example:
+            ``oe-selftest -r qcom_fitimage.QcomFitImageIntegrationTests.test_fitimage_compatible_metadata_validation``
         """
         self._skip_unless_multi_dtb()
         its_path, _, bb_vars = self._build_and_locate_fit()
@@ -815,6 +982,9 @@ class QcomFitImageIntegrationTests(OESelftestTestCase):
 
         For any config whose fdt is a list, the first entry must be a
         base .dtb and the remaining entries must be .dtbo overlays.
+
+        Example:
+            ``oe-selftest -r qcom_fitimage.QcomFitImageIntegrationTests.test_fitimage_overlay_configs_fdt_list``
         """
         self._skip_unless_multi_dtb()
         its_path, _, bb_vars = self._build_and_locate_fit()
@@ -844,6 +1014,7 @@ class QcomFitImageMatrixTests(OESelftestTestCase):
 
     These tests avoid full image builds by using bitbake metadata expansion
     (bitbake -e via get_bb_vars) plus kernel source unpack. This validates:
+
       - KERNEL_DEVICETREE values resolve for each MACHINE/provider pair
       - DTBs/DTBOs declared by machine metadata exist in kernel source trees
       - LINUX_QCOM_KERNEL_DEVICETREE entries are present in qcom kernels
@@ -861,7 +1032,17 @@ class QcomFitImageMatrixTests(OESelftestTestCase):
 
     @classmethod
     def _layer_dir(cls):
-        """Return the meta-qcom layer directory using LAYERDIR_qcom from bitbake."""
+        """Return the meta-qcom layer directory using LAYERDIR_qcom from bitbake.
+
+        Returns:
+            str: The layer directory, cached for the test class.
+
+        Raises:
+            AssertionError: LAYERDIR_qcom is not defined.
+
+        Example:
+            ``machine_dir = os.path.join(self._layer_dir(), "conf", "machine")``
+        """
         if cls._layer_dir_cache is not None:
             return cls._layer_dir_cache
         bb_vars = get_bb_vars(["LAYERDIR_qcom"], "virtual/kernel")
@@ -873,13 +1054,43 @@ class QcomFitImageMatrixTests(OESelftestTestCase):
 
     @staticmethod
     def _dt_files(var_value):
+        """Return the file names listed in a device tree variable value.
+
+        Args:
+            var_value (str | None): A value such as KERNEL_DEVICETREE.
+
+        Returns:
+            set[str]: The base names of the listed files.
+
+        Example:
+            ``_dt_files("qcom/a.dtb qcom/b.dtbo")`` returns ``{"a.dtb", "b.dtbo"}``.
+        """
         return {os.path.basename(x) for x in (var_value or "").split() if x}
 
     @staticmethod
     def _dt_keys_from_files(files):
+        """Return device tree names without extensions, with commas encoded as underscores.
+
+        Args:
+            files (Iterable[str]): Device tree file names.
+
+        Returns:
+            set[str]: The encoded names, as FIT_DTB_COMPATIBLE values use them.
+
+        Example:
+            ``_dt_keys_from_files({"a,b.dtb"})`` returns ``{"a_b"}``.
+        """
         return {os.path.splitext(f)[0].replace(',', '_') for f in files}
 
     def _machine_list(self):
+        """Return the names of the layer's machine configurations.
+
+        Returns:
+            list[str]: Machine names from ``conf/machine/*.conf``, sorted.
+
+        Example:
+            ``for machine in self._machine_list(): ...``
+        """
         machine_dir = os.path.join(self._layer_dir(), "conf", "machine")
         machines = []
         for name in sorted(os.listdir(machine_dir)):
@@ -888,11 +1099,27 @@ class QcomFitImageMatrixTests(OESelftestTestCase):
         return machines
 
     def _fit_compatible_inc(self):
+        """Return the path of conf/machine/include/fit-dtb-compatible.inc.
+
+        Returns:
+            str: The include file path in the layer.
+
+        Example:
+            ``compat_map = self._parse_fit_compatible_map(self._fit_compatible_inc())``
+        """
         return os.path.join(
             self._layer_dir(), "conf", "machine", "include",
             "fit-dtb-compatible.inc")
 
     def _linux_qcom_fit_compat_inc(self):
+        """Return the path of conf/machine/include/fit-dtb-compatible-linux-qcom.inc.
+
+        Returns:
+            str: The include file path in the layer.
+
+        Example:
+            ``qcom_inc = self._linux_qcom_fit_compat_inc()``
+        """
         return os.path.join(
             self._layer_dir(), "conf", "machine", "include",
             "fit-dtb-compatible-linux-qcom.inc")
@@ -906,6 +1133,15 @@ class QcomFitImageMatrixTests(OESelftestTestCase):
         corresponding DTB+overlay combo string (e.g. ``"board"`` or
         ``"board overlay"``).  Handles both single-line and
         backslash-continued multi-line values.  Comment lines are skipped.
+
+        Args:
+            inc_path (str): Include file to read.
+
+        Returns:
+            dict[str, str]: Combination strings by encoded compatible string.
+
+        Example:
+            ``compat_map = QcomFitImageMatrixTests._parse_fit_compatible_map(inc_path)``
         """
         with open(inc_path) as f:
             content = f.read()
@@ -923,11 +1159,25 @@ class QcomFitImageMatrixTests(OESelftestTestCase):
         """Return the base FIT_DTB_COMPATIBLE map (fit-dtb-compatible.inc only).
 
         Returns {encoded_compat: dtb_combo_str}.
+
+        Example:
+            ``missing = _check_combos(self._fit_compatible_map(), all_outputs, "base")``
         """
         return self._parse_fit_compatible_map(self._fit_compatible_inc())
 
     @staticmethod
     def _name_variants(name):
+        """Return a device tree name as given and with commas and underscores swapped.
+
+        Args:
+            name (str): A device tree name from FIT_DTB_COMPATIBLE.
+
+        Returns:
+            set[str]: The name and its comma and underscore spellings.
+
+        Example:
+            ``_name_variants("a,b")`` returns ``{"a,b", "a_b"}``.
+        """
         return {
             name,
             name.replace('_', ','),
@@ -935,6 +1185,19 @@ class QcomFitImageMatrixTests(OESelftestTestCase):
         }
 
     def _has_dt_output(self, output_files, part_name, exts):
+        """Report whether any spelling of a device tree name has an output file.
+
+        Args:
+            output_files (set[str]): Output file names from ``_provider_output_files``.
+            part_name (str): Device tree name without extension.
+            exts (tuple[str, ...]): Extensions to try, such as ``(".dtb",)``.
+
+        Returns:
+            bool: True when a name variant with one of the extensions is present.
+
+        Example:
+            ``self._has_dt_output(outputs, "qcs6490-rb3gen2", (".dtb",))``
+        """
         for variant in self._name_variants(part_name):
             for ext in exts:
                 if f"{variant}{ext}" in output_files:
@@ -942,7 +1205,21 @@ class QcomFitImageMatrixTests(OESelftestTestCase):
         return False
 
     def _provider_output_files(self, provider):
-        """Return set of DTB/DTBO output filenames available in provider source."""
+        """Return set of DTB/DTBO output filenames available in provider source.
+
+        Args:
+            provider (str): Kernel recipe name, such as ``linux-qcom``.
+
+        Returns:
+            set[str]: One .dtb or .dtbo name per .dts or .dtso file in the unpacked
+            kernel's arm64 and arm device tree folders, cached per provider.
+
+        Raises:
+            AssertionError: No machine works with the provider, or its source folder is missing.
+
+        Example:
+            ``outputs = self._provider_output_files("linux-qcom")``
+        """
         if provider in self.__class__._provider_outputs_cache:
             return self.__class__._provider_outputs_cache[provider]
 
@@ -982,6 +1259,17 @@ class QcomFitImageMatrixTests(OESelftestTestCase):
         return outputs
 
     def _provider_machine(self, provider):
+        """Return the first machine whose device tree variables resolve with a kernel provider.
+
+        Args:
+            provider (str): Kernel recipe name.
+
+        Returns:
+            str | None: The machine name, or None when none resolves; cached per provider.
+
+        Example:
+            ``machine = self._provider_machine("linux-yocto")``
+        """
         if provider in self.__class__._provider_machine_cache:
             return self.__class__._provider_machine_cache[provider]
 
@@ -997,6 +1285,14 @@ class QcomFitImageMatrixTests(OESelftestTestCase):
         return None
 
     def _available_providers(self):
+        """Return the kernel providers that bitbake-layers finds in the configured layers.
+
+        Returns:
+            list[str]: linux-yocto, linux-qcom-next, and linux-qcom when present, cached for the class.
+
+        Example:
+            ``available = set(self._available_providers())``
+        """
         if self.__class__._available_providers_cache is not None:
             return self.__class__._available_providers_cache
 
@@ -1014,6 +1310,22 @@ class QcomFitImageMatrixTests(OESelftestTestCase):
         return providers
 
     def _resolve_machine_provider(self, machine, provider):
+        """Expand a machine's device tree variables for a kernel provider.
+
+        Args:
+            machine (str): Machine name.
+            provider (str): Kernel recipe name.
+
+        Returns:
+            dict: ``machine``, ``provider``, ``dt_files``, ``dt_keys``, and ``extra_files``
+            (from LINUX_QCOM_KERNEL_DEVICETREE).
+
+        Raises:
+            AssertionError: bitbake cannot expand virtual/kernel for the pair.
+
+        Example:
+            ``entry = self._resolve_machine_provider("rb3gen2-core-kit", "linux-qcom")``
+        """
         postconfig = '\n'.join([
             f'MACHINE = "{machine}"',
             f'PREFERRED_PROVIDER_virtual/kernel = "{provider}"',
@@ -1034,6 +1346,20 @@ class QcomFitImageMatrixTests(OESelftestTestCase):
         }
 
     def _resolve_qcom_provider(self, machine):
+        """Resolve a machine with the first available Qualcomm kernel provider.
+
+        Args:
+            machine (str): Machine name.
+
+        Returns:
+            dict: An entry from ``_resolve_machine_provider``.
+
+        Raises:
+            AssertionError: No Qualcomm kernel provider resolves for the machine.
+
+        Example:
+            ``qcom = self._resolve_qcom_provider("rb3gen2-core-kit")``
+        """
         last_error = None
         available = set(self._available_providers())
         for provider in self.KERNEL_PROVIDERS_QCOM:
@@ -1047,6 +1373,17 @@ class QcomFitImageMatrixTests(OESelftestTestCase):
             f"Could not resolve qcom kernel provider for {machine}: {last_error}")
 
     def _matrix(self):
+        """Return every machine resolved with linux-yocto, where compatible, and with a Qualcomm kernel.
+
+        Returns:
+            list[dict]: Entries from ``_resolve_machine_provider``, cached for the class.
+
+        Raises:
+            AssertionError: A machine resolves with no Qualcomm kernel provider.
+
+        Example:
+            ``for entry in self._matrix(): ...``
+        """
         if self.__class__._matrix_cache is not None:
             return self.__class__._matrix_cache
 
@@ -1066,7 +1403,11 @@ class QcomFitImageMatrixTests(OESelftestTestCase):
         return matrix
 
     def test_machine_dtb_entries_exist_for_kernel_providers(self):
-        """Validate machine DTB metadata against linux-yocto and qcom kernels."""
+        """Validate machine DTB metadata against linux-yocto and qcom kernels.
+
+        Example:
+            ``oe-selftest -r qcom_fitimage.QcomFitImageMatrixTests.test_machine_dtb_entries_exist_for_kernel_providers``
+        """
         available = set(self._available_providers())
         qcom_available = [p for p in self.KERNEL_PROVIDERS_QCOM if p in available]
         self.assertGreater(len(qcom_available), 0,
@@ -1131,6 +1472,9 @@ class QcomFitImageMatrixTests(OESelftestTestCase):
         kernel sources.  Entries from fit-dtb-compatible-linux-qcom.inc are
         checked against qcom kernel sources only (they reference
         LINUX_QCOM_KERNEL_DEVICETREE overlays not available in linux-yocto).
+
+        Example:
+            ``oe-selftest -r qcom_fitimage.QcomFitImageMatrixTests.test_fit_dtb_compatible_combos_exist_in_kernel_sources``
         """
         available = set(self._available_providers())
 
@@ -1148,6 +1492,19 @@ class QcomFitImageMatrixTests(OESelftestTestCase):
             qcom_outputs |= self._provider_output_files(provider)
 
         def _check_combos(compat_map, output_files, label):
+            """Return the FIT_DTB_COMPATIBLE entries whose device tree files are missing.
+
+            Args:
+                compat_map (dict[str, str]): Combination strings by encoded compatible string.
+                output_files (set[str]): Available .dtb and .dtbo names.
+                label (str): Source label added to each report line.
+
+            Returns:
+                list[str]: One ``key -> combination [label]`` line per incomplete entry.
+
+            Example:
+                ``missing = _check_combos(self._fit_compatible_map(), all_outputs, "base")``
+            """
             missing = []
             for encoded_key, combo_val in compat_map.items():
                 parts = combo_val.split()
@@ -1182,6 +1539,9 @@ class QcomFitImageMatrixTests(OESelftestTestCase):
         Bitbake silently overwrites a flag variable when the same key is
         assigned twice, dropping the first set of compatible strings without
         any warning.
+
+        Example:
+            ``oe-selftest -r qcom_fitimage.QcomFitImageMatrixTests.test_fit_dtb_compatible_no_duplicate_keys``
         """
         errors = []
         for inc_path in (self._fit_compatible_inc(), self._linux_qcom_fit_compat_inc()):
@@ -1212,8 +1572,11 @@ class QcomFitImageMatrixTests(OESelftestTestCase):
 
         Keys encode the Device Tree compatible string with commas replaced by
         underscores (BitBake flag names cannot contain commas).  Every key
-        must therefore start with the 'qcom_' prefix, ensuring the bbclass
-        can decode it back to a valid 'qcom,…' compatible string.
+        must therefore start with the ``qcom_`` prefix, ensuring the bbclass
+        can decode it back to a valid ``qcom,…`` compatible string.
+
+        Example:
+            ``oe-selftest -r qcom_fitimage.QcomFitImageMatrixTests.test_fit_dtb_compatible_compat_key_format``
         """
         errors = []
         for inc_path in (self._fit_compatible_inc(), self._linux_qcom_fit_compat_inc()):

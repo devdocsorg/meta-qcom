@@ -9,6 +9,11 @@ inherit deploy allarch
 
 do_install[noexec] = "1"
 
+# @description Deploy each platform's GPT, zeros, rawprogram, patch, wipe, and contents files under partitions/.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c deploy qcom-partition-conf
 do_deploy() {
     cd ${S}/platforms
     for gpt in `find . -name gpt_main0.bin` ; do

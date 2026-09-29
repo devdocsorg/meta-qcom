@@ -95,7 +95,22 @@ do_compile[cleandirs] = "${CAPSULE_DIR}"
 
 # QA check: warn when test PKI keys are used instead of production keys.
 # Recipes may silence this by adding to INSANE_SKIP:
+#
 #   INSANE_SKIP:<pn> += "test-pki-keys"
+#
+# Skip the recipe unless all four capsule PKI variables are set.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The recipe datastore.
+#
+# Returns:
+#     None
+#
+# Raises:
+#     bb.parse.SkipRecipe: CAPSULE_ROOT_CER, CAPSULE_CERT_PEM, CAPSULE_ROOT_PUB, or CAPSULE_SUB_PUB is unset.
+#
+# Example:
+#     ``bitbake firmware-qcom-capsule``
 python () {
     pn = d.getVar('PN')
 
@@ -130,6 +145,28 @@ do_compile[depends] += "${@'${QCOM_BOOT_FIRMWARE}:do_deploy' if d.getVar('QCOM_B
 do_compile[depends] += "${@'virtual/kernel:do_deploy' if 'dtb' in d.getVar('CAPSULE_ENTRIES').split() else ''}"
 do_compile[depends] += "${@'virtual/kernel:do_qcom_dtbbin_deploy' if 'dtb' in d.getVar('CAPSULE_ENTRIES').split() and 'linux-qcom-dtbbin' in (d.getVar('KERNEL_CLASSES') or '').split() else ''}"
 
+# @function generate_fvupdate.flag
+# Return one flag of the current ``CAPSULE_ENTRY_<name>`` variable.
+#
+# Args:
+#     f (str): Flag name, such as ``binary`` or ``dest_partition``.
+#
+# Returns:
+#     str: The flag value, or "" when it is unset.
+#
+# Example:
+#     ``flag('dest_disk')`` returns ``"SPINOR"``
+
+# Write FvUpdate.xml from the ``CAPSULE_ENTRY_<name>`` flags of each ``CAPSULE_ENTRIES`` entry.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The recipe datastore.
+#
+# Returns:
+#     None: FvUpdate.xml is written to ``B``; nothing is written when ``CAPSULE_ENTRIES`` is empty.
+#
+# Example:
+#     ``bitbake -c compile firmware-qcom-capsule``
 python generate_fvupdate() {
     """Generate FvUpdate.xml from CAPSULE_ENTRIES when the variable is set."""
     import os
@@ -207,11 +244,14 @@ do_compile[prefuncs] += "generate_fvupdate"
 # This makes sure we rebuild when changes are made to the entries.
 generate_fvupdate[vardeps] += "${@' '.join('CAPSULE_ENTRY_' + e for e in d.getVar('CAPSULE_ENTRIES').split())}"
 
-# Inject the OEM root certificate into xbl_config.elf.
+# @description Inject the OEM root certificate into xbl_config.elf.
 # Dumps the config sections, auto-detects the post-DDR DTB (or uses
 # XBLCONFIG_DTB / XBLCONFIG_DTB_SECTION overrides), patches QcCapsuleRootCert
 # in that DTB, and repacks the updated DTB back into xbl_config.elf in place.
-# $1 - path to xbl_config.elf (modified in place on success)
+# @arg $1 string path to xbl_config.elf (modified in place on success)
+# @exitcode 0 The file is patched, or left unchanged when no post-DDR DTB is found; a failing tool fails do_compile.
+# @example
+#   patch_xblconfig_cert "${BOOTBINS_STAGED}/xbl_config.elf"
 patch_xblconfig_cert() {
     local xbl_config="$1"
     local staged_dir
@@ -258,6 +298,11 @@ patch_xblconfig_cert() {
     fi
 }
 
+# @description Build the signed UEFI FMP capsule ${PN}.cap from the staged boot firmware, injecting the OEM root certificate into xbl_config.elf when present.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c compile firmware-qcom-capsule
 do_compile() {
     CBSP_DATA="${STAGING_DATADIR_NATIVE}/cbsp-boot-utilities"
     EDK2_BASETOOLS="${STAGING_DATADIR_NATIVE}/edk2-basetools"
@@ -346,6 +391,11 @@ do_compile() {
         -v
 }
 
+# @description Install the capsule under the firmware/efi folder.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install firmware-qcom-capsule
 do_install() {
     install -d "${D}${nonarch_base_libdir}/firmware/efi"
     install -m 0644 "${CAPSULE_DIR}/${PN}.cap" "${D}${nonarch_base_libdir}/firmware/efi/"
@@ -354,6 +404,11 @@ do_install() {
 PACKAGES = "${PN}"
 FILES:${PN} = "${nonarch_base_libdir}/firmware/efi/${PN}.cap"
 
+# @description Deploy the capsule, and the certificate-injected xbl_config-with-oem-cert.elf when one was produced.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c deploy firmware-qcom-capsule
 do_deploy() {
     install -d "${DEPLOYDIR}"
     install -m 0644 "${CAPSULE_DIR}/${PN}.cap" "${DEPLOYDIR}/"

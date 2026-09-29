@@ -17,6 +17,23 @@ require recipes-bsp/firmware/firmware-qcom.inc
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
 
+# @function do_install
+# @description Install the x1e80100 CAMERA_ICP firmware and its licence, and link it for Purwa under x1p42100.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install camxfirmware-hamoa
+
+# Return the file suffix that ``FIRMWARE_COMPRESSION`` gives installed firmware.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The recipe datastore.
+#
+# Returns:
+#     str: "" without compression, ".zst" for zstd or zst, otherwise "." and the compression name.
+#
+# Example:
+#     ``${@fw_compr_file_suffix(d)}``
 def fw_compr_file_suffix(d):
     compr = d.getVar('FIRMWARE_COMPRESSION')
     if compr == '':

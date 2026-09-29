@@ -25,6 +25,11 @@ do_configure[noexec] = "1"
 do_compile[noexec] = "1"
 do_install[noexec] = "1"
 
+# @description Deploy the v5, v6, and v7 abl2esp images.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c deploy abl2esp
 do_deploy() {
         install -m 0644 ${UNPACKDIR}/abl2esp-v5.elf -D ${DEPLOYDIR}/
         install -m 0644 ${UNPACKDIR}/abl2esp-v6.elf -D ${DEPLOYDIR}/

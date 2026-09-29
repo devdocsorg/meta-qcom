@@ -18,6 +18,19 @@ LIC_FILES_CHKSUM += "file://docs/license.rst;md5=6ed7bace7b0bc63021c6eba7b524039
 COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:aarch64 = "(qcom)"
 
+# Stop parsing when the device recipe does not set ``FIP_ELF_ADDR``.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The recipe datastore.
+#
+# Returns:
+#     None
+#
+# Raises:
+#     bb.BBHandledException: ``FIP_ELF_ADDR`` is unset.
+#
+# Example:
+#     ``bitbake trusted-firmware-a-qcom-rb3gen2``
 python () {
     if not d.getVar('FIP_ELF_ADDR'):
         bb.fatal('FIP_ELF_ADDR must be set by the device recipe')
@@ -33,6 +46,11 @@ EXTRA_OEMAKE:append = " \
 
 do_compile[depends] += "${@bb.utils.contains('QCOM_UBOOT_SPL_FIT', '1', '', 'u-boot-qcom:do_deploy', d)}"
 
+# @description Wrap fip.bin in an ELF at FIP_ELF_ADDR and sign it with qtestsign as fip.elf, unless QCOM_UBOOT_SPL_FIT is 1.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install trusted-firmware-a-qcom-rb3gen2
 do_install:append() {
     # Nothing to wrap and sign without a FIP.
     if [ "${QCOM_UBOOT_SPL_FIT}" != "1" ]; then

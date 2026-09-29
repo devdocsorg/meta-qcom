@@ -20,6 +20,11 @@ S = "${UNPACKDIR}"
 
 do_compile[noexec] = "1"
 
+# @description Install the persist mount unit, check and format script and service, and udev rule.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install mount-tee-partition
 do_install() {
     install -Dm 0644 ${UNPACKDIR}/var-lib-tee.mount \
             ${D}${systemd_system_unitdir}/var-lib-tee.mount

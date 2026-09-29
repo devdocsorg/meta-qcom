@@ -10,6 +10,11 @@ SRCREV = "bd455d362f824f8d15dee305fec32aefafdca0a1"
 
 DEPENDS = "libnl"
 
+# @description Install sigma_dut into sbindir with the source's install target.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install sigma-dut
 do_install () {
 	oe_runmake install DESTDIR=${D} BINDIR=${sbindir}
 }

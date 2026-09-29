@@ -19,6 +19,11 @@ DEPENDS += "glib-2.0 fastrpc"
 COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:aarch64 = "(.*)"
 
+# @description Install the FastCV libraries, headers, pkg-config file, notices, test program, and each board's DSP libraries.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install qcom-fastcv-binaries
 do_install() {
     install -d ${D}${bindir}/
     install -d ${D}${libdir}/pkgconfig

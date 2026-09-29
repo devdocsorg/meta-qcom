@@ -10,6 +10,11 @@ INHIBIT_DEFAULT_DEPS = "1"
 
 inherit python3native
 
+# @description Install the qtestsign Python package and link the qtestsign command to it.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install qtestsign
 do_install() {
     install -d ${D}${bindir}
     install -d ${D}${PYTHON_SITEPACKAGES_DIR}/qtestsign

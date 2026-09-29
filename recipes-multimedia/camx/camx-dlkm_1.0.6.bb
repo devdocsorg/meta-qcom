@@ -14,6 +14,11 @@ inherit module
 MAKE_TARGETS = "modules"
 MODULES_INSTALL_TARGET = "modules_install"
 
+# @description Install the camera and camera-kodiak UAPI media headers.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install camx-dlkm
 do_install:append() {
     install -d ${D}${includedir}/camx/camera/media
     install -d ${D}${includedir}/camx/camera-kodiak/media

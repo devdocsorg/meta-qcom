@@ -4,6 +4,12 @@
 
 TOPDIR=$(realpath $(dirname $(readlink -f $0))/..)
 
+# @description Print how to call the helper and stop.
+# @noargs
+# @stdout The usage message.
+# @exitcode 1 Always; the script exits.
+# @example
+#   _help
 _help(){
     echo "The script path argument is missing, please run it with:"
     echo " $0 /path/to/script"

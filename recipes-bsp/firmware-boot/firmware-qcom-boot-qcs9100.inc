@@ -14,6 +14,11 @@ QCOM_BOOT_IMG_SUBDIR = "qcs9100"
 
 include firmware-qcom-boot-common.inc
 
+# @description Deploy the SAIL NOR partition files and images into a sail_nor subfolder when the firmware release has them.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c deploy firmware-qcom-boot-qcs9100
 do_deploy:append() {
     if [ -d "${UNPACKDIR}/${BOOTBINARIES}/sail_nor" ]; then
         SAIL_FILES="gpt_backup0.bin gpt_main0.bin prog_firehose_ddr.elf patch0.xml rawprogram0.xml sailhyp.elf sailsw1.elf"

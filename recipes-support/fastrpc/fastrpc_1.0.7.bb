@@ -30,6 +30,11 @@ SYSTEMD_SERVICE:${PN} = " \
     sdsprpcd.service \
 "
 
+# @description Create datadir/qcom, where DSP libraries are installed.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install fastrpc
 do_install:append() {
     install -d ${D}${datadir}/qcom/
 }

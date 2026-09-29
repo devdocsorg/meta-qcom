@@ -13,6 +13,11 @@ INHIBIT_DEFAULT_DEPS = "1"
 
 inherit python3native
 
+# @description Install swiv_build_utility.py as swiv_build_utility.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install swiv-build-utility
 do_install() {
     install -Dm 0755 ${S}/tools/swiv_build_utility.py \
         ${D}${bindir}/swiv_build_utility

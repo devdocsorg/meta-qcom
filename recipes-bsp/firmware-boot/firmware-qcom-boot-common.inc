@@ -18,6 +18,11 @@ do_compile[noexec] = "1"
 
 inherit deploy
 
+# @description Deploy the boot firmware binaries from each QCOM_BOOT_BINARY_DIRS folder into QCOM_BOOT_IMG_SUBDIR, except the GPT and zeros images that partition configuration provides.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c deploy firmware-qcom-boot-qcs6490
 do_deploy() {
     install -d ${DEPLOYDIR}/${QCOM_BOOT_IMG_SUBDIR}
     for bootdir in ${QCOM_BOOT_BINARY_DIRS}; do

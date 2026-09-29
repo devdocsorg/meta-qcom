@@ -14,11 +14,20 @@ include firmware-qcom-boot-common.inc
 
 DEPENDS = "lk-db820c"
 
-# Disable archall as we depend on arch-specific package
+# @description Disable archall as we depend on arch-specific package
+# @noargs
+# @exitcode 0 The function finished; any failing command fails the calling task.
+# @example
+#   bitbake firmware-qcom-boot-dragonboard820c
 allarch_package_arch_handler:prepend() {
     return
 }
 
+# @description Deploy the DragonBoard 820c boot loaders, CDT, UFS programmer, and licence.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c deploy firmware-qcom-boot-dragonboard820c
 do_deploy() {
     install -d ${DEPLOYDIR}/${QCOM_BOOT_IMG_SUBDIR}
     find "${S}/bootloaders-linux" -maxdepth 1 \( -name '*.mbn' -o -name '*.elf' -o -name 'sec.dat' \) -exec install -m 0644 {} ${DEPLOYDIR}/${QCOM_BOOT_IMG_SUBDIR} \;

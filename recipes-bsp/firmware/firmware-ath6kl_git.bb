@@ -17,12 +17,22 @@ inherit allarch
 
 CLEANBROKEN = "1"
 
+# @description Skip compilation; the firmware is prebuilt.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c compile firmware-ath6kl
 do_compile() {
 	:
 }
 
 FWDIR = "${nonarch_base_libdir}/firmware"
 
+# @description Install the AR6004 hw1.3 and hw3.0 firmware and its licence.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install firmware-ath6kl
 do_install() {
     install -d ${D}${FWDIR}/ath6k/AR6004/hw1.3
     install -d ${D}${FWDIR}/ath6k/AR6004/hw3.0

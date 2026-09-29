@@ -28,6 +28,16 @@ SRC_URI += " \
     ${@bb.utils.contains('SPL_SIGN_ENABLE', '1', 'file://spl-fit-signature.cfg', '', d)} \
 "
 
+# Build the indexed ``BOARD_MBN_HEADER`` list from its per-``UBOOT_CONFIG`` flags.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The recipe datastore.
+#
+# Returns:
+#     None
+#
+# Example:
+#     ``bitbake u-boot-qcom``
 python __anonymous() {
     ubootconfig = (d.getVar('UBOOT_CONFIG') or "").split()
 
@@ -42,6 +52,13 @@ python __anonymous() {
             d.appendVar('BOARD_MBN_HEADER', mbn_header + " ? ")
 }
 
+# @description Stage bl31.bin and tee-raw.bin for the SPL FIT flow, or sign u-boot.elf as u-boot.mbn with the configuration's MBN header version.
+# @arg $1 integer Index of the configuration in UBOOT_CONFIG.
+# @arg $2 string U-Boot configuration name.
+# @arg $3 string Configuration type.
+# @exitcode 0 The function finished; any failing command fails the calling task.
+# @example
+#   uboot_compile_config 1 qcm6490_defconfig qcs6490-rb3gen2
 uboot_compile_config:append() {
     config_mbn_header=$(uboot_config_get_indexed_value "${BOARD_MBN_HEADER}" $i)
 
@@ -55,7 +72,12 @@ uboot_compile_config:append() {
     fi
 }
 
-# Rebuild the SPL ELF after uboot-sign, add the SWIV segment and sign it as TZ.
+# @description Rebuild the SPL ELF after uboot-sign, add the SWIV segment and sign it as TZ.
+# @arg $1 string Configuration type.
+# @arg $2 string U-Boot binary name.
+# @exitcode 0 The function finished; any failing command fails the calling task.
+# @example
+#   uboot_assemble_fitimage_helper qcs6490-rb3gen2 u-boot.bin
 uboot_assemble_fitimage_helper:append() {
     if [ "${QCOM_UBOOT_SPL_FIT}" = "1" ]; then
         mbn_header=$(uboot_config_get_indexed_value "${BOARD_MBN_HEADER}" $i)
@@ -71,6 +93,12 @@ uboot_assemble_fitimage_helper:append() {
     fi
 }
 
+# @description Deploy u-boot-spl-<type>.mbn for the SPL FIT flow, or u-boot-<type>.mbn otherwise.
+# @arg $1 string U-Boot configuration name.
+# @arg $2 string Configuration type.
+# @exitcode 0 The function finished; any failing command fails the calling task.
+# @example
+#   uboot_deploy_config qcm6490_defconfig qcs6490-rb3gen2
 uboot_deploy_config:append() {
     if [ "${QCOM_UBOOT_SPL_FIT}" = "1" ]; then
         if [ -f ${B}/${builddir}/u-boot-spl.mbn ]; then

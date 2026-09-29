@@ -20,6 +20,11 @@ inherit systemd
 COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:aarch64 = "(.*)"
 
+# @description Install the prebuilt sensor binaries, libraries, configuration, registry, service, pkg-config files, and headers.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install qcom-sensors-binaries
 do_install() {
     install -d ${D}${bindir}
     install -d ${D}${libdir}

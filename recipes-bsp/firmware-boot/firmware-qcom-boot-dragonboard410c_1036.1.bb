@@ -14,11 +14,20 @@ include firmware-qcom-boot-common.inc
 
 DEPENDS = "lk-db410c"
 
-# Disable archall as we depend on arch-specific package
+# @description Disable archall as we depend on arch-specific package
+# @noargs
+# @exitcode 0 The function finished; any failing command fails the calling task.
+# @example
+#   bitbake firmware-qcom-boot-dragonboard410c
 allarch_package_arch_handler:prepend() {
     return
 }
 
+# @description Deploy the DragonBoard 410c boot loaders, CDT, EFS seed, eMMC programmer, and licence.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c deploy firmware-qcom-boot-dragonboard410c
 do_deploy() {
     install -d ${DEPLOYDIR}/${QCOM_BOOT_IMG_SUBDIR}
     find "${S}/bootloaders-linux" -maxdepth 1 -name '*.mbn' -exec install -m 0644 {} ${DEPLOYDIR}/${QCOM_BOOT_IMG_SUBDIR} \;

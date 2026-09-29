@@ -2,6 +2,19 @@ DESCRIPTION = "EFI System Partition Image with U-Boot FIT kernel for Qualcomm bo
 
 inherit image
 
+# Skip the recipe unless the machine configures U-Boot and the kernel builds FIT artifacts.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The recipe datastore.
+#
+# Returns:
+#     None
+#
+# Raises:
+#     bb.parse.SkipRecipe: Neither ``UBOOT_MACHINE`` nor ``UBOOT_CONFIG`` is set, or ``KERNEL_CLASSES`` lacks kernel-fit-extra-artifacts.
+#
+# Example:
+#     ``bitbake esp-qcom-fit-image``
 python () {
     if not (d.getVar('UBOOT_MACHINE') or d.getVar('UBOOT_CONFIG')):
         raise bb.parse.SkipRecipe("Either UBOOT_MACHINE or UBOOT_CONFIG must be set in the %s machine configuration." % d.getVar('MACHINE'))
@@ -13,7 +26,12 @@ require esp-qcom-common.inc
 
 PACKAGE_INSTALL = ""
 
-# Setup boot files for FIT image-based boot
+# @description Setup boot files for FIT image-based boot
+# @noargs
+# @exitcode 0 The ESP holds fitImage and boot.scr.
+# @exitcode 1 No FIT image or boot.scr was deployed.
+# @example
+#   bitbake esp-qcom-fit-image
 setup_fit_boot_files() {
     # Remove skeleton directories and base files created by the image class
     find ${IMAGE_ROOTFS} -mindepth 1 -maxdepth 1 -exec rm -rf {} +

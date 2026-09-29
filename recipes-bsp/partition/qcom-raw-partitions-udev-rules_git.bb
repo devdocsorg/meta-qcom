@@ -9,12 +9,22 @@ inherit allarch
 
 QCOM_RAW_PARTITIONS_RULES = "${B}/55-qcom-raw-partitions-noblkid.rules"
 
+# @description Generate the raw-partition udev rules with qcom-ptool.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c compile qcom-raw-partitions-udev-rules
 do_compile() {
     cd ${S}
     ${STAGING_BINDIR_NATIVE}/qcom-ptool gen_udev_rules \
         --output ${QCOM_RAW_PARTITIONS_RULES}
 }
 
+# @description Install the rules as 55-qcom-raw-partitions-noblkid.rules.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install qcom-raw-partitions-udev-rules
 do_install() {
     install -Dm 0644 ${QCOM_RAW_PARTITIONS_RULES} \
         ${D}${nonarch_libdir}/udev/rules.d/55-qcom-raw-partitions-noblkid.rules

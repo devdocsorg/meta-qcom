@@ -17,6 +17,11 @@ SRC_URI = " \
 
 PV = "0.0+"
 
+# @description Install the source's scripts and the layer's ath10k and ath11k board-2.json generators.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install qca-swiss-army-knife
 do_install () {
 	install -d ${D}/${bindir}
 	install -m 0755 tools/scripts/*/* ${D}/${bindir}

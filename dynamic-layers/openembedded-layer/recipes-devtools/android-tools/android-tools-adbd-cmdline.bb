@@ -9,6 +9,11 @@ SRC_URI = " \
     file://50-adbd-cmdline.conf \
 "
 
+# @description Install the android-tools-adbd service drop-in that starts adbd from the kernel command line.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install android-tools-adbd-cmdline
 do_install() {
     install -d ${D}${systemd_unitdir}/system/android-tools-adbd.service.d
     install -m 0644 ${S}/50-adbd-cmdline.conf ${D}${systemd_unitdir}/system/android-tools-adbd.service.d

@@ -12,6 +12,11 @@ PV = "0.0+git"
 
 inherit allarch
 
+# @description Install bootrr with the source's install target.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install bootrr
 do_install() {
 	oe_runmake install 'DESTDIR=${D}'
 }

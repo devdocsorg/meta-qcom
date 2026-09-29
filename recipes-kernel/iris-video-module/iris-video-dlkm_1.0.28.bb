@@ -19,6 +19,11 @@ MAKE_TARGETS = "modules"
 COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:aarch64 = "(.*)"
 
+# @description Install the venus and vidc modprobe blacklist files.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install iris-video-dlkm
 do_install:append() {
     install -d ${D}${sysconfdir}/modprobe.d
     install -Dm 0644 ${UNPACKDIR}/blacklist-video.conf.venus \

@@ -12,6 +12,11 @@ SRC_URI = " \
 
 PV = "0.0+"
 
+# @description Install pil-squasher with the source's install target.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install pil-squasher
 do_install () {
     oe_runmake install DESTDIR=${D} prefix=${prefix}
 }

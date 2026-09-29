@@ -12,10 +12,20 @@ DEPENDS = "qrtr udev"
 RPROVIDES:${PN} = "virtual-diag-router"
 RCONFLICTS:${PN} = "diag-router"
 
+# @description Build with the source's Makefile.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c compile diag
 do_compile () {
 	oe_runmake
 }
 
+# @description Install diag with the source's install target.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install diag
 do_install () {
 	oe_runmake install 'DESTDIR=${D}'
 }

@@ -11,6 +11,11 @@ DTBBIN_SIZE ?= "4096"
 
 do_qcom_dtbbin_deploy[depends] += "dosfstools-native:do_populate_sysroot mtools-native:do_populate_sysroot"
 do_qcom_dtbbin_deploy[cleandirs] = "${DTBBIN_DEPLOYDIR}"
+# @description Pack each deployed DTB into its own dtb-<name>-image.vfat, and qclinuxfitImage into dtb-multi-dtb-image.vfat when QCOM_DTB_DEFAULT is multi-dtb.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c qcom_dtbbin_deploy virtual/kernel
 do_qcom_dtbbin_deploy() {
     # Source the DTBs from what do_deploy published: unlike ${D}, which
     # only exists when do_install ran in this build, DEPLOY_DIR_IMAGE is
@@ -47,6 +52,16 @@ SSTATETASKS += "do_qcom_dtbbin_deploy"
 do_qcom_dtbbin_deploy[sstate-inputdirs] = "${DTBBIN_DEPLOYDIR}"
 do_qcom_dtbbin_deploy[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}"
 
+# Restore the DTB images from the shared state cache.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The recipe datastore.
+#
+# Returns:
+#     None: The cached images are placed in ``DEPLOY_DIR_IMAGE``.
+#
+# Example:
+#     ``bitbake -c qcom_dtbbin_deploy_setscene virtual/kernel``
 python do_qcom_dtbbin_deploy_setscene () {
     sstate_setscene(d)
 }

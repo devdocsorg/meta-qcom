@@ -48,6 +48,11 @@ PACKAGES += "${PN}-ta"
 SYSTEMD_PACKAGES = "${PN}-qteesupplicant"
 SYSTEMD_SERVICE:${PN}-qteesupplicant = "qteesupplicant.service sfsconfig.service"
 
+# @description Install the QTEE trusted applications under qtee-tas, without their licence PDF.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install minkipc
 do_install:append() {
        mkdir -p ${D}${nonarch_base_libdir}/qtee-tas
        cp -R ${S}/ta/* ${D}${nonarch_base_libdir}/qtee-tas/

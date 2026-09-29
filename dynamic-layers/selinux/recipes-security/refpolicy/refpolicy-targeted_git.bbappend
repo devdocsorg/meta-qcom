@@ -12,6 +12,13 @@ SRC_URI:append:qcom = " \
 # local hook can be removed once an equivalent upstream implementation exists.
 POLICY_BOOLEANS ?= ""
 
+# @description Write each POLICY_BOOLEANS name=value setting into policy/booleans.conf, replacing an earlier value for the same name.
+# @noargs
+# @exitcode 0 Every setting is written.
+# @exitcode 1 An entry is not name=value, the name has characters other than letters, digits, and underscores, or the value is not true or false.
+# @example
+#   POLICY_BOOLEANS = "tee_supplicant_qtee=true"
+#   set_qcom_policy_booleans
 set_qcom_policy_booleans() {
     touch "${S}/policy/booleans.conf"
 
@@ -42,6 +49,11 @@ set_qcom_policy_booleans() {
     done
 }
 
+# @description Apply POLICY_BOOLEANS before the policy is compiled.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c compile refpolicy-targeted
 do_compile:prepend:qcom() {
     set_qcom_policy_booleans
 }

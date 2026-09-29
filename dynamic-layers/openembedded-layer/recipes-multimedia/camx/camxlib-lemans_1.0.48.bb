@@ -14,6 +14,11 @@ DEPENDS += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'virtual/egl virtual/libgles2', '', d)} \
 "
 
+# @description Install the Lemans test JSON files and data, dropping OpenCL components when OpenCL is disabled.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install camxlib-lemans
 do_install:append() {
     # Copy json only when /etc folder exists in ${S}
     if [ -d "${S}/etc" ]; then

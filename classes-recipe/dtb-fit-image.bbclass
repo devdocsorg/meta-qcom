@@ -20,6 +20,22 @@ QCOMFIT_DEPLOYDIR = "${WORKDIR}/qcom_fitimage_deploy-${PN}"
 
 do_generate_qcom_fitimage[depends] += "qcom-dtb-metadata:do_deploy u-boot-tools-native:do_populate_sysroot"
 do_generate_qcom_fitimage[cleandirs] += "${QCOMFIT_DEPLOYDIR}"
+# Build the multi-DTB FIT image qclinuxfitImage from the deployed device trees.
+#
+# The image holds qcom-metadata.dtb, every DTB and DTBO in ``KERNEL_DEVICETREE``, and one
+# configuration per compatible string that ``FIT_DTB_COMPATIBLE`` maps to them.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The recipe datastore.
+#
+# Returns:
+#     None: The ITS file and image are written to ``QCOMFIT_DEPLOYDIR``.
+#
+# Raises:
+#     bb.BBHandledException: A device tree listed in ``KERNEL_DEVICETREE`` was not deployed, or mkimage failed.
+#
+# Example:
+#     ``bitbake -c generate_qcom_fitimage virtual/kernel``
 python do_generate_qcom_fitimage() {
     import os
     from qcom.dtb_only_fitimage import QcomItsNodeRoot
@@ -129,6 +145,16 @@ SSTATETASKS += "do_generate_qcom_fitimage"
 do_generate_qcom_fitimage[sstate-inputdirs] = "${QCOMFIT_DEPLOYDIR}"
 do_generate_qcom_fitimage[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}"
 
+# Restore the FIT image task's output from the shared state cache.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The recipe datastore.
+#
+# Returns:
+#     None: The cached files are placed in ``DEPLOY_DIR_IMAGE``.
+#
+# Example:
+#     ``bitbake -c generate_qcom_fitimage_setscene virtual/kernel``
 python do_generate_qcom_fitimage_setscene () {
     sstate_setscene(d)
 }

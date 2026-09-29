@@ -8,6 +8,11 @@ SRCREV_optee = "690842e042dc470bf0625eb77a8cab926c372a8f"
 
 # Copy of do_deploy from meta-arm until we get it fixed to support configurable deploy dir
 OPTEE_DEPLOY ?= "optee"
+# @description Deploy the OP-TEE OS firmware and its trusted application ELFs under OPTEE_DEPLOY.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c deploy optee-os-qcom-kodiak
 do_deploy() {
     install -d ${DEPLOYDIR}/${MLPREFIX}${OPTEE_DEPLOY}
     install -m 644 ${D}${nonarch_base_libdir}/firmware/* ${DEPLOYDIR}/${MLPREFIX}${OPTEE_DEPLOY}

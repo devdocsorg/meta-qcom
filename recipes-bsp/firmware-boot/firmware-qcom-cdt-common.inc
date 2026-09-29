@@ -16,6 +16,11 @@ do_compile[noexec] = "1"
 
 inherit deploy
 
+# @description Deploy every CDT binary from the unpacked release into QCOM_CDT_SUBDIR.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c deploy firmware-qcom-cdt-qcs6490
 do_deploy() {
     install -d ${DEPLOYDIR}/${QCOM_CDT_SUBDIR}
     find "${UNPACKDIR}" -iname '*cdt*.bin' -exec install -m 0644 {} ${DEPLOYDIR}/${QCOM_CDT_SUBDIR} \;

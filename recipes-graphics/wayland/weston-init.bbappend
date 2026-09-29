@@ -7,6 +7,11 @@ SRC_URI:append:qcom = " \
     file://weston-start.sh \
 "
 
+# @description Install the weston.service drop-in and weston-start.sh, which passes extra KMS cards to Weston.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install weston-init
 do_install:append:qcom() {
     install -d ${D}${systemd_system_unitdir}/weston.service.d
     install -m 0644 ${UNPACKDIR}/additional-devices.conf \

@@ -12,6 +12,11 @@ PV = "0.2.2"
 
 inherit meson systemd
 
+# @description Install qbootctl-bless-boot.service with the qbootctl path filled in.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install qbootctl
 do_install:append () {
 	install -d ${D}${systemd_system_unitdir}
 	sed 's:@bindir@:${bindir}:' < ${UNPACKDIR}/qbootctl-bless-boot.service.in > ${D}${systemd_system_unitdir}/qbootctl-bless-boot.service

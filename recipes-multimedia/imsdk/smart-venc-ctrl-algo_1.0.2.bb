@@ -19,6 +19,11 @@ DEPENDS += "glib-2.0 qcom-fastcv-binaries"
 COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:aarch64 = "(.*)"
 
+# @description Install the prebuilt headers and libraries.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install smart-venc-ctrl-algo
 do_install() {
     install -d ${D}${includedir}
     install -d ${D}${libdir}

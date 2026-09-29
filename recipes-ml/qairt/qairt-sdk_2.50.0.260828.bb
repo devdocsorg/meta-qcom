@@ -30,6 +30,15 @@ DEPENDS = "patchelf-native binutils-native systemd"
 # like "aarch64-oe-linux-gcc8.2", "aarch64-oe-linux-gcc9.3", etc.
 # This helper picks the directory whose GCC major version best matches the
 # build compiler, falling back to the nearest lower available version.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The recipe datastore.
+#
+# Returns:
+#     str | None: A glob such as ``aarch64-oe-linux-gcc11*``, or None when no directory matches.
+#
+# Example:
+#     ``PLATFORM_DIR = "${@platform_dir(d)}"``
 def platform_dir(d):
     sdk_lib_dir = d.getVar("S", True) + "/lib/"
     if os.path.exists(sdk_lib_dir) and os.path.isdir(sdk_lib_dir):
@@ -56,6 +65,11 @@ do_compile[noexec] = "1"
 COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:aarch64 = "(.*)"
 
+# @description Install the QAIRT headers, libraries, tools, and Hexagon DSP libraries for each supported board, linking boards that share binaries.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install qairt-sdk
 do_install() {
     install -d ${D}${includedir}
     install -d ${D}${libdir}
@@ -100,12 +114,16 @@ do_install() {
     cp -r ${S}/bin/${PLATFORM_DIR}/* ${D}${bindir}
 }
 
-# Some shared libraries depend on the unversioned 'libcdsprpc.so',
+# @description Some shared libraries depend on the unversioned 'libcdsprpc.so',
 # while the provider (fastrpc) exports the versioned SONAME 'libcdsprpc.so.1'.
 # Rewrite DT_NEEDED from libcdsprpc.so to libcdsprpc.so.1 for affected libraries
 # to avoid packaging/runtime dependency mismatches.
 #
 # Can be dropped once fixed upstream (planned in QAIRT SDK v2.45)
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c patch_qairt_needed_soname qairt-sdk
 do_patch_qairt_needed_soname() {
     for so in ${D}${libdir}/lib*.so; do
         if readelf -d "$so" 2>/dev/null | grep -q "NEEDED.*libcdsprpc\.so"; then

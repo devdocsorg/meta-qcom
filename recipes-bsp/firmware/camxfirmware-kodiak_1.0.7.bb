@@ -16,6 +16,11 @@ require recipes-bsp/firmware/firmware-qcom.inc
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
 
+# @description Install the qcm6490 CAMERA_ICP_170 firmware and its licence.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install camxfirmware-kodiak
 do_install() {
     install -d ${D}${FW_QCOM_PATH}
     install -m 0644 ${S}/usr/lib/firmware/qcom/qcm6490/CAMERA_ICP_170.elf ${D}${FW_QCOM_PATH}

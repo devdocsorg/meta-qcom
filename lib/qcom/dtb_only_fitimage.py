@@ -21,6 +21,17 @@ from oe.fitimage import ItsNodeRootKernel, ItsNodeConfiguration
 class QcomItsNodeRoot(ItsNodeRootKernel):
 
     def __init__(self, description, address_cells, conf_prefix, mkimage=None):
+        """Create the root node of an arm64 DTB-only FIT image.
+
+        Args:
+            description (str): FIT image description.
+            address_cells (str): ``#address-cells`` value.
+            conf_prefix (str): Configuration node name prefix, such as ``conf-``.
+            mkimage (str | None): mkimage path. Defaults to None.
+
+        Example:
+            ``root = QcomItsNodeRoot("QCOM FIT", "1", "conf-", mkimage)``
+        """
         # We only pass the essential parameters needed for QCOM DTB-only FIT image generation
         # because FIT features like signing, hashing, and padding are not required here.
         # The fit_os value is unused since no kernel node is emitted.
@@ -31,12 +42,37 @@ class QcomItsNodeRoot(ItsNodeRootKernel):
         self._dtbs = []
 
     def set_extra_opts(self, mkimage_extra_opts):
+        """Set extra mkimage options from a shell-quoted string.
+
+        Args:
+            mkimage_extra_opts (str): Options, such as ``"-E -B 8"``, or "" for none.
+
+        Returns:
+            None
+
+        Example:
+            ``root.set_extra_opts(d.getVar("FIT_DTB_MKIMAGE_EXTRA_OPTS") or "")``
+        """
         self._mkimage_extra_opts = shlex.split(mkimage_extra_opts) if mkimage_extra_opts else []
 
     # Emit the DTB section for the FIT image
     def fitimage_emit_section_dtb(self, dtb_id, dtb_path,
                                   compatible_str=None,
                                   dtb_type=None):
+        """Add a device tree image node and remember it for the configuration sections.
+
+        Args:
+            dtb_id (str): Image name after the ``fdt-`` prefix, with commas encoded as underscores.
+            dtb_path (str): Device tree file included with ``/incbin/``.
+            compatible_str (str | None): Space-separated compatible strings. Defaults to None.
+            dtb_type (str | None): Image type, such as ``flat_dt`` or ``qcom_metadata``. Defaults to None.
+
+        Returns:
+            None
+
+        Example:
+            ``root.fitimage_emit_section_dtb("board.dtb", path, "qcom,board-iot", "flat_dt")``
+        """
         load = None
         dtb_ext = os.path.splitext(dtb_path)[1]
 
@@ -58,7 +94,19 @@ class QcomItsNodeRoot(ItsNodeRootKernel):
         self._dtbs.append((dtb_node, compatible_str or "", dtb_id))
 
     def _fitimage_emit_one_section_config(self, conf_node_name, dtb=None):
-        """Emit the fitImage ITS configuration section"""
+        """Emit the fitImage ITS configuration section
+
+        Args:
+            conf_node_name (str): Configuration node name, such as ``conf-1``.
+            dtb (object | None): Image node whose name and ``compatible`` the configuration uses.
+                Defaults to None.
+
+        Returns:
+            None
+
+        Example:
+            ``self._fitimage_emit_one_section_config("conf-1", dtb_node)``
+        """
         opt_props = {}
         conf_desc = []
 
@@ -76,6 +124,14 @@ class QcomItsNodeRoot(ItsNodeRootKernel):
         )
 
     def fitimage_emit_section_config(self):
+        """Add one configuration per compatible string of each device tree, skipping qcom-metadata.
+
+        Returns:
+            None
+
+        Example:
+            ``root.fitimage_emit_section_config()``
+        """
         counter = 0
         for dtb_node, compatible_str in self._dtbs:
             # qcom-metadata don't need any config entry
@@ -89,6 +145,19 @@ class QcomItsNodeRoot(ItsNodeRootKernel):
                 self._fitimage_emit_one_section_config(conf_name, dtb_node)
 
     def fitimage_emit_section_qcomconfig(self, overlay_groups, overlay_compats):
+        """Add numbered configurations for base device trees and their overlay combinations.
+
+        Args:
+            overlay_groups (dict[str, list[list[str]]]): Overlay file lists by encoded base DTB name.
+            overlay_compats (dict[str, str]): Space-separated compatible strings by encoded
+                combination key.
+
+        Returns:
+            None
+
+        Example:
+            ``root.fitimage_emit_section_qcomconfig(overlay_groups, overlay_compats)``
+        """
         counter = 1
         for (dtb_node, compatible_str, dtb_id) in self._dtbs:
             # qcom-metadata doesn't need any config entry
@@ -127,6 +196,21 @@ class QcomItsNodeRoot(ItsNodeRootKernel):
 
     # Override mkimage assemble to inject extra opts
     def run_mkimage_assemble(self, itsfile, fitfile):
+        """Assemble the FIT image with mkimage, the extra options, and any dtc options.
+
+        Args:
+            itsfile (str): ITS file to compile.
+            fitfile (str): FIT image to write.
+
+        Returns:
+            None
+
+        Raises:
+            bb.BBHandledException: mkimage failed; ``bb.fatal`` reports its output.
+
+        Example:
+            ``root.run_mkimage_assemble(itsfile, fitname)``
+        """
         cmd = [self._mkimage, *self._mkimage_extra_opts, '-f', itsfile, fitfile]
         if self._mkimage_dtcopts:
             cmd.insert(1, '-D')

@@ -18,6 +18,11 @@ S = "${UNPACKDIR}/${BP}/src"
 
 DEPENDS = "zlib"
 
+# @description Install the qc_image_unpacker tool.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install qc-image-unpacker
 do_install() {
     install -d ${D}${bindir}
     install -m 0755 ${S}/qc_image_unpacker ${D}${bindir} 

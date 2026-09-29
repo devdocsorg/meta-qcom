@@ -20,6 +20,11 @@ inherit lib_package
 COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:aarch64 = "(.*)"
 
+# @description Install the prebuilt libdiag library, links, programs, pkg-config file, and headers.
+# @noargs
+# @exitcode 0 The task finished; any failing command fails the task and stops the build.
+# @example
+#   bitbake -c install libdiag
 do_install() {
     install -d ${D}${bindir}
     install -d ${D}${libdir}/pkgconfig

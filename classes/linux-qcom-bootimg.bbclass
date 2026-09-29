@@ -17,6 +17,19 @@ QIMG_DEPLOYDIR = "${WORKDIR}/qcom_deploy-${PN}"
 # INITRAMFS_IMAGE = "initramfs-kerneltest-image"
 #
 
+# Add the initramfs and external device tree dependencies of do_qcom_img_deploy.
+#
+# When ``PREFERRED_PROVIDER_virtual/dtb`` is set, it also points ``EXTERNAL_KERNEL_DEVICETREE``
+# at the provider's device trees in the recipe sysroot.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The recipe datastore.
+#
+# Returns:
+#     None
+#
+# Example:
+#     ``bitbake virtual/kernel``
 python __anonymous () {
     if d.getVar('INITRAMFS_IMAGE') != '':
         d.appendVarFlag('do_qcom_img_deploy', 'depends', ' ${INITRAMFS_IMAGE}:do_image_complete')
@@ -27,6 +40,97 @@ python __anonymous () {
         d.setVar('EXTERNAL_KERNEL_DEVICETREE', "${RECIPE_SYSROOT}/boot/devicetree")
 }
 
+# @function do_qcom_img_deploy.make_dtb_image
+# Build the boot images for one device tree, including SD card and initramfs variants when configured.
+#
+# Args:
+#     dtbf (str): Device tree path from ``KERNEL_DEVICETREE`` or ``QCOM_BOOTIMG_DEVICETREE``.
+#     external (bool): True for a device tree from ``EXTERNAL_KERNEL_DEVICETREE``.
+#
+# Returns:
+#     None
+#
+# Raises:
+#     bb.BBHandledException: ``QCOM_BOOTIMG_ROOTFS`` is undefined.
+#
+# Example:
+#     ``make_dtb_image("qcom/qcs6490-rb3gen2.dtb")``
+
+# @function do_qcom_img_deploy.make_dtb_image.getVarDTB
+# Return a variable's per-DTB flag value, or the variable itself when the flag is unset.
+#
+# Args:
+#     name (str): Variable name, such as ``QCOM_BOOTIMG_PAGE_SIZE``.
+#
+# Returns:
+#     str: The value for the current device tree.
+#
+# Example:
+#     ``getVarDTB("QCOM_BOOTIMG_ROOTFS")``
+
+# @function do_qcom_img_deploy.make_dtb_image.make_image_internal
+# Run mkbootimg for one image and point its link name at it.
+#
+# Args:
+#     output (str): Image path.
+#     output_link (str): Link path.
+#     rootfs (str): Root device for the command line, or "" for none.
+#     initrd (str): Ramdisk path; defaults to the placeholder initrd.
+#
+# Returns:
+#     None
+#
+# Raises:
+#     subprocess.CalledProcessError: mkbootimg failed.
+#
+# Example:
+#     ``make_image_internal(output, output_link, "/dev/sda1")``
+
+# @function do_qcom_img_deploy.make_dtb_image.make_image
+# Build a boot image named from a template, the device tree, and the kernel image name.
+#
+# Args:
+#     template (str): File name template with device tree and kernel name fields.
+#     rootfs (str): Root device for the command line.
+#
+# Returns:
+#     str: The image path.
+#
+# Example:
+#     ``make_image("boot-%s-%s.img", rootfs)``
+
+# @function do_qcom_img_deploy.make_dtb_image.make_initramfs_image
+# Build a boot image that carries the initramfs, and link it under an initramfs name.
+#
+# Args:
+#     template (str): File name template with initramfs, device tree, and kernel name fields.
+#     rootfs (str): Root device for the command line.
+#     initrd (str): Initramfs path.
+#     initrd_image_name (str): Initramfs image name used in the file name.
+#
+# Returns:
+#     str: The image path.
+#
+# Example:
+#     ``make_initramfs_image("boot-%s-%s-%s.img", rootfs, initrd, "initramfs-kerneltest-image")``
+
+# Build Android boot images for each device tree with skales mkbootimg.
+#
+# Each image holds the kernel with an appended DTB, a placeholder or ``INITRAMFS_IMAGE``
+# ramdisk, and the command line built from ``SERIAL_CONSOLES``, ``QCOM_BOOTIMG_ROOTFS``,
+# and ``KERNEL_CMDLINE_EXTRA``.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The recipe datastore.
+#
+# Returns:
+#     None: Images and links are written to ``QIMG_DEPLOYDIR``.
+#
+# Raises:
+#     bb.BBHandledException: The initramfs image, ARCH, root file system, or device tree settings are missing or unsupported.
+#
+# Example:
+#     ``bitbake -c qcom_img_deploy virtual/kernel``
 python do_qcom_img_deploy() {
     import shutil
     import subprocess
@@ -177,6 +281,16 @@ SSTATETASKS += "do_qcom_img_deploy"
 do_qcom_img_deploy[sstate-inputdirs] = "${QIMG_DEPLOYDIR}"
 do_qcom_img_deploy[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}"
 
+# Restore the boot images from the shared state cache.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The recipe datastore.
+#
+# Returns:
+#     None: The cached images are placed in ``DEPLOY_DIR_IMAGE``.
+#
+# Example:
+#     ``bitbake -c qcom_img_deploy_setscene virtual/kernel``
 python do_qcom_img_deploy_setscene () {
     sstate_setscene(d)
 }

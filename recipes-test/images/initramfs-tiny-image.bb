@@ -36,6 +36,11 @@ LOCAL_GETTY ?= " \
     ${IMAGE_ROOTFS}${systemd_system_unitdir}/serial-getty@.service \
     ${IMAGE_ROOTFS}${systemd_system_unitdir}/getty@.service \
 "
+# @description Add --autologin root to the getty units in LOCAL_GETTY.
+# @noargs
+# @exitcode 0 The function finished; any failing command fails the calling task.
+# @example
+#   bitbake initramfs-tiny-image
 local_autologin () {
     sed -i -e 's/^\(ExecStart *=.*getty \)/\1--autologin root /' ${LOCAL_GETTY}
 }
@@ -47,6 +52,15 @@ ROOTFS_POSTPROCESS_COMMAND += "${@oe.utils.conditional('VIRTUAL-RUNTIME_init_man
 #
 # To use it define PACKAGE_INSTALL_foo-layer variable containing the list of
 # packages to be installed if (and only if) layer foo-layer is enabled.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The recipe datastore.
+#
+# Returns:
+#     None
+#
+# Example:
+#     ``PACKAGE_INSTALL_openembedded-layer = "htop"``
 python() {
     for layer in d.getVar("BBFILE_COLLECTIONS", True).split():
         extra = d.getVar("PACKAGE_INSTALL_%s" % layer)
