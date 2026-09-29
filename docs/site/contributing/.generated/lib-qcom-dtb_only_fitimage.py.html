@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>lib/qcom/dtb_only_fitimage.py &#8212; meta-qcom  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=dd1dafa6"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="recipes-bsp/firmware-boot/firmware-qcom-boot-common.inc" href="recipes-bsp-firmware-boot-firmware-qcom-boot-common.inc.html" />
+    <link rel="prev" title="lib/oeqa/selftest/cases/qcom_fitimage.py" href="lib-oeqa-selftest-cases-qcom_fitimage.py.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <!-- markdownlint-disable-file -->
+<section id="module-dtb_only_fitimage">
+<span id="lib-qcom-dtb-only-fitimage-py"></span><h1>lib/qcom/dtb_only_fitimage.py<a class="headerlink" href="#module-dtb_only_fitimage" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="dtb_only_fitimage.QcomItsNodeRoot">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dtb_only_fitimage.</span></span><span class="sig-name descname"><span class="pre">QcomItsNodeRoot</span></span><a class="headerlink" href="#dtb_only_fitimage.QcomItsNodeRoot" title="Link to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="dtb_only_fitimage.QcomItsNodeRoot.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address_cells</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conf_prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mkimage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dtb_only_fitimage.QcomItsNodeRoot.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Create the root node of an arm64 DTB-only FIT image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>description</strong> (<em>str</em>) – FIT image description.</p></li>
+<li><p><strong>address_cells</strong> (<em>str</em>) – <code class="docutils literal notranslate"><span class="pre">#address-cells</span></code> value.</p></li>
+<li><p><strong>conf_prefix</strong> (<em>str</em>) – Configuration node name prefix, such as <code class="docutils literal notranslate"><span class="pre">conf-</span></code>.</p></li>
+<li><p><strong>mkimage</strong> (<em>str</em><em> | </em><em>None</em>) – mkimage path. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p><code class="docutils literal notranslate"><span class="pre">root</span> <span class="pre">=</span> <span class="pre">QcomItsNodeRoot(&quot;QCOM</span> <span class="pre">FIT&quot;,</span> <span class="pre">&quot;1&quot;,</span> <span class="pre">&quot;conf-&quot;,</span> <span class="pre">mkimage)</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dtb_only_fitimage.QcomItsNodeRoot._fitimage_emit_one_section_config">
+<span class="sig-name descname"><span class="pre">_fitimage_emit_one_section_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conf_node_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dtb_only_fitimage.QcomItsNodeRoot._fitimage_emit_one_section_config" title="Link to this definition">¶</a></dt>
+<dd><p>Emit the fitImage ITS configuration section</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>conf_node_name</strong> (<em>str</em>) – Configuration node name, such as <code class="docutils literal notranslate"><span class="pre">conf-1</span></code>.</p></li>
+<li><p><strong>dtb</strong> (<em>object</em><em> | </em><em>None</em>) – Image node whose name and <code class="docutils literal notranslate"><span class="pre">compatible</span></code> the configuration uses.
+Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p><code class="docutils literal notranslate"><span class="pre">self._fitimage_emit_one_section_config(&quot;conf-1&quot;,</span> <span class="pre">dtb_node)</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dtb_only_fitimage.QcomItsNodeRoot.fitimage_emit_section_config">
+<span class="sig-name descname"><span class="pre">fitimage_emit_section_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dtb_only_fitimage.QcomItsNodeRoot.fitimage_emit_section_config" title="Link to this definition">¶</a></dt>
+<dd><p>Add one configuration per compatible string of each device tree, skipping qcom-metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p><code class="docutils literal notranslate"><span class="pre">root.fitimage_emit_section_config()</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dtb_only_fitimage.QcomItsNodeRoot.fitimage_emit_section_dtb">
+<span class="sig-name descname"><span class="pre">fitimage_emit_section_dtb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtb_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtb_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compatible_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtb_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dtb_only_fitimage.QcomItsNodeRoot.fitimage_emit_section_dtb" title="Link to this definition">¶</a></dt>
+<dd><p>Add a device tree image node and remember it for the configuration sections.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dtb_id</strong> (<em>str</em>) – Image name after the <code class="docutils literal notranslate"><span class="pre">fdt-</span></code> prefix, with commas encoded as underscores.</p></li>
+<li><p><strong>dtb_path</strong> (<em>str</em>) – Device tree file included with <code class="docutils literal notranslate"><span class="pre">/incbin/</span></code>.</p></li>
+<li><p><strong>compatible_str</strong> (<em>str</em><em> | </em><em>None</em>) – Space-separated compatible strings. Defaults to None.</p></li>
+<li><p><strong>dtb_type</strong> (<em>str</em><em> | </em><em>None</em>) – Image type, such as <code class="docutils literal notranslate"><span class="pre">flat_dt</span></code> or <code class="docutils literal notranslate"><span class="pre">qcom_metadata</span></code>. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p><code class="docutils literal notranslate"><span class="pre">root.fitimage_emit_section_dtb(&quot;board.dtb&quot;,</span> <span class="pre">path,</span> <span class="pre">&quot;qcom,board-iot&quot;,</span> <span class="pre">&quot;flat_dt&quot;)</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dtb_only_fitimage.QcomItsNodeRoot.fitimage_emit_section_qcomconfig">
+<span class="sig-name descname"><span class="pre">fitimage_emit_section_qcomconfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overlay_groups</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlay_compats</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dtb_only_fitimage.QcomItsNodeRoot.fitimage_emit_section_qcomconfig" title="Link to this definition">¶</a></dt>
+<dd><p>Add numbered configurations for base device trees and their overlay combinations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>overlay_groups</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>list</em><em>[</em><em>list</em><em>[</em><em>str</em><em>]</em><em>]</em><em>]</em>) – Overlay file lists by encoded base DTB name.</p></li>
+<li><p><strong>overlay_compats</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Space-separated compatible strings by encoded
+combination key.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p><code class="docutils literal notranslate"><span class="pre">root.fitimage_emit_section_qcomconfig(overlay_groups,</span> <span class="pre">overlay_compats)</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dtb_only_fitimage.QcomItsNodeRoot.run_mkimage_assemble">
+<span class="sig-name descname"><span class="pre">run_mkimage_assemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">itsfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fitfile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dtb_only_fitimage.QcomItsNodeRoot.run_mkimage_assemble" title="Link to this definition">¶</a></dt>
+<dd><p>Assemble the FIT image with mkimage, the extra options, and any dtc options.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>itsfile</strong> (<em>str</em>) – ITS file to compile.</p></li>
+<li><p><strong>fitfile</strong> (<em>str</em>) – FIT image to write.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>bb.BBHandledException</strong> – mkimage failed; <code class="docutils literal notranslate"><span class="pre">bb.fatal</span></code> reports its output.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p><code class="docutils literal notranslate"><span class="pre">root.run_mkimage_assemble(itsfile,</span> <span class="pre">fitname)</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dtb_only_fitimage.QcomItsNodeRoot.set_extra_opts">
+<span class="sig-name descname"><span class="pre">set_extra_opts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mkimage_extra_opts</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dtb_only_fitimage.QcomItsNodeRoot.set_extra_opts" title="Link to this definition">¶</a></dt>
+<dd><p>Set extra mkimage options from a shell-quoted string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mkimage_extra_opts</strong> (<em>str</em>) – Options, such as <code class="docutils literal notranslate"><span class="pre">&quot;-E</span> <span class="pre">-B</span> <span class="pre">8&quot;</span></code>, or “” for none.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p><code class="docutils literal notranslate"><span class="pre">root.set_extra_opts(d.getVar(&quot;FIT_DTB_MKIMAGE_EXTRA_OPTS&quot;)</span> <span class="pre">or</span> <span class="pre">&quot;&quot;)</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../README.html">meta-qcom</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user/README.html">User documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../README.html">Contributor documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../CONTRIBUTING.html">Contributing to meta-qcom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../DEVELOPMENT.html">Set up your development environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../AGENTS.html">Agent Guide for meta-qcom</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../README.html#function-reference">Function reference</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href=".github-test_reference_coverage.py.html">.github/test_reference_coverage.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ci-kas-container-shell-helper.sh.html">ci/kas-container-shell-helper.sh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ci-oe-selftest.sh.html">ci/oe-selftest.sh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ci-yocto-buildstats.sh.html">ci/yocto-buildstats.sh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ci-yocto-check-layer.sh.html">ci/yocto-check-layer.sh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ci-yocto-patchreview.sh.html">ci/yocto-patchreview.sh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="classes-linux-qcom-bootimg.bbclass.html">classes/linux-qcom-bootimg.bbclass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="classes-linux-qcom-dtbbin.bbclass.html">classes/linux-qcom-dtbbin.bbclass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="classes-recipe-dtb-fit-image.bbclass.html">classes-recipe/dtb-fit-image.bbclass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="classes-recipe-image-adbd.bbclass.html">classes-recipe/image-adbd.bbclass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="classes-recipe-image_types_qcom.bbclass.html">classes-recipe/image_types_qcom.bbclass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="classes-recipe-qcom-capsule.bbclass.html">classes-recipe/qcom-capsule.bbclass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="classes-uki-esp-image.bbclass.html">classes/uki-esp-image.bbclass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dynamic-layers-meta-arm-recipes-bsp-trusted-firmware-a-trusted-firmware-a-qcom.inc.html">dynamic-layers/meta-arm/recipes-bsp/trusted-firmware-a/trusted-firmware-a-qcom.inc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dynamic-layers-meta-arm-recipes-devtools-cbsp-boot-utilities-cbsp-boot-utilities-native_1.0.bb.html">dynamic-layers/meta-arm/recipes-devtools/cbsp-boot-utilities/cbsp-boot-utilities-native_1.0.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dynamic-layers-meta-arm-recipes-security-optee-optee-os-qcom.inc.html">dynamic-layers/meta-arm/recipes-security/optee/optee-os-qcom.inc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dynamic-layers-meta-arm-recipes-security-optee-optee-os-tadevkit-qcom_git.bb.html">dynamic-layers/meta-arm/recipes-security/optee/optee-os-tadevkit-qcom_git.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-devtools-abseil-cpp-abseil-cpp_20260107.1.bb.html">dynamic-layers/openembedded-layer/recipes-devtools/abseil-cpp/abseil-cpp_20260107.1.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-devtools-android-tools-android-tools-adbd-cmdline.bb.html">dynamic-layers/openembedded-layer/recipes-devtools/android-tools/android-tools-adbd-cmdline.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-devtools-android-tools-android-tools-conf-android-gadget-start.html">dynamic-layers/openembedded-layer/recipes-devtools/android-tools/android-tools-conf/android-gadget-start</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-multimedia-camx-camxlib-hamoa_1.0.48.bb.html">dynamic-layers/openembedded-layer/recipes-multimedia/camx/camxlib-hamoa_1.0.48.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-multimedia-camx-camxlib-kodiak_1.0.44.bb.html">dynamic-layers/openembedded-layer/recipes-multimedia/camx/camxlib-kodiak_1.0.44.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-multimedia-camx-camxlib-lemans_1.0.48.bb.html">dynamic-layers/openembedded-layer/recipes-multimedia/camx/camxlib-lemans_1.0.48.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-multimedia-camx-camxlib-shikra_1.0.48.bb.html">dynamic-layers/openembedded-layer/recipes-multimedia/camx/camxlib-shikra_1.0.48.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-multimedia-camx-camxlib-talos_1.0.48.bb.html">dynamic-layers/openembedded-layer/recipes-multimedia/camx/camxlib-talos_1.0.48.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-multimedia-camx-common.inc.html">dynamic-layers/openembedded-layer/recipes-multimedia/camx/common.inc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-navigation-location-client-api-location-hal_1.0.2.bb.html">dynamic-layers/openembedded-layer/recipes-navigation/location-client-api/location-hal_1.0.2.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-security-minkipc-minkipc_1.2.10.bb.html">dynamic-layers/openembedded-layer/recipes-security/minkipc/minkipc_1.2.10.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-support-libssc-libssc_git.bb.html">dynamic-layers/openembedded-layer/recipes-support/libssc/libssc_git.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dynamic-layers-openembedded-layer-recipes-support-sensors-qcom-sensors-binaries_1.2.1.bb.html">dynamic-layers/openembedded-layer/recipes-support/sensors/qcom-sensors-binaries_1.2.1.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dynamic-layers-selinux-recipes-security-refpolicy-refpolicy-targeted_git.bbappend.html">dynamic-layers/selinux/recipes-security/refpolicy/refpolicy-targeted_git.bbappend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dynamic-layers-virtualization-layer-recipes-containers-containerd-containerd_git.bbappend.html">dynamic-layers/virtualization-layer/recipes-containers/containerd/containerd_git.bbappend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lib-oeqa-selftest-cases-qcom_fitimage.py.html">lib/oeqa/selftest/cases/qcom_fitimage.py</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">lib/qcom/dtb_only_fitimage.py</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dtb_only_fitimage.QcomItsNodeRoot"><code class="docutils literal notranslate"><span class="pre">QcomItsNodeRoot</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#dtb_only_fitimage.QcomItsNodeRoot.__init__"><code class="docutils literal notranslate"><span class="pre">QcomItsNodeRoot.__init__()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#dtb_only_fitimage.QcomItsNodeRoot._fitimage_emit_one_section_config"><code class="docutils literal notranslate"><span class="pre">QcomItsNodeRoot._fitimage_emit_one_section_config()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#dtb_only_fitimage.QcomItsNodeRoot.fitimage_emit_section_config"><code class="docutils literal notranslate"><span class="pre">QcomItsNodeRoot.fitimage_emit_section_config()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#dtb_only_fitimage.QcomItsNodeRoot.fitimage_emit_section_dtb"><code class="docutils literal notranslate"><span class="pre">QcomItsNodeRoot.fitimage_emit_section_dtb()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#dtb_only_fitimage.QcomItsNodeRoot.fitimage_emit_section_qcomconfig"><code class="docutils literal notranslate"><span class="pre">QcomItsNodeRoot.fitimage_emit_section_qcomconfig()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#dtb_only_fitimage.QcomItsNodeRoot.run_mkimage_assemble"><code class="docutils literal notranslate"><span class="pre">QcomItsNodeRoot.run_mkimage_assemble()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#dtb_only_fitimage.QcomItsNodeRoot.set_extra_opts"><code class="docutils literal notranslate"><span class="pre">QcomItsNodeRoot.set_extra_opts()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-bsp-firmware-boot-firmware-qcom-boot-common.inc.html">recipes-bsp/firmware-boot/firmware-qcom-boot-common.inc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-bsp-firmware-boot-firmware-qcom-boot-dragonboard410c_1036.1.bb.html">recipes-bsp/firmware-boot/firmware-qcom-boot-dragonboard410c_1036.1.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-bsp-firmware-boot-firmware-qcom-boot-dragonboard820c_01700.1.bb.html">recipes-bsp/firmware-boot/firmware-qcom-boot-dragonboard820c_01700.1.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-bsp-firmware-boot-firmware-qcom-boot-qcs8300.inc.html">recipes-bsp/firmware-boot/firmware-qcom-boot-qcs8300.inc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-bsp-firmware-boot-firmware-qcom-boot-qcs9100.inc.html">recipes-bsp/firmware-boot/firmware-qcom-boot-qcs9100.inc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-bsp-firmware-boot-firmware-qcom-cdt-common.inc.html">recipes-bsp/firmware-boot/firmware-qcom-cdt-common.inc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-bsp-firmware-camxfirmware-hamoa_1.0.6.bb.html">recipes-bsp/firmware/camxfirmware-hamoa_1.0.6.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-bsp-firmware-camxfirmware-kodiak_1.0.7.bb.html">recipes-bsp/firmware/camxfirmware-kodiak_1.0.7.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-bsp-firmware-camxfirmware-lemans_1.0.7.bb.html">recipes-bsp/firmware/camxfirmware-lemans_1.0.7.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-bsp-firmware-camxfirmware-talos_1.0.1.bb.html">recipes-bsp/firmware/camxfirmware-talos_1.0.1.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-bsp-firmware-firmware-ath6kl_git.bb.html">recipes-bsp/firmware/firmware-ath6kl_git.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-bsp-firmware-firmware-qcom.inc.html">recipes-bsp/firmware/firmware-qcom.inc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-bsp-hexagon-dsp-binaries-hexagon-dsp-binaries.inc.html">recipes-bsp/hexagon-dsp-binaries/hexagon-dsp-binaries.inc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-bsp-lk-lk.inc.html">recipes-bsp/lk/lk.inc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-bsp-partition-mount-tee-partition_1.0.bb.html">recipes-bsp/partition/mount-tee-partition_1.0.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-bsp-partition-qcom-partition-conf_git.bb.html">recipes-bsp/partition/qcom-partition-conf_git.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-bsp-partition-qcom-raw-partitions-udev-rules_git.bb.html">recipes-bsp/partition/qcom-raw-partitions-udev-rules_git.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-bsp-u-boot-u-boot-qcom_git.bb.html">recipes-bsp/u-boot/u-boot-qcom_git.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-bsp-u-boot-u-boot-scr-qcom-fit.bb.html">recipes-bsp/u-boot/u-boot-scr-qcom-fit.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-bsp-u-boot-u-boot_%25.bbappend.html">recipes-bsp/u-boot/u-boot_%.bbappend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-connectivity-sigma-dut-sigma-dut_git.bb.html">recipes-connectivity/sigma-dut/sigma-dut_git.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-core-systemd-systemd_%25.bbappend.html">recipes-core/systemd/systemd_%.bbappend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-devtools-pil-squasher-pil-squasher_git.bb.html">recipes-devtools/pil-squasher/pil-squasher_git.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-devtools-qc-image-unpacker-qc-image-unpacker_git.bb.html">recipes-devtools/qc-image-unpacker/qc-image-unpacker_git.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-devtools-qca-swiss-army-knife-qca-swiss-army-knife_git.bb.html">recipes-devtools/qca-swiss-army-knife/qca-swiss-army-knife_git.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-devtools-qmic-qmic_git.bb.html">recipes-devtools/qmic/qmic_git.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-devtools-qtestsign-qtestsign_git.bb.html">recipes-devtools/qtestsign/qtestsign_git.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-devtools-skales-skales_git.bb.html">recipes-devtools/skales/skales_git.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-devtools-swiv-build-utility-swiv-build-utility_git.bb.html">recipes-devtools/swiv-build-utility/swiv-build-utility_git.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-graphics-adreno-qcom-adreno_1.877.3.bb.html">recipes-graphics/adreno/qcom-adreno_1.877.3.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-graphics-kgsl-dlkm-kgsl-dlkm_1.0.14.bb.html">recipes-graphics/kgsl-dlkm/kgsl-dlkm_1.0.14.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-graphics-wayland-weston-init.bbappend.html">recipes-graphics/wayland/weston-init.bbappend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-kernel-images-esp-qcom-fit-image.bb.html">recipes-kernel/images/esp-qcom-fit-image.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-kernel-images-esp-qcom-image.bb.html">recipes-kernel/images/esp-qcom-image.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-kernel-iris-video-module-iris-video-dlkm_1.0.28.bb.html">recipes-kernel/iris-video-module/iris-video-dlkm_1.0.28.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-kernel-linux-linux-qcom-next_git.bb.html">recipes-kernel/linux/linux-qcom-next_git.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-kernel-linux-linux-qcom_6.18.bb.html">recipes-kernel/linux/linux-qcom_6.18.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-kernel-linux-linux-yocto-dev.bbappend.html">recipes-kernel/linux/linux-yocto-dev.bbappend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-kernel-linux-qcom-dtb-metadata_1.1.bb.html">recipes-kernel/linux/qcom-dtb-metadata_1.1.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-kernel-qps615-module-qps615-firmware_6.0.0.bb.html">recipes-kernel/qps615-module/qps615-firmware_6.0.0.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-ml-qairt-qairt-sdk_2.50.0.260828.bb.html">recipes-ml/qairt/qairt-sdk_2.50.0.260828.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-multimedia-camx-camx-dlkm_1.0.6.bb.html">recipes-multimedia/camx/camx-dlkm_1.0.6.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-multimedia-camx-camxcommon-headers_1.0.48.bb.html">recipes-multimedia/camx/camxcommon-headers_1.0.48.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-multimedia-fastcv-qcom-fastcv-binaries_1.8.9.bb.html">recipes-multimedia/fastcv/qcom-fastcv-binaries_1.8.9.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-multimedia-imsdk-gst-plugins-imsdk-packaging.inc.html">recipes-multimedia/imsdk/gst-plugins-imsdk-packaging.inc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-multimedia-imsdk-smart-venc-ctrl-algo_1.0.2.bb.html">recipes-multimedia/imsdk/smart-venc-ctrl-algo_1.0.2.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-support-abl2esp-abl2esp_1.0.bb.html">recipes-support/abl2esp/abl2esp_1.0.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-support-fastrpc-fastrpc_1.0.7.bb.html">recipes-support/fastrpc/fastrpc_1.0.7.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-support-initrdscripts-files-copy-modules.sh.html">recipes-support/initrdscripts/files/copy-modules.sh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-support-initrdscripts-initramfs-module-copy-modules_1.0.bb.html">recipes-support/initrdscripts/initramfs-module-copy-modules_1.0.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-support-pd-mapper-pd-mapper_1.1.bb.html">recipes-support/pd-mapper/pd-mapper_1.1.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-support-qbootctl-qbootctl_git.bb.html">recipes-support/qbootctl/qbootctl_git.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-support-rmtfs-rmtfs_1.3.bb.html">recipes-support/rmtfs/rmtfs_1.3.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-test-bootrr-bootrr_git.bb.html">recipes-test/bootrr/bootrr_git.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-test-diag-diag_git.bb.html">recipes-test/diag/diag_git.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-test-diag-router-diag-router_1.0.3.bb.html">recipes-test/diag-router/diag-router_1.0.3.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-test-images-initramfs-tiny-image.bb.html">recipes-test/images/initramfs-tiny-image.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-test-libdiag-libdiag_1.0.5.bb.html">recipes-test/libdiag/libdiag_1.0.5.bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipes-test-mybw-mybw_git.bb.html">recipes-test/mybw/mybw_git.bb</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../README.html#files">Files</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../README.html">Documentation overview</a><ul>
+  <li><a href="../README.html">Contributor documentation</a><ul>
+      <li>Previous: <a href="lib-oeqa-selftest-cases-qcom_fitimage.py.html" title="previous chapter">lib/oeqa/selftest/cases/qcom_fitimage.py</a></li>
+      <li>Next: <a href="recipes-bsp-firmware-boot-firmware-qcom-boot-common.inc.html" title="next chapter">recipes-bsp/firmware-boot/firmware-qcom-boot-common.inc</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

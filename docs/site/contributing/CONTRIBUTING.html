@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Contributing to meta-qcom &#8212; meta-qcom  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=dd1dafa6"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Set up your development environment" href="DEVELOPMENT.html" />
+    <link rel="prev" title="Contributor documentation" href="README.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="contributing-to-meta-qcom">
+<h1>Contributing to meta-qcom<a class="headerlink" href="#contributing-to-meta-qcom" title="Link to this heading">¶</a></h1>
+<p>For some useful guidelines when submitting patches, please refer to:
+<a class="reference external" href="https://docs.yoctoproject.org/dev/contributor-guide/submit-changes.html#preparing-changes-for-submission">Preparing Changes for Submission</a></p>
+<p>Pull requests will be discussed within the GitHub pull-request infrastructure.</p>
+<section id="where-to-send-changes">
+<h2>Where to send changes<a class="headerlink" href="#where-to-send-changes" title="Link to this heading">¶</a></h2>
+<p>Please submit any patches against the <code class="docutils literal notranslate"><span class="pre">meta-qcom</span></code> layer (branch <strong>master</strong>)
+by using the GitHub pull-request feature. Fork the repo, create a branch,
+do the work, rebase from upstream, and create the pull request.
+<a class="reference external" href="https://github.com/qualcomm-linux/meta-qcom/compare?expand=1&amp;template=pr_template.md">Open the pull request with the template</a>,
+choosing your fork’s branch as the head.</p>
+<p>Fixes reach the <code class="docutils literal notranslate"><span class="pre">wrynose</span></code> release branch as backports of merged <code class="docutils literal notranslate"><span class="pre">master</span></code>
+changes, as the <a class="reference internal" href="AGENTS.html#backporting-to-a-release-branch"><span class="std std-ref">agent guide’s backport section</span></a>
+describes.</p>
+<p>Branch <strong>kirkstone</strong> is not open for direct contributions, please raise an
+issue with the suggested change instead.</p>
+<p><a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/BRANCHES.md">BRANCHES.md</a>
+describes the other branches. Report vulnerabilities privately as
+<a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/SECURITY.md">SECURITY.md</a>
+describes, and follow the
+<a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/CODE_OF_CONDUCT.md">Code of Conduct</a>.
+<a class="reference external" href="https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/.github/CODEOWNERS">CODEOWNERS</a>
+names the reviewers.</p>
+<section id="qualcomm-internal">
+<h3>Qualcomm Internal<a class="headerlink" href="#qualcomm-internal" title="Link to this heading">¶</a></h3>
+<p>Please make sure to visit go/GitHubBasicsDoc and go/OSSBestPractices before proposing changes.</p>
+</section>
+</section>
+<section id="prepare-and-check-a-change">
+<h2>Prepare and check a change<a class="headerlink" href="#prepare-and-check-a-change" title="Link to this heading">¶</a></h2>
+<p>Set up the documentation tools and run the layer’s checks as
+<a class="reference internal" href="DEVELOPMENT.html"><span class="std std-doc">DEVELOPMENT.md</span></a> describes.</p>
+</section>
+<section id="commit-messages">
+<h2>Commit messages<a class="headerlink" href="#commit-messages" title="Link to this heading">¶</a></h2>
+<p>Each commit must be atomic: it must contain exactly one logical change. Do not
+squash multiple features, fixes, or otherwise unrelated changes into a single
+commit — split them into separate commits, one per logical change. Each patch
+must be logically coherent, self-contained, and independently buildable, and
+the tree must remain in a functional state after every commit.</p>
+<p>Each commit must contain a well-formed commit subject and message.</p>
+<p>The commit subject must follow the form <code class="docutils literal notranslate"><span class="pre">recipe-name:</span> <span class="pre">summary</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">changes</span></code>,
+where <code class="docutils literal notranslate"><span class="pre">recipe-name</span></code> identifies the recipe or component being touched and the
+summary concisely describes the change. Keep the subject short and specific,
+capturing intent rather than a file-by-file dump. For example:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ci/qcom-distro:</span> <span class="pre">Include</span> <span class="pre">meta-dpdk</span> <span class="pre">layer</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fit-dtb-compatible:</span> <span class="pre">drop</span> <span class="pre">SoC</span> <span class="pre">version</span> <span class="pre">suffixes</span> <span class="pre">from</span> <span class="pre">compatible</span> <span class="pre">strings</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">debug.yml:</span> <span class="pre">enable</span> <span class="pre">FTrace</span> <span class="pre">settings</span> <span class="pre">in</span> <span class="pre">kernel</span> <span class="pre">cmdline</span></code></p></li>
+</ul>
+<p>Use consistent wording for version upgrades, e.g.
+<code class="docutils literal notranslate"><span class="pre">recipe-name:</span> <span class="pre">upgrade</span> <span class="pre">vX.Y.Z</span> <span class="pre">-&gt;</span> <span class="pre">vA.B.C</span></code>.</p>
+<p>The commit message (the body) must:</p>
+<ul class="simple">
+<li><p>be written in plain English;</p></li>
+<li><p>first describe the issue or the problem that is being solved, so that a
+reader can understand <em>why</em> the change is needed;</p></li>
+<li><p>then use the imperative mood (e.g. “add”, “drop”, “enable”, “update”)
+to describe the actions to be performed in order to solve the problem;</p></li>
+<li><p>not merely restate <em>what</em> the diff changes line by line — the diff
+already shows that;</p></li>
+<li><p>avoid unnecessary bullet lists; prefer prose paragraphs;</p></li>
+<li><p>wrap body lines for readability (~72 chars).</p></li>
+</ul>
+</section>
+<section id="sign-off-and-trailers">
+<h2>Sign-off and trailers<a class="headerlink" href="#sign-off-and-trailers" title="Link to this heading">¶</a></h2>
+<p>Every commit must also carry a <code class="docutils literal notranslate"><span class="pre">Signed-off-by</span></code> trailer matching the
+author identity from your local <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">config</span></code> (use <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span> <span class="pre">-s</span></code>). Never
+fabricate a name or email; always read them from <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">config</span></code>.</p>
+<p>If an AI coding assistant or other advanced tool was used to help create the
+change, acknowledge that use by adding an <code class="docutils literal notranslate"><span class="pre">Assisted-by</span></code> trailer in the form:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Assisted-by: AGENT_NAME:MODEL_VERSION [TOOL1] [TOOL2]
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">AGENT_NAME</span></code> is the name of the AI tool or framework, <code class="docutils literal notranslate"><span class="pre">MODEL_VERSION</span></code> is
+the specific model version used, and <code class="docutils literal notranslate"><span class="pre">[TOOL1]</span> <span class="pre">[TOOL2]</span></code> are optional specialized
+analysis tools. Basic development tools (git, gcc, make, editors) should not be
+listed. For example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Assisted-by: ExampleAgent:example-model-1.0
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../README.html">meta-qcom</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user/README.html">User documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="README.html">Contributor documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Contributing to meta-qcom</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#where-to-send-changes">Where to send changes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#qualcomm-internal">Qualcomm Internal</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#prepare-and-check-a-change">Prepare and check a change</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#commit-messages">Commit messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sign-off-and-trailers">Sign-off and trailers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="DEVELOPMENT.html">Set up your development environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="AGENTS.html">Agent Guide for meta-qcom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="README.html#function-reference">Function reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="README.html#files">Files</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../README.html">Documentation overview</a><ul>
+  <li><a href="README.html">Contributor documentation</a><ul>
+      <li>Previous: <a href="README.html" title="previous chapter">Contributor documentation</a></li>
+      <li>Next: <a href="DEVELOPMENT.html" title="next chapter">Set up your development environment</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

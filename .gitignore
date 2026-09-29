@@ -1,3 +1,16 @@
 lib/qcom/__pycache__/
 ci/build-id.yml
 kas-container
+
+# Ignore local environment settings at any folder depth.
+.env
+# Ignore named environment files, such as .env.local.
+.env.*
+# Keep the documented, safe settings file in version control.
+!.env.example
+
+# Local documentation environment, build caches, and generated reference pages.
+.venv/
+docs/.doctrees/
+docs/source/contributing/.generated/
+__pycache__/

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Security recommendation for Production Build &#8212; meta-qcom  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=dd1dafa6"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Contributor documentation" href="../contributing/README.html" />
+    <link rel="prev" title="Configuration" href="CONFIGURATION.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="security-recommendation-for-production-build">
+<h1>Security recommendation for Production Build<a class="headerlink" href="#security-recommendation-for-production-build" title="Link to this heading">¶</a></h1>
+<section id="debugfs">
+<h2>1. Debugfs<a class="headerlink" href="#debugfs" title="Link to this heading">¶</a></h2>
+<p>By default debugfs is enabled to make it user friendly for debugging. Commercial products are not advised to have this enabled.
+We recommend deployers to disable debugfs as part of production deployment customization.</p>
+<p>Disable via kernel configuration:</p>
+<p>DebugFS is controlled by the kernel configuration option <code class="docutils literal notranslate"><span class="pre">CONFIG_DEBUG_FS</span></code>.</p>
+<p>For commercial/production builds, In meta-qcom based builds, this can be disabled by setting the following option in the kernel configuration used by the BSP
+(for example, in <code class="docutils literal notranslate"><span class="pre">meta-qcom/recipes-kernel/linux/linux-qcom-next/configs/bsp-additions.cfg</span></code>):</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># CONFIG_DEBUG_FS is not set
+</pre></div>
+</div>
+</section>
+<section id="kernel-hardening-flags">
+<h2>2. Kernel hardening flags<a class="headerlink" href="#kernel-hardening-flags" title="Link to this heading">¶</a></h2>
+<p>Kernel security restrictions and self-protection (“kernel hardening”) can be enabled via distribution-specific configuration.</p>
+<p>For commercial/production builds, enabling available kernel hardening features is recommended to enhance system security and reduce the attack surface.</p>
+<p>Where supported by the selected distribution, the <code class="docutils literal notranslate"><span class="pre">hardened</span></code> feature can be appended to <code class="docutils literal notranslate"><span class="pre">DISTRO_FEATURES</span></code>.</p>
+<p>This can be added to the distribution configuration (for example, <code class="docutils literal notranslate"><span class="pre">meta-qcom-distro/conf/distro/qcom-distro.conf</span></code> when using meta-qcom-distro).</p>
+<p>For example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>DISTRO_FEATURES:append = " hardened"
+</pre></div>
+</div>
+</section>
+<section id="logging-and-kernel-information-exposure-restrictions">
+<h2>3. Logging and kernel information exposure restrictions<a class="headerlink" href="#logging-and-kernel-information-exposure-restrictions" title="Link to this heading">¶</a></h2>
+<p>For commercial/production builds, it is recommended to restrict kernel logging and kernel information exposure to reduce the attack surface and prevent leakage of sensitive kernel details.</p>
+<section id="kernel-log-rate-limiting-printk">
+<h3>3.1 Kernel log rate limiting (printk)<a class="headerlink" href="#kernel-log-rate-limiting-printk" title="Link to this heading">¶</a></h3>
+<p>Rate limiting for kernel log output (for example via <code class="docutils literal notranslate"><span class="pre">/dev/kmsg</span></code> or the serial console) can be configured using kernel command-line parameters.</p>
+<p>For production builds, enabling printk rate limiting is recommended to avoid excessive kernel log exposure.</p>
+<p>In meta-qcom based Yocto builds, this can be done by appending the parameter to the kernel command line
+via the distribution configuration (for example <code class="docutils literal notranslate"><span class="pre">meta-qcom-distro/conf/distro/qcom-distro.conf</span></code>) when using meta-qcom-distro.</p>
+<p>For example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>KERNEL_CMDLINE_EXTRA:append = " printk.devkmsg=ratelimit "
+</pre></div>
+</div>
+</section>
+<section id="kernel-pointer-restriction-kptr-restrict-and-kernel-log-access-restriction-dmesg-restrict">
+<h3>3.2 Kernel pointer restriction (kptr_restrict) and Kernel log access restriction (dmesg_restrict)<a class="headerlink" href="#kernel-pointer-restriction-kptr-restrict-and-kernel-log-access-restriction-dmesg-restrict" title="Link to this heading">¶</a></h3>
+<p>Kernel pointer exposure can be restricted using the <code class="docutils literal notranslate"><span class="pre">kptr_restrict</span></code> sysctl.
+Access to kernel logs via <code class="docutils literal notranslate"><span class="pre">dmesg</span></code> can be restricted using <code class="docutils literal notranslate"><span class="pre">dmesg_restrict</span></code> so that only privileged users are allowed to read kernel messages.
+For commercial/production builds, it is recommended to set these to restrict visibility to privileged users only.</p>
+<p>In meta-qcom based Yocto builds, this can be implemented by adding a sysctl configuration file via a bbappend to the <code class="docutils literal notranslate"><span class="pre">procps</span></code> recipe.</p>
+<p>Example implementation:</p>
+<ol class="arabic">
+<li><p>Create a bbappend file:</p>
+<p><code class="docutils literal notranslate"><span class="pre">meta-qcom/recipes-core/procps/procps_%.bbappend</span></code></p>
+<div class="highlight-bitbake notranslate"><div class="highlight"><pre><span></span><span class="nv">FILESEXTRAPATHS</span><span class="nd">:prepend</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="s2">"</span><span class="si">${</span><span class="nv">THISDIR</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">PN</span><span class="si">}</span><span class="s2">:"</span>
+
+<span class="nv">SRC_URI</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s2">"file://99-security-hardening.conf"</span>
+
+<span class="nf">do_install</span><span class="nd">:append</span>() <span class="p">{</span>
+<span class="w">   </span>install<span class="w"> </span>-d<span class="w"> </span><span class="si">${</span><span class="nv">D</span><span class="si">}${</span><span class="nv">sysconfdir</span><span class="si">}</span>/sysctl.d
+<span class="w">   </span>install<span class="w"> </span>-m<span class="w"> </span><span class="m">0644</span><span class="w"> </span><span class="si">${</span><span class="nv">WORKDIR</span><span class="si">}</span>/99-security-hardening.conf<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span><span class="si">${</span><span class="nv">D</span><span class="si">}${</span><span class="nv">sysconfdir</span><span class="si">}</span>/sysctl.d/
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Add sysctl configuration file:</p>
+<p><code class="docutils literal notranslate"><span class="pre">meta-qcom/recipes-core/procps/procps/99-security-hardening.conf</span></code></p>
+<p>Contents:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>kernel.kptr_restrict = 2
+kernel.dmesg_restrict = 1
+</pre></div>
+</div>
+</li>
+<li><p>Build the image:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bitbake<span class="w"> </span>&lt;image-name&gt;
+</pre></div>
+</div>
+</li>
+<li><p>verify in the target</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sysctl<span class="w"> </span>kernel.kptr_restrict
+sysctl<span class="w"> </span>kernel.dmesg_restrict<span class="w">   </span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
+<section id="userspace-hardening">
+<h2>5. Userspace hardening<a class="headerlink" href="#userspace-hardening" title="Link to this heading">¶</a></h2>
+<p>OpenEmbedded provides a standard set of userspace security hardening compiler and linker flags via <strong>security_flags.inc</strong>
+(<a class="reference external" href="https://git.openembedded.org/openembedded-core/tree/meta/conf/distro/include/security_flags.inc">https://git.openembedded.org/openembedded-core/tree/meta/conf/distro/include/security_flags.inc</a>).</p>
+<p>These flags are already part of the build and must remain enabled for production images to ensure adequate userspace exploit mitigations.
+Any deviation from these defaults should be avoided or explicitly justified.</p>
+</section>
+<section id="adb-security-recommendations-for-production">
+<h2>6. ADB security recommendations for production<a class="headerlink" href="#adb-security-recommendations-for-production" title="Link to this heading">¶</a></h2>
+<section id="adb-adbd-restrictions">
+<h3>ADB / adbd restrictions<a class="headerlink" href="#adb-adbd-restrictions" title="Link to this heading">¶</a></h3>
+<p>By default <code class="docutils literal notranslate"><span class="pre">adbd</span></code> runs as root on yocto, which means <code class="docutils literal notranslate"><span class="pre">adb</span> <span class="pre">shell</span></code> provides root access.
+Commercial/production products should not allow root access via ADB because it weakens overall device security.</p>
+</section>
+<section id="recommendation">
+<h3>Recommendation<a class="headerlink" href="#recommendation" title="Link to this heading">¶</a></h3>
+<p>In production builds, <code class="docutils literal notranslate"><span class="pre">adbd</span></code> must not run as root.</p>
+<p>Limit root ADB access to development/debug use only.</p>
+<p><strong>Deployers are expected to disable root ADB access as part of production deployment customization before commercialization.</strong></p>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../README.html">meta-qcom</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="README.html">User documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="USAGE.html">Flashing images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CONFIGURATION.html">Configuration</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Security recommendation for Production Build</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#debugfs">1. Debugfs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#kernel-hardening-flags">2. Kernel hardening flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#logging-and-kernel-information-exposure-restrictions">3. Logging and kernel information exposure restrictions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#kernel-log-rate-limiting-printk">3.1 Kernel log rate limiting (printk)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kernel-pointer-restriction-kptr-restrict-and-kernel-log-access-restriction-dmesg-restrict">3.2 Kernel pointer restriction (kptr_restrict) and Kernel log access restriction (dmesg_restrict)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#userspace-hardening">5. Userspace hardening</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adb-security-recommendations-for-production">6. ADB security recommendations for production</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#adb-adbd-restrictions">ADB / adbd restrictions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#recommendation">Recommendation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="README.html#files">Files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/README.html">Contributor documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../README.html">Documentation overview</a><ul>
+  <li><a href="README.html">User documentation</a><ul>
+      <li>Previous: <a href="CONFIGURATION.html" title="previous chapter">Configuration</a></li>
+      <li>Next: <a href="../contributing/README.html" title="next chapter">Contributor documentation</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,5 +1,10 @@
 # Flashing images
 
+This tutorial flashes an RB3 Gen 2 board over USB. It needs a Linux host, the
+board with its power supply, USB-C and micro USB cables, and an image from the
+README's [quick build](https://github.com/devdocsorg/meta-qcom/blob/docs/layer-documentation/README.md#quick-build),
+run in the folder you work from below.
+
 ## Build QDL tool
 
 QDL tool communicates with USB devices of VID:PID `05c6:9008` and uploads a

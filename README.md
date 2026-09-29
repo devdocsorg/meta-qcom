@@ -36,17 +36,22 @@ revision: HEAD
 
 The dependency is optional, and not strictly required. When meta-oe is enabled
 in the build (e.g. it is used in BBLAYERS) then additional recipes from
-meta-qcom are added to the metadata. You can refer to meta-qcom/conf/layer.conf
+meta-qcom are added to the metadata. You can refer to [meta-qcom/conf/layer.conf](conf/layer.conf)
 for the implementation details.
 
 ## Branches
 
-- **master:** Primary development branch, with focus on upstream support and
-  compatibility with the most recent Yocto Project release.
-- **wrynose:** LTS branch based on the Yocto Project 6.0 release, used by
-  Qualcomm Linux 2.x.
-- **all stable branches up until styhead:** Legacy branches maintained by Linaro,
-  prior to the migration to [Qualcomm-linux](https://github.com/qualcomm-linux).
+| Branch | Purpose | Status | Build from it | Contributions |
+| --- | --- | --- | --- | --- |
+| **master** | Primary development branch, with focus on upstream support and compatibility with the most recent Yocto Project release. | Active | Yes | Yes, see [CONTRIBUTING.md](CONTRIBUTING.md) |
+| **wrynose** | LTS branch based on the Yocto Project 6.0 release, used by Qualcomm Linux 2.x. | Active LTS | Yes | Backports from master, see [CONTRIBUTING.md](CONTRIBUTING.md) |
+| **backport/&lt;pr&gt;-to-wrynose** | Temporary branches that the backport automation opens pull requests from. | Temporary | Only to test the backport | Review the backport pull request |
+| **next** | For testing workflow changes before being merged to master. | Test branch | Builds like master; meant for workflow tests | Not documented |
+| **kirkstone** | Legacy branch maintained by Linaro, prior to the migration to [Qualcomm-linux](https://github.com/qualcomm-linux). | Yocto Project support ended | Only with kirkstone layers | Not open for direct contributions, see [CONTRIBUTING.md](CONTRIBUTING.md) |
+| **all other stable branches up until styhead** (dunfell, honister, jethro, krogoth, morty, pyro, rocko, scarthgap, styhead, sumo, thud, warrior, zeus) | Legacy branches maintained by Linaro, prior to the migration to [Qualcomm-linux](https://github.com/qualcomm-linux). | Inactive since 2025 or earlier | Only with the matching release's layers | Current policy not documented; see [BRANCHES.md](BRANCHES.md) for the routes their READMEs name |
+
+This table lists every current branch. [BRANCHES.md](BRANCHES.md) gives each
+branch's support status, history, and relationship to master.
 
 ## Machine Support
 
@@ -88,8 +93,9 @@ not need to be installed on the host.
     ```
 
 This reuses the same `ci/<board>.yml` configurations that CI uses. See
-[AGENTS.md](AGENTS.md) for more advanced usage, including sharing the
-`DL_DIR`/`SSTATE_DIR` caches across builds.
+[AGENTS.md](docs/source/contributing/AGENTS.md) for more advanced usage, including sharing the
+`DL_DIR`/`SSTATE_DIR` caches across builds, and the
+[configuration guide](docs/source/user/CONFIGURATION.md) for what each kas file sets.
 
 > **Note:** To run kas natively on the host instead of in a container, install
 > kas by following the
@@ -101,12 +107,12 @@ For a manual build without KAS, refer to the [Yocto Project Quick Build](https:/
 ## Flash
 
 For instructions on building the QDL tool, preparing the board, and flashing
-images over USB (EDL mode), see [Flashing images](docs/flashing.md).
+images over USB (EDL mode), see [Flashing images](docs/source/user/USAGE.md).
 
 ## Security recommendations for production
 
 Please refer to the security recommendations for production builds documented here:
-[Security Recommendations](docs/security-recommendations.md)
+[Security Recommendations](docs/source/user/security-recommendations.md)
 
 ## Releases
 
@@ -146,19 +152,10 @@ build it with KAS using the configuration for your target machine and distro.
 
 ## Contributing
 
-Please submit any patches against the `meta-qcom` layer (branch **master**)
-by using the GitHub pull-request feature. Fork the repo, create a branch,
-do the work, rebase from upstream, and create the pull request.
-
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow
-and the commit subject and message requirements before opening a pull request.
-
-Branch **kirkstone** is not open for direct contributions, please raise an
-issue with the suggested change instead.
-
-### Qualcomm Internal
-
-Please make sure to visit go/GitHubBasicsDoc and go/OSSBestPractices before proposing changes.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for where to send changes, the
+contribution workflow, and the commit subject and message requirements before
+opening a pull request. Follow the [Code of Conduct](CODE_OF_CONDUCT.md) when
+participating.
 
 ## Communication
 
@@ -175,7 +172,19 @@ Please make sure to visit go/GitHubBasicsDoc and go/OSSBestPractices before prop
 - Sourabh Banerjee <sbanerje@qti.qualcomm.com>
 - Viswanath Kraleti <viswanath.kraleti@oss.qualcomm.com>
 
+## Documentation
+
+Open [docs/site/index.html](docs/site/index.html) directly in a browser for the
+generated documentation site; the [documentation guide](docs/README.md) explains
+where its source lives and how to rebuild it.
+
+- [Flashing images](docs/source/user/USAGE.md) — Flash a built image onto a board.
+- [Configuration](docs/source/user/CONFIGURATION.md) — Understand the kas files, layer settings, and layer variables.
+- [Development setup](docs/source/contributing/DEVELOPMENT.md) — Run the layer checks and rebuild the documentation.
+- [Function reference](docs/site/contributing/README.html#function-reference) — Read the documented tasks and functions of every recipe, class, and script.
+
 ## License
 
 This layer is licensed under the MIT license. Check out [LICENSE](LICENSE)
-for more details.
+for more details. [NOTICE](NOTICE) keeps the licences of the adapted
+documentation tooling and templates.
