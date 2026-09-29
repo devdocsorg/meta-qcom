@@ -48,6 +48,21 @@ for the implementation details.
 - **all stable branches up until styhead:** Legacy branches maintained by Linaro,
   prior to the migration to [Qualcomm-linux](https://github.com/qualcomm-linux).
 
+Every current branch, with the [Yocto Project support status](https://wiki.yoctoproject.org/wiki/Releases)
+of its release series and its last commit:
+
+| Branch | Status | Build from it | Contributions |
+| --- | --- | --- | --- |
+| `master` | Active development | Yes, as in [Quick build](#quick-build) | [Pull requests](docs/source/contributing/CONTRIBUTING.md#where-to-send-changes) |
+| `wrynose` | LTS, supported until April 2030; last commit September 2026 | Yes, for Qualcomm Linux 2.x | [Backports from `master`](docs/source/contributing/CONTRIBUTING.md#where-to-send-changes) |
+| `next` | Tests workflow changes before they reach `master`; last commit September 2026 | No; use `master` | [Not documented](docs/source/contributing/CONTRIBUTING.md#where-to-send-changes) |
+| `scarthgap` | Legacy; LTS supported until April 2028; last commit December 2024 | Only with other `scarthgap` layers | [Not documented](docs/source/contributing/CONTRIBUTING.md#where-to-send-changes) |
+| `kirkstone` | Legacy; end of life; last commit December 2024 | Only with other `kirkstone` layers | [Issues, not pull requests](docs/source/contributing/CONTRIBUTING.md#where-to-send-changes) |
+| `styhead`, `honister`, `dunfell`, `zeus`, `warrior`, `thud`, `sumo`, `rocko`, `pyro`, `morty`, `krogoth`, `jethro` | Legacy; end of life; last commits from November 2016 to January 2025 | Only with layers of the same release | [Not documented](docs/source/contributing/CONTRIBUTING.md#where-to-send-changes) |
+| `backport/<pull-request>-to-wrynose` | Temporary branches that the backport workflow creates for merged pull requests | No; use `wrynose` | Reviewed in their backport pull requests |
+
+[BRANCHES.md](BRANCHES.md) describes how the long-lived branches are maintained.
+
 ## Machine Support
 
 See `conf/machine` for the complete list of supported devices.
