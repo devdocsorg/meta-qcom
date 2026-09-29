@@ -7,6 +7,11 @@ SRC_URI = "file://copy-modules.sh"
 
 S = "${UNPACKDIR}"
 
+# @description Install copy-modules.sh as the initramfs-framework module /init.d/95-copy_modules.
+# @noargs
+# @exitcode 0 ${D}/init.d/95-copy_modules is installed.
+# @example
+#   bitbake initramfs-module-copy-modules -c install
 do_install() {
     install -d ${D}/init.d
     install -m 0755 ${S}/copy-modules.sh ${D}/init.d/95-copy_modules

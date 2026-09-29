@@ -19,6 +19,11 @@ RCONFLICTS:${PN} = "diag"
 COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:aarch64 = "(.*)"
 
+# @description Install the prebuilt diag-router programs.
+# @noargs
+# @exitcode 0 The programs from usr/bin in the archive are in ${bindir}.
+# @example
+#   bitbake diag-router -c install
 do_install() {
     install -d ${D}${bindir}
 

@@ -28,8 +28,13 @@ if [ ! -d "$GADGET_PATH" ]; then
     exit 1
 fi
 
+# @description Convert a UDC maximum_speed value into a number for comparison.
 # Return a normalized rank for a speed string.
 # Higher number == better.
+# @arg $1 string Speed value, such as "high-speed".
+# @exitcode 0 Prints the rank: 5 for super-speed-plus down to 1 for low-speed, or 0 if unknown.
+# @example
+#   max_rank="$(speed_rank "$max_text")"
 speed_rank() {
     # Kernel ABI guarantees specific lowercase values
     case "$1" in
@@ -42,7 +47,12 @@ speed_rank() {
     esac
 }
 
+# @description Print the maximum_speed value of a USB device controller.
 # Read maximum speed capability for a UDC.
+# @arg $1 string Path of the controller's folder under /sys/class/udc.
+# @exitcode 0 Prints the value, or an empty line when the controller has no maximum_speed file.
+# @example
+#   max_text="$(read_max_speed "$udc_path")"
 read_max_speed() {
     p="$1"
     if [ -f "$p/maximum_speed" ]; then

@@ -9,6 +9,11 @@ SRC_URI[chicdk.sha256sum] = "25142ac658c6d1eedb78c451c65a5b6fa94da2bae68e5b5c13c
 SRC_URI[camxcommon.sha256sum] = "8d7e0bac9f6050451d5c280af38067fff2a0cfe444f9b67074e30a9f0f1a378b"
 SRC_URI[camxtest.sha256sum] = "3e25601ae086f050902cb6a231141fc3d7adb54c61d0d57ffecd745e308c177b"
 
+# @description Install the x1e80100 DSP skel files under ${datadir}/qcom.
+# @noargs
+# @exitcode 0 The skel files are in ${datadir}/qcom/x1e80100.
+# @example
+#   bitbake camxlib-hamoa -c install
 do_install:append() {
     # copy skel file
     install -d ${D}${datadir}/qcom

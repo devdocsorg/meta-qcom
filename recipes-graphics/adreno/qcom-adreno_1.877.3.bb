@@ -53,6 +53,13 @@ RDEPENDS:${PN} = " \
 
 ALLOW_EMPTY:${PN} = "1"
 
+# @description Install the prebuilt Adreno libraries and the config files for the enabled APIs.
+# Libraries for EGL/GLES, Vulkan, OpenCL, and the X11 and Wayland EGL sub-drivers are
+# removed when the matching DISTRO_FEATURES are not set.
+# @noargs
+# @exitcode 0 The libraries, loader JSON/ICD files, and modprobe config are installed under ${D}.
+# @example
+#   bitbake qcom-adreno -c install
 do_install () {
     install -d ${D}/${libdir}
     cp -r ${S}/usr/lib/* ${D}/${libdir}/

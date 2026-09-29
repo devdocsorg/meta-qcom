@@ -7,6 +7,12 @@ SRC_URI:append:qcom = " \
     file://weston-start.sh \
 "
 
+# @description Install the Qualcomm weston.service drop-in and the weston-start.sh script.
+# Both files have @bindir@ replaced with ${bindir}.
+# @noargs
+# @exitcode 0 additional-devices.conf is in weston.service.d and weston-start.sh is in ${bindir}.
+# @example
+#   bitbake weston-init -c install
 do_install:append:qcom() {
     install -d ${D}${systemd_system_unitdir}/weston.service.d
     install -m 0644 ${UNPACKDIR}/additional-devices.conf \

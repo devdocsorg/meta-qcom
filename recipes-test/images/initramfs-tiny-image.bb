@@ -36,6 +36,12 @@ LOCAL_GETTY ?= " \
     ${IMAGE_ROOTFS}${systemd_system_unitdir}/serial-getty@.service \
     ${IMAGE_ROOTFS}${systemd_system_unitdir}/getty@.service \
 "
+# @description Make the getty services in ${LOCAL_GETTY} log in root automatically.
+# It runs only when systemd is the init manager.
+# @noargs
+# @exitcode 0 The ExecStart lines of the getty units pass --autologin root.
+# @example
+#   bitbake initramfs-tiny-image -c rootfs
 local_autologin () {
     sed -i -e 's/^\(ExecStart *=.*getty \)/\1--autologin root /' ${LOCAL_GETTY}
 }
@@ -47,6 +53,10 @@ ROOTFS_POSTPROCESS_COMMAND += "${@oe.utils.conditional('VIRTUAL-RUNTIME_init_man
 #
 # To use it define PACKAGE_INSTALL_foo-layer variable containing the list of
 # packages to be installed if (and only if) layer foo-layer is enabled.
+#
+# Example:
+#     With ``PACKAGE_INSTALL_openembedded-layer = "<packages>"`` set and meta-oe enabled,
+#     parsing ``bitbake initramfs-tiny-image`` adds those packages to PACKAGE_INSTALL.
 python() {
     for layer in d.getVar("BBFILE_COLLECTIONS", True).split():
         extra = d.getVar("PACKAGE_INSTALL_%s" % layer)

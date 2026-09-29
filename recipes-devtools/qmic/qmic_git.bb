@@ -12,6 +12,11 @@ PV = "0.0+"
 
 BBCLASSEXTEND = "native nativesdk"
 
+# @description Install the qmic compiler with the project's make install target.
+# @noargs
+# @exitcode 0 qmic is in ${D}${prefix}/bin.
+# @example
+#   bitbake qmic -c install
 do_install () {
     oe_runmake install DESTDIR=${D} prefix=${prefix}
 }

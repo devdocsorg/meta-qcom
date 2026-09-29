@@ -48,9 +48,24 @@ for the implementation details.
 - **all stable branches up until styhead:** Legacy branches maintained by Linaro,
   prior to the migration to [Qualcomm-linux](https://github.com/qualcomm-linux).
 
+Every current branch, with the [Yocto Project support status](https://wiki.yoctoproject.org/wiki/Releases)
+of its release series and its last commit:
+
+| Branch | Status | Build from it | Contributions |
+| --- | --- | --- | --- |
+| `master` | Active development | Yes, as in [Quick build](#quick-build) | [Pull requests](docs/source/contributing/CONTRIBUTING.md#where-to-send-changes) |
+| `wrynose` | LTS, supported until April 2030; last commit September 2026 | Yes, for Qualcomm Linux 2.x | [Backports from `master`](docs/source/contributing/CONTRIBUTING.md#where-to-send-changes) |
+| `next` | Tests workflow changes before they reach `master`; last commit September 2026 | No; use `master` | [Not documented](docs/source/contributing/CONTRIBUTING.md#where-to-send-changes) |
+| `scarthgap` | Legacy; LTS supported until April 2028; last commit December 2024 | Only with other `scarthgap` layers | [Not documented](docs/source/contributing/CONTRIBUTING.md#where-to-send-changes) |
+| `kirkstone` | Legacy; end of life; last commit December 2024 | Only with other `kirkstone` layers | [Issues, not pull requests](docs/source/contributing/CONTRIBUTING.md#where-to-send-changes) |
+| `styhead`, `honister`, `dunfell`, `zeus`, `warrior`, `thud`, `sumo`, `rocko`, `pyro`, `morty`, `krogoth`, `jethro` | Legacy; end of life; last commits from November 2016 to January 2025 | Only with layers of the same release | [Not documented](docs/source/contributing/CONTRIBUTING.md#where-to-send-changes) |
+| `backport/<pull-request>-to-wrynose` | Temporary branches that the backport workflow creates for merged pull requests | No; use `wrynose` | Reviewed in their backport pull requests |
+
+[BRANCHES.md](BRANCHES.md) describes how the long-lived branches are maintained.
+
 ## Machine Support
 
-See `conf/machine` for the complete list of supported devices.
+See [conf/machine](conf/machine/README.md) for the complete list of supported devices.
 
 ## Generic machine support
 
@@ -88,7 +103,7 @@ not need to be installed on the host.
     ```
 
 This reuses the same `ci/<board>.yml` configurations that CI uses. See
-[AGENTS.md](AGENTS.md) for more advanced usage, including sharing the
+[AGENTS.md](docs/source/contributing/AGENTS.md) for more advanced usage, including sharing the
 `DL_DIR`/`SSTATE_DIR` caches across builds.
 
 > **Note:** To run kas natively on the host instead of in a container, install
@@ -101,12 +116,12 @@ For a manual build without KAS, refer to the [Yocto Project Quick Build](https:/
 ## Flash
 
 For instructions on building the QDL tool, preparing the board, and flashing
-images over USB (EDL mode), see [Flashing images](docs/flashing.md).
+images over USB (EDL mode), see [Flashing images](docs/source/user/flashing.md).
 
 ## Security recommendations for production
 
 Please refer to the security recommendations for production builds documented here:
-[Security Recommendations](docs/security-recommendations.md)
+[Security Recommendations](docs/source/user/security-recommendations.md)
 
 ## Releases
 
@@ -144,21 +159,29 @@ build it with KAS using the configuration for your target machine and distro.
    Refer to `meta-qcom/ci/` for the complete list of available machine and
    distro configurations.
 
+## Documentation
+
+Build the documentation site from the repository root, then open
+`docs/site/index.html` directly in a browser:
+
+```bash
+make -f docs/source/Makefile setup html
+```
+
+The [documentation guide](docs/README.md) explains where its source lives. The site
+includes:
+
+- [Build, flash, and boot tutorial](docs/source/user/USAGE.md) — Build an image with kas, flash it, and log in.
+- [Configuration reference](docs/source/user/CONFIGURATION.md) — Layer, machine, kas, fragment, environment, and CI settings.
+- [Development setup](docs/source/contributing/DEVELOPMENT.md) — Install the documentation tools, build the site, and run the checks.
+- [Function reference](docs/source/contributing/README.md#function-reference) — Generated from the comments on every recipe, class, script, and Python function.
+
 ## Contributing
 
-Please submit any patches against the `meta-qcom` layer (branch **master**)
-by using the GitHub pull-request feature. Fork the repo, create a branch,
-do the work, rebase from upstream, and create the pull request.
-
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow
-and the commit subject and message requirements before opening a pull request.
-
-Branch **kirkstone** is not open for direct contributions, please raise an
-issue with the suggested change instead.
-
-### Qualcomm Internal
-
-Please make sure to visit go/GitHubBasicsDoc and go/OSSBestPractices before proposing changes.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for where to send changes, the
+contribution workflow, and the commit subject and message requirements before
+opening a pull request. Follow the [Code of Conduct](CODE_OF_CONDUCT.md) when
+participating.
 
 ## Communication
 
@@ -177,5 +200,171 @@ Please make sure to visit go/GitHubBasicsDoc and go/OSSBestPractices before prop
 
 ## License
 
-This layer is licensed under the MIT license. Check out [COPYING.MIT](COPYING.MIT)
+This layer is licensed under the MIT license. Check out [LICENSE](LICENSE)
 for more details.
+
+## Folders
+
+- [.github/](.github/) — Holds the CI workflows and actions, [CODEOWNERS](.github/CODEOWNERS), the Markdown lint rules, the documentation build helpers, and the [issue](.github/ISSUE_TEMPLATE/) and [pull request](.github/PULL_REQUEST_TEMPLATE/pr_template.md) templates.
+- [ci/](ci/README.md) — Holds the kas configuration files for each machine, distro, and build option, and the CI helper scripts.
+- [classes/](classes/README.md) — Holds BitBake classes for kernel boot images, devicetree images, source mirrors, and EFI system partitions.
+- [classes-recipe/](classes-recipe/README.md) — Holds recipe classes for the flash package, multi-DTB FIT images, UEFI capsules, and adbd images.
+- [conf/](conf/README.md) — Holds the layer configuration and the machine configurations.
+- [docs/](docs/README.md) — Holds the documentation source and explains how to build the site.
+- [dynamic-layers/](dynamic-layers/README.md) — Holds recipes and appends that apply only when another layer is in the build.
+- [lib/](lib/README.md) — Holds the layer's Python helpers and oe-selftest test cases.
+- [licenses/](licenses/) — Holds the Qualcomm firmware licence texts that recipes name; BitBake finds them by name through `LICENSE_PATH`.
+- [patches/](patches/README.md) — Holds patches that the kas files apply to [OpenEmbedded-Core](https://github.com/openembedded/openembedded-core) and [meta-selinux](https://git.yoctoproject.org/meta-selinux).
+- [recipes-bsp/](recipes-bsp/README.md) — Holds board support recipes: boot and device firmware, boot loaders, partition layouts, and machine packagegroups.
+- [recipes-connectivity/](recipes-connectivity/README.md) — Holds connectivity recipes.
+- [recipes-core/](recipes-core/README.md) — Holds Qualcomm changes to core system recipes.
+- [recipes-devtools/](recipes-devtools/README.md) — Holds flashing, signing, boot image, and firmware tools.
+- [recipes-graphics/](recipes-graphics/README.md) — Holds Adreno GPU and Wayland display recipes.
+- [recipes-kernel/](recipes-kernel/README.md) — Holds the kernels, kernel modules, kernel firmware, and devicetree images.
+- [recipes-ml/](recipes-ml/README.md) — Holds machine learning recipes.
+- [recipes-multimedia/](recipes-multimedia/README.md) — Holds camera, computer vision, and GStreamer recipes.
+- [recipes-support/](recipes-support/README.md) — Holds daemons, libraries, and tools for the remote processors and boot firmware.
+- [recipes-test/](recipes-test/README.md) — Holds test and diagnostic tools and test initramfs images.
+
+## Files
+
+- [.env.example](.env.example) — Documents the environment variables that kas-container and the CI scripts read.
+- [.gitignore](.gitignore) — Keeps generated CI files, the kas-container script, and the documentation build output out of Git.
+- [AGENTS.md](AGENTS.md) — Points automation agents to the agent guide.
+- [BRANCHES.md](BRANCHES.md) — Describes the purpose and maintenance of each long-lived branch.
+- [CLAUDE.md](CLAUDE.md) — Symlink to `AGENTS.md` for agents that read this name.
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) — States participation standards and how to report conduct concerns.
+- [CONTRIBUTING.md](CONTRIBUTING.md) — Points to the contribution guide and development setup.
+- [LICENSE](LICENSE) — Contains the layer's MIT licence.
+- [NOTICE.md](NOTICE.md) — Retains the notices of material that the documentation tools and templates adapt.
+- [README](README) — Symlink to this README.
+- [README.md](README.md) — Introduces the layer, its branches, builds, and contents.
+- [SECURITY.md](SECURITY.md) — Explains how to report vulnerabilities.
+
+<!-- repository-map:start -->
+
+## Repository map
+
+### Connections (1/2)
+
+```mermaid
+flowchart LR
+    r0["meta-qcom (you are here)"]
+    click r0 href "https://github.com/qualcomm-linux/meta-qcom" _blank
+    r1["TC9564_Host_Driver"]
+    click r1 href "https://github.com/qualcomm-linux/TC9564_Host_Driver" _blank
+    r2["boot-firmware-ci"]
+    click r2 href "https://github.com/qualcomm-linux/boot-firmware-ci" _blank
+    r3["camera-driver"]
+    click r3 href "https://github.com/qualcomm-linux/camera-driver" _blank
+    r4["gbm-msm-backend"]
+    click r4 href "https://github.com/qualcomm-linux/gbm-msm-backend" _blank
+    r5["kernel"]
+    click r5 href "https://github.com/qualcomm-linux/kernel" _blank
+    r6["kgsl"]
+    click r6 href "https://github.com/qualcomm-linux/kgsl" _blank
+    r7["location-hal-qcom"]
+    click r7 href "https://github.com/qualcomm-linux/location-hal-qcom" _blank
+    r8["meta-ai"]
+    click r8 href "https://github.com/qualcomm-linux/meta-ai" _blank
+    r9["meta-qcom-3rdparty"]
+    click r9 href "https://github.com/qualcomm-linux/meta-qcom-3rdparty" _blank
+    r10["meta-qcom-distro"]
+    click r10 href "https://github.com/qualcomm-linux/meta-qcom-distro" _blank
+    r11["meta-qcom-releases"]
+    click r11 href "https://github.com/qualcomm-linux/meta-qcom-releases" _blank
+    r12["optee_os"]
+    click r12 href "https://github.com/qualcomm-linux/optee_os" _blank
+    r13["qcom-dtb-metadata"]
+    click r13 href "https://github.com/qualcomm-linux/qcom-dtb-metadata" _blank
+    r14["qcom-ptool"]
+    click r14 href "https://github.com/qualcomm-linux/qcom-ptool" _blank
+    r15["trusted-firmware-a"]
+    click r15 href "https://github.com/qualcomm-linux/trusted-firmware-a" _blank
+    r16["u-boot"]
+    click r16 href "https://github.com/qualcomm-linux/u-boot" _blank
+    r17["video-driver"]
+    click r17 href "https://github.com/qualcomm-linux/video-driver" _blank
+    r18["camera-service"]
+    click r18 href "https://github.com/qualcomm/camera-service" _blank
+    r19["fastrpc"]
+    click r19 href "https://github.com/qualcomm/fastrpc" _blank
+    r20["minkipc"]
+    click r20 href "https://github.com/qualcomm/minkipc" _blank
+    r21["qimsdk"]
+    click r21 href "https://github.com/qualcomm/qimsdk" _blank
+    r22["sensinghub"]
+    click r22 href "https://github.com/qualcomm/sensinghub" _blank
+    r23["sigma-dut"]
+    click r23 href "https://github.com/qualcomm/sigma-dut" _blank
+    r0 -->|"fetches Linux kernel sources from"| r5
+    r0 -->|"includes for Qualcomm Linux images"| r8
+    r0 -->|"includes for Qualcomm Linux images"| r10
+    r0 -->|"gets partition tools from"| r14
+    r9 -->|"adds third-party board support to"| r0
+    r11 -->|"pins a release of"| r0
+    r0 -->|"fetches sources from"| r19
+    r0 -->|"fetches sources from"| r15
+    r0 -->|"fetches sources from"| r12
+    r0 -->|"fetches sources from"| r18
+    r0 -->|"fetches sources from"| r7
+    r0 -->|"fetches sources from"| r20
+    r0 -->|"fetches sources from"| r22
+    r0 -->|"fetches sources from"| r16
+    r0 -->|"fetches sources from"| r23
+    r0 -->|"fetches sources from"| r2
+    r0 -->|"fetches sources from"| r6
+    r0 -->|"fetches sources from"| r4
+    r0 -->|"fetches sources from"| r17
+    r0 -->|"fetches sources from"| r13
+    r0 -->|"fetches sources from"| r1
+    r0 -->|"fetches sources from"| r3
+    r0 -->|"fetches sources from"| r21
+    style r0 fill:#e6f3ff,stroke:#0969da,stroke-width:3px,color:#182c43
+```
+
+### Connections (2/2)
+
+```mermaid
+flowchart LR
+    r0["meta-qcom (you are here)"]
+    click r0 href "https://github.com/qualcomm-linux/meta-qcom" _blank
+    r1["meta-ai"]
+    click r1 href "https://github.com/qualcomm-linux/meta-ai" _blank
+    r2["meta-qcom-arduino"]
+    click r2 href "https://github.com/qualcomm-linux/meta-qcom-arduino" _blank
+    r3["meta-qcom-distro"]
+    click r3 href "https://github.com/qualcomm-linux/meta-qcom-distro" _blank
+    r4["abl2esp"]
+    click r4 href "https://github.com/qualcomm/abl2esp" _blank
+    r5["cbsp-boot-utilities"]
+    click r5 href "https://github.com/qualcomm/cbsp-boot-utilities" _blank
+    r6["mink-idl-compiler"]
+    click r6 href "https://github.com/qualcomm/mink-idl-compiler" _blank
+    r7["qca-swiss-army-knife"]
+    click r7 href "https://github.com/qualcomm/qca-swiss-army-knife" _blank
+    r8["qmi-framework"]
+    click r8 href "https://github.com/qualcomm/qmi-framework" _blank
+    r9["quic-teec"]
+    click r9 href "https://github.com/qualcomm/quic-teec" _blank
+    r10["userspace-resource-manager"]
+    click r10 href "https://github.com/qualcomm/userspace-resource-manager" _blank
+    r0 -->|"fetches sources from"| r4
+    r0 -->|"fetches sources from"| r10
+    r0 -->|"adds recipes when combined with"| r1
+    r0 -->|"adds recipes when combined with"| r3
+    r3 -->|"builds on"| r0
+    r2 -->|"builds on"| r0
+    r0 -->|"fetches sources from"| r5
+    r0 -->|"fetches sources from"| r6
+    r0 -->|"fetches sources from"| r9
+    r0 -->|"fetches sources from"| r8
+    r0 -->|"fetches sources from"| r7
+    style r0 fill:#e6f3ff,stroke:#0969da,stroke-width:3px,color:#182c43
+```
+
+[Full Qualcomm repository map](https://github.com/devdocsorg/qualcomm-repository-map).
+
+<!-- Generated from https://github.com/devdocsorg/qualcomm-repository-map at f5685a3fe3503607f73fdda8dce15be74e58a80f; dataset SHA-256: 3e08766dec124c3a72f891d688eeee291dffe4c160aba66c6c4f7c0f401f8aca. -->
+
+<!-- repository-map:end -->

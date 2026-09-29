@@ -18,6 +18,13 @@ LIC_FILES_CHKSUM += "file://docs/license.rst;md5=6ed7bace7b0bc63021c6eba7b524039
 COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:aarch64 = "(qcom)"
 
+# Stop parsing when the device recipe has not set the FIP ELF load address.
+#
+# Raises:
+#     bb.BBHandledException: Through ``bb.fatal`` when ``FIP_ELF_ADDR`` is not set.
+#
+# Example:
+#     BitBake runs this while parsing: ``bitbake trusted-firmware-a-qcom-rb3gen2``.
 python () {
     if not d.getVar('FIP_ELF_ADDR'):
         bb.fatal('FIP_ELF_ADDR must be set by the device recipe')
@@ -33,6 +40,12 @@ EXTRA_OEMAKE:append = " \
 
 do_compile[depends] += "${@bb.utils.contains('QCOM_UBOOT_SPL_FIT', '1', '', 'u-boot-qcom:do_deploy', d)}"
 
+# @description Wrap the FIP image in an ELF loaded at ${FIP_ELF_ADDR} and test-sign it as fip.elf.
+# Nothing is done when QCOM_UBOOT_SPL_FIT is "1", because that flow builds no FIP.
+# @noargs
+# @exitcode 0 The signed fip.elf is in ${FIRMWARE_DIR}, or no FIP is built.
+# @example
+#   bitbake trusted-firmware-a-qcom-rb3gen2 -c install
 do_install:append() {
     # Nothing to wrap and sign without a FIP.
     if [ "${QCOM_UBOOT_SPL_FIT}" != "1" ]; then

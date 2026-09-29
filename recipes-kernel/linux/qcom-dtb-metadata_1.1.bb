@@ -16,6 +16,11 @@ do_configure[noexec] = "1"
 
 inherit deploy
 
+# @description Deploy the compiled qcom-metadata.dtb blob.
+# @noargs
+# @exitcode 0 qcom-metadata.dtb is in ${DEPLOYDIR}.
+# @example
+#   bitbake qcom-dtb-metadata -c deploy
 do_deploy() {
     install -m 0644 ${B}/qcom-metadata.dtb -D ${DEPLOYDIR}/qcom-metadata.dtb
 }

@@ -20,6 +20,19 @@ QCOMFIT_DEPLOYDIR = "${WORKDIR}/qcom_fitimage_deploy-${PN}"
 
 do_generate_qcom_fitimage[depends] += "qcom-dtb-metadata:do_deploy u-boot-tools-native:do_populate_sysroot"
 do_generate_qcom_fitimage[cleandirs] += "${QCOMFIT_DEPLOYDIR}"
+# Build the multi-DTB FIT image qclinuxfitImage from the device trees the kernel deployed.
+#
+# The image holds qcom-metadata.dtb, every DTB and DTBO named in KERNEL_DEVICETREE, and one
+# configuration per compatible string of each FIT_DTB_COMPATIBLE entry whose files are all
+# in KERNEL_DEVICETREE. qclinux-fit-image.its and qclinuxfitImage are written to
+# ${QCOMFIT_DEPLOYDIR}, which sstate publishes to ${DEPLOY_DIR_IMAGE}.
+#
+# Raises:
+#     bb.BBHandledException: bb.fatal stops the task when a file named in
+#         KERNEL_DEVICETREE is missing from the deploy directory or mkimage fails.
+#
+# Example:
+#     ``bitbake virtual/kernel -c generate_qcom_fitimage``
 python do_generate_qcom_fitimage() {
     import os
     from qcom.dtb_only_fitimage import QcomItsNodeRoot
@@ -129,6 +142,11 @@ SSTATETASKS += "do_generate_qcom_fitimage"
 do_generate_qcom_fitimage[sstate-inputdirs] = "${QCOMFIT_DEPLOYDIR}"
 do_generate_qcom_fitimage[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}"
 
+# Restore the output of do_generate_qcom_fitimage from the shared state cache.
+#
+# Example:
+#     BitBake runs it in place of do_generate_qcom_fitimage when sstate holds the output:
+#     ``bitbake virtual/kernel -c generate_qcom_fitimage``
 python do_generate_qcom_fitimage_setscene () {
     sstate_setscene(d)
 }

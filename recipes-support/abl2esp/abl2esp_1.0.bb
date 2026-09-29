@@ -25,6 +25,11 @@ do_configure[noexec] = "1"
 do_compile[noexec] = "1"
 do_install[noexec] = "1"
 
+# @description Deploy the prebuilt abl2esp v5, v6, and v7 ELF images.
+# @noargs
+# @exitcode 0 abl2esp-v5.elf, abl2esp-v6.elf, and abl2esp-v7.elf are in ${DEPLOYDIR}.
+# @example
+#   bitbake abl2esp -c deploy
 do_deploy() {
         install -m 0644 ${UNPACKDIR}/abl2esp-v5.elf -D ${DEPLOYDIR}/
         install -m 0644 ${UNPACKDIR}/abl2esp-v6.elf -D ${DEPLOYDIR}/

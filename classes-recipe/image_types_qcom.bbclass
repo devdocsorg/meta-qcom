@@ -43,6 +43,15 @@ do_image_qcomflash[depends] += "${@ ['', '${QCOM_PARTITION_CONF}:do_deploy'][d.g
 				${@'abl2esp:do_deploy' if d.getVar('ABL_SIGNATURE_VERSION') else  ''}"
 IMAGE_TYPEDEP:qcomflash += "${IMAGE_QCOMFLASH_FS_TYPE}"
 
+# @description Copy the partition table binaries and flashing XML files from a directory.
+# Copies gpt_main*.bin, gpt_backup*.bin, gpt_both*.bin, zeros_*.bin, rawprogram[0-9].xml,
+# patch*.xml, and contents.xml when present.
+# @arg $1 string Directory that holds the partition files.
+# @arg $2 string Destination directory.
+# @exitcode 0 The files are in the destination directory.
+# @exitcode 1 A pattern matches no file, so install fails and set -e stops the calling task.
+# @example
+#   deploy_partition_files ${DEPLOY_DIR_IMAGE}/${QCOM_PARTITION_FILES_SUBDIR} .
 deploy_partition_files() {
     for pbin in $1/gpt_main*.bin $1/gpt_backup*.bin \
                 $1/gpt_both*.bin $1/zeros_*.bin \
@@ -55,6 +64,13 @@ deploy_partition_files() {
     fi
 }
 
+# @description Collect the images and boot firmware needed to flash the board into
+# ${QCOMFLASH_DIR} and pack them as ${IMAGE_NAME}.qcomflash.tar.gz.
+# This is the IMAGE_CMD of the qcomflash image type and runs inside ${QCOMFLASH_DIR}.
+# @noargs
+# @exitcode 0 The qcomflash directory, the tarball, and their links are in ${IMGDEPLOYDIR}.
+# @example
+#   bitbake core-image-base -c image_qcomflash
 create_qcomflash_pkg() {
     # esp image
     [ -n "${QCOM_ESP_FILE}" ] && cp -l -L ${QCOM_ESP_FILE} efi.bin

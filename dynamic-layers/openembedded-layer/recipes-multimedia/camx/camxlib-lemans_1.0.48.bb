@@ -14,6 +14,12 @@ DEPENDS += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'virtual/egl virtual/libgles2', '', d)} \
 "
 
+# @description Add the camera-nhx test files, deep learning data, and DSP skel files to the install.
+# OpenCL files are removed when DISTRO_FEATURES has no opencl.
+# @noargs
+# @exitcode 0 The extra files are in ${sysconfdir}/camera/test/NHX and ${datadir}.
+# @example
+#   bitbake camxlib-lemans -c install
 do_install:append() {
     # Copy json only when /etc folder exists in ${S}
     if [ -d "${S}/etc" ]; then

@@ -17,6 +17,27 @@ require recipes-bsp/firmware/firmware-qcom.inc
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
 
+# @function do_install
+# @description Install the Hamoa camera firmware and its licence, and link it for Purwa.
+# CAMERA_ICP.mbn goes to ${FW_QCOM_PATH}, and ${FW_QCOM_BASE_PATH}/x1p42100 gets a symlink to it
+# whose name carries the suffix that do_install:append gives the compressed file.
+# @noargs
+# @exitcode 0 The firmware, licence, and x1p42100 symlink are under ${D}.
+# @example
+#   bitbake camxfirmware-hamoa -c install
+
+# Return the file name suffix that FIRMWARE_COMPRESSION gives the installed firmware files.
+#
+# Args:
+#     d (bb.data_smart.DataSmart): The recipe's datastore.
+#
+# Returns:
+#     str: "" when FIRMWARE_COMPRESSION is empty, ".zst" for "zstd", and otherwise "."
+#     followed by the value, such as ".xz".
+#
+# Example:
+#     In do_install, ``CAMERA_ICP.mbn${@fw_compr_file_suffix(d)}`` expands to
+#     ``CAMERA_ICP.mbn.zst`` when FIRMWARE_COMPRESSION is "zstd".
 def fw_compr_file_suffix(d):
     compr = d.getVar('FIRMWARE_COMPRESSION')
     if compr == '':

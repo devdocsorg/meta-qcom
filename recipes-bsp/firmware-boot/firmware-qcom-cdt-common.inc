@@ -16,6 +16,12 @@ do_compile[noexec] = "1"
 
 inherit deploy
 
+# @description Deploy every CDT binary found under ${UNPACKDIR} to ${DEPLOYDIR}/${QCOM_CDT_SUBDIR}.
+# A CDT binary is any file whose name matches *cdt*.bin, ignoring case.
+# @noargs
+# @exitcode 0 The CDT binaries are in ${DEPLOYDIR}/${QCOM_CDT_SUBDIR}.
+# @example
+#   bitbake firmware-qcom-cdt-qcs6490 -c deploy
 do_deploy() {
     install -d ${DEPLOYDIR}/${QCOM_CDT_SUBDIR}
     find "${UNPACKDIR}" -iname '*cdt*.bin' -exec install -m 0644 {} ${DEPLOYDIR}/${QCOM_CDT_SUBDIR} \;

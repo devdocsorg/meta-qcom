@@ -28,6 +28,11 @@ KCONFIG_MODE:qcom = "--alldefconfig"
 KBUILD_DEFCONFIG:qcom ?= "defconfig"
 KBUILD_DEFCONFIG:qcom-armv7a = "qcom_defconfig"
 
+# @description Remove the ${TMPDIR} path from the generated MSM DRM files in the kernel build tree.
+# @noargs
+# @exitcode 0 The files in drivers/gpu/drm/msm/generated no longer contain the ${TMPDIR} path.
+# @example
+#   bitbake linux-yocto-dev -c install
 do_install:append:qcom() {
 	sed -i 's:${TMPDIR}::g' ${WORKDIR}/linux-${PACKAGE_ARCH}-${LINUX_KERNEL_TYPE}-build/drivers/gpu/drm/msm/generated/*
 }

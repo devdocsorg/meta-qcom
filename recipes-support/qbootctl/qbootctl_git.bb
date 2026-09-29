@@ -12,6 +12,11 @@ PV = "0.2.2"
 
 inherit meson systemd
 
+# @description Generate qbootctl-bless-boot.service from its template, filling in ${bindir}.
+# @noargs
+# @exitcode 0 qbootctl-bless-boot.service is in ${systemd_system_unitdir}.
+# @example
+#   bitbake qbootctl -c install
 do_install:append () {
 	install -d ${D}${systemd_system_unitdir}
 	sed 's:@bindir@:${bindir}:' < ${UNPACKDIR}/qbootctl-bless-boot.service.in > ${D}${systemd_system_unitdir}/qbootctl-bless-boot.service

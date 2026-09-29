@@ -8,6 +8,11 @@ HOMEPAGE = "https://www.op-tee.org/"
 DEPENDS += "python3-pycryptodome-native"
 DEPENDS:append:toolchain-clang = " lld-native"
 
+# @description Install the OP-TEE TA devkit used to build trusted applications.
+# @noargs
+# @exitcode 0 The devkit files are in ${includedir}/optee/export-user_ta.
+# @example
+#   bitbake optee-os-tadevkit-qcom -c install
 do_install() {
     #install TA devkit
     install -d ${D}${includedir}/optee/export-user_ta/
@@ -16,6 +21,11 @@ do_install() {
     done
 }
 
+# @description Replace the deploy task inherited from optee-os so the devkit deploys nothing.
+# @noargs
+# @exitcode 0 A message is printed and nothing is deployed.
+# @example
+#   bitbake optee-os-tadevkit-qcom -c deploy
 do_deploy() {
         echo "Do not inherit do_deploy from optee-os."
 }

@@ -34,6 +34,13 @@ PACKAGES_DYNAMIC:class-native = ""
 
 PACKAGESPLITFUNCS =+ "split_dynamic_packages"
 
+# Split each ``libabsl_*.so`` library into its own ``libabsl-*`` package.
+#
+# The main package gets a runtime dependency on every package created, so
+# installing it still installs all the libraries.
+#
+# Example:
+#     ``bitbake abseil-cpp -c package`` runs it through ``PACKAGESPLITFUNCS``.
 python split_dynamic_packages() {
     libdir = d.getVar('libdir')
 

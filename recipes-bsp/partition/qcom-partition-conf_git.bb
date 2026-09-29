@@ -9,6 +9,14 @@ inherit deploy allarch
 
 do_install[noexec] = "1"
 
+# @description Deploy the partition tables and flashing XML files of each platform.
+# Every directory under ${S}/platforms that holds gpt_main0.bin is a platform; its GPT, zeros,
+# patch, rawprogram, and wipe files, and contents.xml when present, go to
+# ${DEPLOYDIR}/partitions/<platform directory>.
+# @noargs
+# @exitcode 0 The partition files are in ${DEPLOYDIR}/partitions.
+# @example
+#   bitbake qcom-partition-conf -c deploy
 do_deploy() {
     cd ${S}/platforms
     for gpt in `find . -name gpt_main0.bin` ; do

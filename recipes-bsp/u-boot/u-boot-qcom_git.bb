@@ -28,6 +28,14 @@ SRC_URI += " \
     ${@bb.utils.contains('SPL_SIGN_ENABLE', '1', 'file://spl-fit-signature.cfg', '', d)} \
 "
 
+# Build BOARD_MBN_HEADER as a "?"-separated list with one MBN header version per UBOOT_CONFIG.
+#
+# Each value comes from the BOARD_MBN_HEADER[<config>] flag, or is empty when the flag is not
+# set, so uboot_config_get_indexed_value can look it up by the configuration's index.
+#
+# Example:
+#     With UBOOT_CONFIG = "qcs6490-rb3gen2", parsing ``bitbake u-boot-qcom`` sets
+#     BOARD_MBN_HEADER to "v6 ? ".
 python __anonymous() {
     ubootconfig = (d.getVar('UBOOT_CONFIG') or "").split()
 
@@ -42,6 +50,16 @@ python __anonymous() {
             d.appendVar('BOARD_MBN_HEADER', mbn_header + " ? ")
 }
 
+# @description Stage the FIT inputs or sign u-boot.elf for one built U-Boot configuration.
+# With QCOM_UBOOT_SPL_FIT = "1", bl31.bin and tee-raw.bin are copied into the build directory for
+# the FIT; otherwise, when the configuration has an MBN header version, qtestsign signs
+# u-boot.elf as u-boot.mbn.
+# @arg $1 int Index of the configuration in UBOOT_MACHINE and UBOOT_CONFIG.
+# @arg $2 string U-Boot defconfig name, from UBOOT_MACHINE.
+# @arg $3 string Configuration name, from UBOOT_CONFIG.
+# @exitcode 0 The FIT inputs or u-boot.mbn are in the build directory, or nothing was needed.
+# @example
+#   uboot_compile_config $i $config $type
 uboot_compile_config:append() {
     config_mbn_header=$(uboot_config_get_indexed_value "${BOARD_MBN_HEADER}" $i)
 
@@ -55,7 +73,13 @@ uboot_compile_config:append() {
     fi
 }
 
+# @description Build the signed SPL image u-boot-spl.mbn when QCOM_UBOOT_SPL_FIT is "1".
 # Rebuild the SPL ELF after uboot-sign, add the SWIV segment and sign it as TZ.
+# @arg $1 string Configuration name from UBOOT_CONFIG, or empty without UBOOT_CONFIG.
+# @arg $2 string Name of the U-Boot binary for the configuration.
+# @exitcode 0 u-boot-spl.mbn is in the build directory, or QCOM_UBOOT_SPL_FIT is not "1".
+# @example
+#   uboot_assemble_fitimage_helper ${type} ${config_binary}
 uboot_assemble_fitimage_helper:append() {
     if [ "${QCOM_UBOOT_SPL_FIT}" = "1" ]; then
         mbn_header=$(uboot_config_get_indexed_value "${BOARD_MBN_HEADER}" $i)
@@ -71,6 +95,14 @@ uboot_assemble_fitimage_helper:append() {
     fi
 }
 
+# @description Deploy the signed MBN image of one U-Boot configuration when it was built.
+# With QCOM_UBOOT_SPL_FIT = "1" this is u-boot-spl.mbn, deployed as u-boot-spl-<type>.mbn;
+# otherwise u-boot.mbn is deployed as u-boot-<type>.mbn.
+# @arg $1 string U-Boot defconfig name, from UBOOT_MACHINE.
+# @arg $2 string Configuration name, from UBOOT_CONFIG.
+# @exitcode 0 The MBN image is in ${DEPLOYDIR}, or none was built.
+# @example
+#   uboot_deploy_config $config $type
 uboot_deploy_config:append() {
     if [ "${QCOM_UBOOT_SPL_FIT}" = "1" ]; then
         if [ -f ${B}/${builddir}/u-boot-spl.mbn ]; then

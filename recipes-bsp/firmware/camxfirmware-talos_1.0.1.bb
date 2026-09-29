@@ -16,6 +16,12 @@ require recipes-bsp/firmware/firmware-qcom.inc
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
 
+# @description Install the Talos camera firmware CAMERA_ICP.elf and its licence.
+# The firmware goes to ${FW_QCOM_PATH} and the licence to ${datadir}/doc/${BPN}.
+# @noargs
+# @exitcode 0 The firmware and licence are under ${D}.
+# @example
+#   bitbake camxfirmware-talos -c install
 do_install() {
     install -d ${D}${FW_QCOM_PATH}
     install -m 0644 ${S}/usr/lib/firmware/qcom/qcs615/CAMERA_ICP.elf ${D}${FW_QCOM_PATH}

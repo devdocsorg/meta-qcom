@@ -30,6 +30,12 @@ PV = "${LK_PV}+git"
 
 DEPENDS += "qtestsign-native"
 
+# @description Sign the built LK image with qtestsign as an aboot image with an MBN v3 header.
+# The result is ${S}/build-${LK_SOC}/emmc_appsboot_signed.mbn, next to emmc_appsboot.mbn.
+# @noargs
+# @exitcode 0 emmc_appsboot_signed.mbn is in ${S}/build-${LK_SOC}.
+# @example
+#   bitbake lk-db410c -c compile
 do_compile:append() {
     export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1
     qtestsign -v3 aboot -o ${S}/build-${LK_SOC}/emmc_appsboot_signed.mbn ${S}/build-${LK_SOC}/emmc_appsboot.mbn
@@ -39,6 +45,12 @@ do_compile:append() {
 
 inherit deploy
 
+# @description Deploy the unsigned and signed LK images to ${DEPLOYDIR}/${LK_MACHINE}.
+# They are named emmc_appsboot${LK_FLAVOUR}-unsigned.mbn and emmc_appsboot${LK_FLAVOUR}.mbn.
+# @noargs
+# @exitcode 0 Both LK images are in ${DEPLOYDIR}/${LK_MACHINE}.
+# @example
+#   bitbake lk-db410c -c deploy
 do_deploy() {
     install -d ${DEPLOYDIR}/${LK_MACHINE}
     install -D -p -m644 ${S}/build-${LK_SOC}/emmc_appsboot.mbn ${DEPLOYDIR}/${LK_MACHINE}/emmc_appsboot${LK_FLAVOUR}-unsigned.mbn

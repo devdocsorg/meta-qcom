@@ -17,6 +17,13 @@ SRC_URI = " \
 
 PV = "0.0+"
 
+# @description Install the project's scripts and the ath10k and ath11k board-2 JSON scripts.
+# Every file in the tools/scripts subdirectories and the four *-generate-*board-2_json.sh
+# scripts from ${UNPACKDIR} go to ${bindir}.
+# @noargs
+# @exitcode 0 The scripts are in ${D}${bindir}.
+# @example
+#   bitbake qca-swiss-army-knife -c install
 do_install () {
 	install -d ${D}/${bindir}
 	install -m 0755 tools/scripts/*/* ${D}/${bindir}

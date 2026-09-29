@@ -48,6 +48,11 @@ PACKAGES += "${PN}-ta"
 SYSTEMD_PACKAGES = "${PN}-qteesupplicant"
 SYSTEMD_SERVICE:${PN}-qteesupplicant = "qteesupplicant.service sfsconfig.service"
 
+# @description Install the QTEE trusted applications, without their license PDF.
+# @noargs
+# @exitcode 0 The trusted applications are in ${nonarch_base_libdir}/qtee-tas.
+# @example
+#   bitbake minkipc -c install
 do_install:append() {
        mkdir -p ${D}${nonarch_base_libdir}/qtee-tas
        cp -R ${S}/ta/* ${D}${nonarch_base_libdir}/qtee-tas/
