@@ -88,7 +88,7 @@ not need to be installed on the host.
     ```
 
 This reuses the same `ci/<board>.yml` configurations that CI uses. See
-[AGENTS.md](AGENTS.md) for more advanced usage, including sharing the
+[AGENTS.md](docs/source/contributing/AGENTS.md) for more advanced usage, including sharing the
 `DL_DIR`/`SSTATE_DIR` caches across builds.
 
 > **Note:** To run kas natively on the host instead of in a container, install
@@ -101,12 +101,12 @@ For a manual build without KAS, refer to the [Yocto Project Quick Build](https:/
 ## Flash
 
 For instructions on building the QDL tool, preparing the board, and flashing
-images over USB (EDL mode), see [Flashing images](docs/flashing.md).
+images over USB (EDL mode), see [Flashing images](docs/source/user/flashing.md).
 
 ## Security recommendations for production
 
 Please refer to the security recommendations for production builds documented here:
-[Security Recommendations](docs/security-recommendations.md)
+[Security Recommendations](docs/source/user/security-recommendations.md)
 
 ## Releases
 
@@ -144,21 +144,29 @@ build it with KAS using the configuration for your target machine and distro.
    Refer to `meta-qcom/ci/` for the complete list of available machine and
    distro configurations.
 
+## Documentation
+
+Build the documentation site from the repository root, then open
+`docs/site/index.html` directly in a browser:
+
+```bash
+make -f docs/source/Makefile setup html
+```
+
+The [documentation guide](docs/README.md) explains where its source lives. The site
+includes:
+
+- [Build, flash, and boot tutorial](docs/source/user/USAGE.md) — Build an image with kas, flash it, and log in.
+- [Configuration reference](docs/source/user/CONFIGURATION.md) — Layer, machine, kas, fragment, environment, and CI settings.
+- [Development setup](docs/source/contributing/DEVELOPMENT.md) — Install the documentation tools, build the site, and run the checks.
+- [Function reference](docs/source/contributing/README.md#function-reference) — Generated from the comments on every recipe, class, script, and Python function.
+
 ## Contributing
 
-Please submit any patches against the `meta-qcom` layer (branch **master**)
-by using the GitHub pull-request feature. Fork the repo, create a branch,
-do the work, rebase from upstream, and create the pull request.
-
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow
-and the commit subject and message requirements before opening a pull request.
-
-Branch **kirkstone** is not open for direct contributions, please raise an
-issue with the suggested change instead.
-
-### Qualcomm Internal
-
-Please make sure to visit go/GitHubBasicsDoc and go/OSSBestPractices before proposing changes.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for where to send changes, the
+contribution workflow, and the commit subject and message requirements before
+opening a pull request. Follow the [Code of Conduct](CODE_OF_CONDUCT.md) when
+participating.
 
 ## Communication
 

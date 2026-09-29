@@ -1,15 +1,21 @@
 # Notices
 
-meta-qcom is licensed under the MIT licence in [LICENSE](LICENSE). The GitHub
-templates listed below adapt material from other projects, whose notices are
-retained here.
+meta-qcom is licensed under the MIT licence in [LICENSE](LICENSE). The documentation
+build files and GitHub templates listed below adapt material from other projects,
+whose notices are retained here.
 
 ## Documentation site and templates
 
 These files adapt the
 [QLI 2.0 repository skeleton](https://github.com/devdocsorg/qli2-example-repo):
-[.github/ISSUE_TEMPLATE/](.github/ISSUE_TEMPLATE/) and
-[.github/PULL_REQUEST_TEMPLATE/](.github/PULL_REQUEST_TEMPLATE/).
+[.github/test_reference_coverage.py](.github/test_reference_coverage.py),
+[.github/finalise_site.py](.github/finalise_site.py),
+[.github/check_offline.py](.github/check_offline.py),
+[.github/workflows/documentation.yml](.github/workflows/documentation.yml),
+[.github/ISSUE_TEMPLATE/](.github/ISSUE_TEMPLATE/),
+[.github/PULL_REQUEST_TEMPLATE/](.github/PULL_REQUEST_TEMPLATE/), and the build files in
+[docs/source/](docs/source/README.md) (`conf.py`, `Makefile`, `requirements.txt`,
+`requirements.lock`, and `.templates/index.html`).
 
 ```text
 BSD 3-Clause License
