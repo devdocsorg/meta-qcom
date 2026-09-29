@@ -65,7 +65,7 @@ of its release series and its last commit:
 
 ## Machine Support
 
-See `conf/machine` for the complete list of supported devices.
+See [conf/machine](conf/machine/README.md) for the complete list of supported devices.
 
 ## Generic machine support
 
@@ -202,3 +202,41 @@ participating.
 
 This layer is licensed under the MIT license. Check out [LICENSE](LICENSE)
 for more details.
+
+## Folders
+
+- [.github/](.github/) — Holds the CI workflows and actions, [CODEOWNERS](.github/CODEOWNERS), the Markdown lint rules, the documentation build helpers, and the [issue](.github/ISSUE_TEMPLATE/) and [pull request](.github/PULL_REQUEST_TEMPLATE/pr_template.md) templates.
+- [ci/](ci/README.md) — Holds the kas configuration files for each machine, distro, and build option, and the CI helper scripts.
+- [classes/](classes/README.md) — Holds BitBake classes for kernel boot images, devicetree images, source mirrors, and EFI system partitions.
+- [classes-recipe/](classes-recipe/README.md) — Holds recipe classes for the flash package, multi-DTB FIT images, UEFI capsules, and adbd images.
+- [conf/](conf/README.md) — Holds the layer configuration and the machine configurations.
+- [docs/](docs/README.md) — Holds the documentation source and explains how to build the site.
+- [dynamic-layers/](dynamic-layers/README.md) — Holds recipes and appends that apply only when another layer is in the build.
+- [lib/](lib/README.md) — Holds the layer's Python helpers and oe-selftest test cases.
+- [licenses/](licenses/) — Holds the Qualcomm firmware licence texts that recipes name; BitBake finds them by name through `LICENSE_PATH`.
+- [patches/](patches/README.md) — Holds patches that the kas files apply to [OpenEmbedded-Core](https://github.com/openembedded/openembedded-core) and [meta-selinux](https://git.yoctoproject.org/meta-selinux).
+- [recipes-bsp/](recipes-bsp/README.md) — Holds board support recipes: boot and device firmware, boot loaders, partition layouts, and machine packagegroups.
+- [recipes-connectivity/](recipes-connectivity/README.md) — Holds connectivity recipes.
+- [recipes-core/](recipes-core/README.md) — Holds Qualcomm changes to core system recipes.
+- [recipes-devtools/](recipes-devtools/README.md) — Holds flashing, signing, boot image, and firmware tools.
+- [recipes-graphics/](recipes-graphics/README.md) — Holds Adreno GPU and Wayland display recipes.
+- [recipes-kernel/](recipes-kernel/README.md) — Holds the kernels, kernel modules, kernel firmware, and devicetree images.
+- [recipes-ml/](recipes-ml/README.md) — Holds machine learning recipes.
+- [recipes-multimedia/](recipes-multimedia/README.md) — Holds camera, computer vision, and GStreamer recipes.
+- [recipes-support/](recipes-support/README.md) — Holds daemons, libraries, and tools for the remote processors and boot firmware.
+- [recipes-test/](recipes-test/README.md) — Holds test and diagnostic tools and test initramfs images.
+
+## Files
+
+- [.env.example](.env.example) — Documents the environment variables that kas-container and the CI scripts read.
+- [.gitignore](.gitignore) — Keeps generated CI files, the kas-container script, and the documentation build output out of Git.
+- [AGENTS.md](AGENTS.md) — Points automation agents to the agent guide.
+- [BRANCHES.md](BRANCHES.md) — Describes the purpose and maintenance of each long-lived branch.
+- [CLAUDE.md](CLAUDE.md) — Symlink to `AGENTS.md` for agents that read this name.
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) — States participation standards and how to report conduct concerns.
+- [CONTRIBUTING.md](CONTRIBUTING.md) — Points to the contribution guide and development setup.
+- [LICENSE](LICENSE) — Contains the layer's MIT licence.
+- [NOTICE.md](NOTICE.md) — Retains the notices of material that the documentation tools and templates adapt.
+- [README](README) — Symlink to this README.
+- [README.md](README.md) — Introduces the layer, its branches, builds, and contents.
+- [SECURITY.md](SECURITY.md) — Explains how to report vulnerabilities.
