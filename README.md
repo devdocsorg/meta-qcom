@@ -240,3 +240,131 @@ for more details.
 - [README](README) — Symlink to this README.
 - [README.md](README.md) — Introduces the layer, its branches, builds, and contents.
 - [SECURITY.md](SECURITY.md) — Explains how to report vulnerabilities.
+
+<!-- repository-map:start -->
+
+## Repository map
+
+### Connections (1/2)
+
+```mermaid
+flowchart LR
+    r0["meta-qcom (you are here)"]
+    click r0 href "https://github.com/qualcomm-linux/meta-qcom" _blank
+    r1["TC9564_Host_Driver"]
+    click r1 href "https://github.com/qualcomm-linux/TC9564_Host_Driver" _blank
+    r2["boot-firmware-ci"]
+    click r2 href "https://github.com/qualcomm-linux/boot-firmware-ci" _blank
+    r3["camera-driver"]
+    click r3 href "https://github.com/qualcomm-linux/camera-driver" _blank
+    r4["gbm-msm-backend"]
+    click r4 href "https://github.com/qualcomm-linux/gbm-msm-backend" _blank
+    r5["kernel"]
+    click r5 href "https://github.com/qualcomm-linux/kernel" _blank
+    r6["kgsl"]
+    click r6 href "https://github.com/qualcomm-linux/kgsl" _blank
+    r7["location-hal-qcom"]
+    click r7 href "https://github.com/qualcomm-linux/location-hal-qcom" _blank
+    r8["meta-ai"]
+    click r8 href "https://github.com/qualcomm-linux/meta-ai" _blank
+    r9["meta-qcom-3rdparty"]
+    click r9 href "https://github.com/qualcomm-linux/meta-qcom-3rdparty" _blank
+    r10["meta-qcom-distro"]
+    click r10 href "https://github.com/qualcomm-linux/meta-qcom-distro" _blank
+    r11["meta-qcom-releases"]
+    click r11 href "https://github.com/qualcomm-linux/meta-qcom-releases" _blank
+    r12["optee_os"]
+    click r12 href "https://github.com/qualcomm-linux/optee_os" _blank
+    r13["qcom-dtb-metadata"]
+    click r13 href "https://github.com/qualcomm-linux/qcom-dtb-metadata" _blank
+    r14["qcom-ptool"]
+    click r14 href "https://github.com/qualcomm-linux/qcom-ptool" _blank
+    r15["trusted-firmware-a"]
+    click r15 href "https://github.com/qualcomm-linux/trusted-firmware-a" _blank
+    r16["u-boot"]
+    click r16 href "https://github.com/qualcomm-linux/u-boot" _blank
+    r17["video-driver"]
+    click r17 href "https://github.com/qualcomm-linux/video-driver" _blank
+    r18["camera-service"]
+    click r18 href "https://github.com/qualcomm/camera-service" _blank
+    r19["fastrpc"]
+    click r19 href "https://github.com/qualcomm/fastrpc" _blank
+    r20["minkipc"]
+    click r20 href "https://github.com/qualcomm/minkipc" _blank
+    r21["qimsdk"]
+    click r21 href "https://github.com/qualcomm/qimsdk" _blank
+    r22["sensinghub"]
+    click r22 href "https://github.com/qualcomm/sensinghub" _blank
+    r23["sigma-dut"]
+    click r23 href "https://github.com/qualcomm/sigma-dut" _blank
+    r0 -->|"fetches Linux kernel sources from"| r5
+    r0 -->|"includes for Qualcomm Linux images"| r8
+    r0 -->|"includes for Qualcomm Linux images"| r10
+    r0 -->|"gets partition tools from"| r14
+    r9 -->|"adds third-party board support to"| r0
+    r11 -->|"pins a release of"| r0
+    r0 -->|"fetches sources from"| r19
+    r0 -->|"fetches sources from"| r15
+    r0 -->|"fetches sources from"| r12
+    r0 -->|"fetches sources from"| r18
+    r0 -->|"fetches sources from"| r7
+    r0 -->|"fetches sources from"| r20
+    r0 -->|"fetches sources from"| r22
+    r0 -->|"fetches sources from"| r16
+    r0 -->|"fetches sources from"| r23
+    r0 -->|"fetches sources from"| r2
+    r0 -->|"fetches sources from"| r6
+    r0 -->|"fetches sources from"| r4
+    r0 -->|"fetches sources from"| r17
+    r0 -->|"fetches sources from"| r13
+    r0 -->|"fetches sources from"| r1
+    r0 -->|"fetches sources from"| r3
+    r0 -->|"fetches sources from"| r21
+    style r0 fill:#e6f3ff,stroke:#0969da,stroke-width:3px,color:#182c43
+```
+
+### Connections (2/2)
+
+```mermaid
+flowchart LR
+    r0["meta-qcom (you are here)"]
+    click r0 href "https://github.com/qualcomm-linux/meta-qcom" _blank
+    r1["meta-ai"]
+    click r1 href "https://github.com/qualcomm-linux/meta-ai" _blank
+    r2["meta-qcom-arduino"]
+    click r2 href "https://github.com/qualcomm-linux/meta-qcom-arduino" _blank
+    r3["meta-qcom-distro"]
+    click r3 href "https://github.com/qualcomm-linux/meta-qcom-distro" _blank
+    r4["abl2esp"]
+    click r4 href "https://github.com/qualcomm/abl2esp" _blank
+    r5["cbsp-boot-utilities"]
+    click r5 href "https://github.com/qualcomm/cbsp-boot-utilities" _blank
+    r6["mink-idl-compiler"]
+    click r6 href "https://github.com/qualcomm/mink-idl-compiler" _blank
+    r7["qca-swiss-army-knife"]
+    click r7 href "https://github.com/qualcomm/qca-swiss-army-knife" _blank
+    r8["qmi-framework"]
+    click r8 href "https://github.com/qualcomm/qmi-framework" _blank
+    r9["quic-teec"]
+    click r9 href "https://github.com/qualcomm/quic-teec" _blank
+    r10["userspace-resource-manager"]
+    click r10 href "https://github.com/qualcomm/userspace-resource-manager" _blank
+    r0 -->|"fetches sources from"| r4
+    r0 -->|"fetches sources from"| r10
+    r0 -->|"adds recipes when combined with"| r1
+    r0 -->|"adds recipes when combined with"| r3
+    r3 -->|"builds on"| r0
+    r2 -->|"builds on"| r0
+    r0 -->|"fetches sources from"| r5
+    r0 -->|"fetches sources from"| r6
+    r0 -->|"fetches sources from"| r9
+    r0 -->|"fetches sources from"| r8
+    r0 -->|"fetches sources from"| r7
+    style r0 fill:#e6f3ff,stroke:#0969da,stroke-width:3px,color:#182c43
+```
+
+[Full Qualcomm repository map](https://github.com/devdocsorg/qualcomm-repository-map).
+
+<!-- Generated from https://github.com/devdocsorg/qualcomm-repository-map at f5685a3fe3503607f73fdda8dce15be74e58a80f; dataset SHA-256: 3e08766dec124c3a72f891d688eeee291dffe4c160aba66c6c4f7c0f401f8aca. -->
+
+<!-- repository-map:end -->
