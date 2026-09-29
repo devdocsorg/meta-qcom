@@ -55,7 +55,7 @@ branch's support status, history, and relationship to master.
 
 ## Machine Support
 
-See `conf/machine` for the complete list of supported devices.
+See [conf/machine](conf/machine/README.md) for the complete list of supported devices.
 
 ## Generic machine support
 
@@ -147,7 +147,7 @@ build it with KAS using the configuration for your target machine and distro.
     kas build meta-qcom/ci/rb3gen2-core-kit.yml:meta-qcom/ci/qcom-distro.yml
     ```
 
-   Refer to `meta-qcom/ci/` for the complete list of available machine and
+   Refer to [meta-qcom/ci/](ci/README.md) for the complete list of available machine and
    distro configurations.
 
 ## Contributing
@@ -182,6 +182,44 @@ where its source lives and how to rebuild it.
 - [Configuration](docs/source/user/CONFIGURATION.md) — Understand the kas files, layer settings, and layer variables.
 - [Development setup](docs/source/contributing/DEVELOPMENT.md) — Run the layer checks and rebuild the documentation.
 - [Function reference](docs/site/contributing/README.html#function-reference) — Read the documented tasks and functions of every recipe, class, and script.
+
+## Folders
+
+- [.github/](.github/) — Holds CODEOWNERS, issue and pull request templates, CI workflows and actions, the Markdown lint settings, and the documentation build helpers.
+- [ci/](ci/README.md) — Holds the kas files and helper scripts that CI and local builds use.
+- [classes/](classes/README.md) — Holds global classes for boot images, DTB images, the download mirror, and ESP images.
+- [classes-recipe/](classes-recipe/README.md) — Holds recipe classes for FIT DTB images, adbd, the qcomflash image type, and UEFI capsules.
+- [conf/](conf/README.md) — Holds the layer configuration and the machine configurations.
+- [docs/](docs/README.md) — Holds the documentation source and the generated site.
+- [dynamic-layers/](dynamic-layers/README.md) — Holds recipes that apply only when another layer is present.
+- [lib/](lib/README.md) — Holds the layer's Python helpers and oe-selftest cases.
+- [licenses/](licenses/) — Holds the Qualcomm licence texts that recipes name.
+- [patches/](patches/README.md) — Holds patches that the kas files apply to other layers.
+- [recipes-bsp/](recipes-bsp/README.md) — Holds board support recipes: firmware, boot loaders, partitions, images, and packagegroups.
+- [recipes-connectivity/](recipes-connectivity/README.md) — Holds connectivity recipes.
+- [recipes-core/](recipes-core/README.md) — Holds changes to core system recipes.
+- [recipes-devtools/](recipes-devtools/README.md) — Holds host and target tools for building, signing, and flashing images.
+- [recipes-graphics/](recipes-graphics/README.md) — Holds GPU drivers and graphics stack changes.
+- [recipes-kernel/](recipes-kernel/README.md) — Holds kernels, kernel modules, firmware, and boot partition images.
+- [recipes-ml/](recipes-ml/README.md) — Holds the Qualcomm AI Runtime SDK recipe.
+- [recipes-multimedia/](recipes-multimedia/README.md) — Holds camera, computer vision, GStreamer, and IMSDK recipes.
+- [recipes-support/](recipes-support/README.md) — Holds Qualcomm support services and libraries.
+- [recipes-test/](recipes-test/README.md) — Holds test tools and test images.
+
+## Files
+
+- [.env.example](.env.example) — Lists the environment variables the helper scripts read, with safe examples.
+- [.gitignore](.gitignore) — Keeps generated files, local settings, and the documentation environment out of version control.
+- [AGENTS.md](AGENTS.md) — Points automation agents to the agent guide.
+- [BRANCHES.md](BRANCHES.md) — Describes each branch's purpose, status, and relationship to master.
+- [CLAUDE.md](CLAUDE.md) — Links to AGENTS.md for agents that read this name.
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) — States the expected behaviour and how to report conduct concerns.
+- [CONTRIBUTING.md](CONTRIBUTING.md) — Points to the contribution guide.
+- [LICENSE](LICENSE) — Contains the layer's MIT licence.
+- [NOTICE](NOTICE) — Keeps the licences of adapted documentation tooling and templates.
+- [README](README) — Links to this README.
+- [README.md](README.md) — Introduces the layer, its branches, and its contents.
+- [SECURITY.md](SECURITY.md) — Explains how to report vulnerabilities.
 
 ## License
 
